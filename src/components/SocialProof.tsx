@@ -23,7 +23,7 @@ export const SocialProof = () => {
   return (
     <>
       {/* SINGLE NOTIFICATION POPUP (BOTTOM LEFT) */}
-      <div className="fixed bottom-24 left-4 z-40 pointer-events-none">
+      <div className="hidden sm:block fixed bottom-24 left-4 z-40 pointer-events-none">
         <AnimatePresence mode="wait">
           {currentReview && (
             <motion.div
@@ -32,7 +32,7 @@ export const SocialProof = () => {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -40, opacity: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="bg-white shadow-lg rounded-lg px-3 py-2 w-[240px] border border-black/5 pointer-events-auto"
+              className="bg-white/95 backdrop-blur-md shadow-[0_18px_50px_rgba(15,15,15,0.12)] rounded-2xl px-3 py-2 w-[240px] border border-black/5 pointer-events-auto"
             >
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-full bg-brand-orange/10 flex-shrink-0 flex items-center justify-center text-xs font-semibold text-brand-orange">
@@ -72,4 +72,3 @@ export const SocialProof = () => {
     </>
   );
 };
-

@@ -21,10 +21,10 @@ export const WhatsAppCTA = () => {
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1 }}
-        className="relative w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-2xl hover:bg-[#20ba59] transition-colors duration-300"
+        className="relative w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-[0_16px_40px_rgba(37,211,102,0.22)] hover:shadow-[0_22px_55px_rgba(37,211,102,0.3)] hover:bg-[#20ba59] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
         aria-label="Contact on WhatsApp"
         id="whatsapp-floating-button"
       >

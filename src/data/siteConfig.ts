@@ -26,8 +26,8 @@ export const siteConfig = {
     heading: "We Turn Content Into Clients",
     headingHighlights: ["Content", "Clients"],
     subheading: "Graphinex Creative is a modern creative agency helping brands grow through powerful video editing, graphic design, and branding strategies.",
-    video: "/Videos/showreel.mp4", // Note: Hero video needs a direct file path, not a YouTube link.
-    placeholder: "https://i.ibb.co/Xrwgy0Bw/Whats-App-Image-2026-04-28-at-11-07-52-PM.jpg"
+    video: "/assets/videos/work-1.mp4",
+    placeholder: "/assets/videos/work-1.png"
   },
 
   // 🎯 SHOWREEL
@@ -271,6 +271,11 @@ export const siteConfig = {
         type: "image",
         title: "Branding 02",
         src: "/assets/branding/b2.jpeg"
+      },
+      {
+        type: "image",
+        title: "Branding 03",
+        src: "/assets/branding/b3.jpeg"
       },
       {
         type: "image",
