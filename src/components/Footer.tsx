@@ -126,7 +126,9 @@ export const Footer = () => {
             Instagram
           </a>
           <a
-            href="#"
+            href="https://www.linkedin.com/in/graphinex-undefined-45a269407?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             LinkedIn
