@@ -20,8 +20,12 @@ import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
+import { HomeSEOContent } from './components/HomeSEOContent';
 import { SEO } from './components/SEO';
 import PortfolioPage from './pages/Portfolio';
+import VideoEditingPage from './pages/VideoEditing';
+import LogoDesignPage from './pages/LogoDesign';
+import SocialMediaDesignPage from './pages/SocialMediaDesign';
 import { siteConfig } from './data/siteConfig';
 import { useLocation } from 'react-router-dom';
 import { Suspense, lazy, useEffect } from 'react';
@@ -65,6 +69,7 @@ function HomePage() {
       <Hero />
       <Showreel />
       <Services />
+      <HomeSEOContent />
       <Portfolio />
       <PortfolioCollections collections={collections} />
       <div className="pb-20 sm:pb-24 text-center">
@@ -104,6 +109,9 @@ export default function App() {
               </>
             } />
             <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/video-editing" element={<VideoEditingPage />} />
+            <Route path="/logo-design" element={<LogoDesignPage />} />
+            <Route path="/social-media-design" element={<SocialMediaDesignPage />} />
           </Routes>
         </div>
         <WhatsAppCTA />

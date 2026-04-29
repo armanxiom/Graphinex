@@ -11,10 +11,10 @@ import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 
-const categoryMap: Record<string, string> = {
-  videoEditing: 'video-editing',
-  graphicDesign: 'graphic-design',
-  branding: 'branding'
+const servicePageMap: Record<string, string> = {
+  videoEditing: '/video-editing',
+  graphicDesign: '/social-media-design',
+  branding: '/logo-design'
 };
 
 export const Services = () => {
@@ -40,9 +40,9 @@ export const Services = () => {
           {siteConfig.serviceOverviews.map((service: any, index: number) => (
             <Link
               key={service.id}
-              to={`/portfolio?category=${categoryMap[service.id] || service.id}`}
+              to={servicePageMap[service.id] || '/'}
               className="block"
-              aria-label={`${service.title} portfolio examples`}
+              aria-label={`${service.title} service page`}
             >
               <Tilt
                 tiltMaxAngleX={8}

@@ -13,6 +13,24 @@ const seoPages: Record<string, { title: string; description: string; canonical: 
     description:
       'Explore Graphinex Creative portfolio work across video editing, graphic design, and branding built to increase attention, trust, and conversions.',
     canonical: 'https://graphinex.in/portfolio'
+  },
+  '/video-editing': {
+    title: 'Video Editing Agency | Graphinex Creative',
+    description:
+      'Graphinex Creative is a video editing agency that turns raw footage into high-retention content designed to build trust and generate leads.',
+    canonical: 'https://graphinex.in/video-editing'
+  },
+  '/logo-design': {
+    title: 'Logo Design Agency | Graphinex Creative',
+    description:
+      'Graphinex Creative is a logo design agency building memorable brand identities that look premium, consistent, and conversion-ready.',
+    canonical: 'https://graphinex.in/logo-design'
+  },
+  '/social-media-design': {
+    title: 'Social Media Design Agency | Graphinex Creative',
+    description:
+      'Graphinex Creative is a social media design agency creating posts, creatives, and graphics that improve engagement and support lead generation.',
+    canonical: 'https://graphinex.in/social-media-design'
   }
 };
 
@@ -60,6 +78,7 @@ export function SEO() {
 
   useEffect(() => {
     document.title = seo.title;
+    updateMeta('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
     updateMeta('description', seo.description);
     updateMeta('twitter:title', seo.title);
     updateMeta('twitter:description', seo.description);

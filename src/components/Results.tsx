@@ -27,11 +27,20 @@ export const Results = () => {
   ];
 
   return (
-    <section className="bg-brand-dark overflow-hidden relative py-24 md:py-28" id="about">
+    <section className="bg-brand-dark overflow-hidden relative py-24 md:py-28" id="results">
       {/* Decorative Blur */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-orange/5 rounded-full blur-[120px] pointer-events-none" />
       
       <div className="container-boxed relative z-10">
+        <div className="max-w-3xl mb-10 md:mb-14">
+          <span className="luxury-section-kicker mb-6 block text-white/60">Results</span>
+          <h2 className="luxury-heading text-white mb-5">
+            Results That <span className="text-brand-orange">Support Growth</span>
+          </h2>
+          <p className="text-sm md:text-base text-white/70 leading-relaxed">
+            The numbers below represent the kind of outcomes a strong creative system can help support. Better content, better branding, and better consistency can all contribute to stronger visibility, more trust, and more enquiries over time.
+          </p>
+        </div>
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-start mb-12 md:mb-16">
           <div className="max-w-2xl">
             <span className="luxury-section-kicker mb-6 block text-white/60">About</span>

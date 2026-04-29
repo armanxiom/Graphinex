@@ -58,19 +58,19 @@ export const siteConfig = {
       id: "videoEditing",
       title: "Video Editing", 
       icon: "🎬",
-      description: "Video editing for brands that want cinematic storytelling, sharper retention, and more qualified leads.",
+      description: "High-retention editing for reels, ads, testimonials, and story-driven brand content that keeps viewers watching longer.",
     }, 
     { 
       id: "graphicDesign",
       title: "Graphic Design", 
       icon: "🎨",
-      description: "Graphic design that turns social posts, ads, thumbnails, and brand assets into conversion-ready visuals.",
+      description: "Conversion-ready social media design, thumbnails, and campaign graphics that make your brand easier to trust.",
     }, 
     { 
       id: "branding",
       title: "Branding", 
       icon: "🚀",
-      description: "Branding systems that make your business look premium, memorable, and ready to scale.",
+      description: "Brand identity and logo direction that make your business look premium, memorable, and ready to scale.",
     }
   ],
 
@@ -212,6 +212,13 @@ export const siteConfig = {
         src: "/assets/videos/work-6.mp4",
         poster: "/assets/videos/work-6.png",
         link: "#"
+      },
+      {
+        title: "Brand Film 03",
+        category: "Branding",
+        src: "/assets/videos/work-6.mp4",
+        poster: "/assets/videos/work-6.png",
+        link: "#"
       }
     ]
   },
@@ -267,8 +274,8 @@ export const siteConfig = {
       },
       {
         type: "image",
-        title: "Branding 03",
-        src: "/assets/branding/b3.jpeg"
+        title: "Branding 04",
+        src: "/assets/branding/b4.jpeg"
       }
     ]
   },

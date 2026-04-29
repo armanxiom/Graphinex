@@ -50,6 +50,21 @@ export const Footer = () => {
                 </Link>
               ))}
             </div>
+
+            <span className="mt-5 text-[10px] uppercase tracking-widest text-gray-500 font-medium">
+              Services
+            </span>
+            <div className="flex flex-col gap-2">
+              <Link to="/video-editing" className="text-sm text-gray-300 hover:text-white transition-colors w-fit">
+                Video Editing
+              </Link>
+              <Link to="/logo-design" className="text-sm text-gray-300 hover:text-white transition-colors w-fit">
+                Logo Design
+              </Link>
+              <Link to="/social-media-design" className="text-sm text-gray-300 hover:text-white transition-colors w-fit">
+                Social Media Design
+              </Link>
+            </div>
           </div>
 
           {/* Contact Block */}
