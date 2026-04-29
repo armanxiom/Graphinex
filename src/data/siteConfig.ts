@@ -26,8 +26,8 @@ export const siteConfig = {
     heading: "We Turn Content Into Clients",
     headingHighlights: ["Content", "Clients"],
     subheading: "Graphinex Creative is a modern creative agency helping brands grow through powerful video editing, graphic design, and branding strategies.",
-    video: "/assets/videos/work-1.mp4",
-    placeholder: "/assets/videos/work-1.png"
+    image: "/hero/hero-image.png",
+    placeholder: "/hero/hero-image.png"
   },
 
   // 🎯 SHOWREEL
