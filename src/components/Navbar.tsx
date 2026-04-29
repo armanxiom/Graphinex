@@ -44,15 +44,15 @@ export const Navbar = () => {
 
       {/* 3. NAVBAR BELOW TOP BAR */}
       <nav 
-        className="bg-white border-b border-black/5 h-14 flex items-center"
+        className="bg-white/92 backdrop-blur-md border-b border-black/5 h-14 flex items-center shadow-[0_12px_40px_rgba(15,15,15,0.04)]"
         id="navbar"
       >
-        <div className="max-w-6xl mx-auto w-full px-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto w-full px-4 sm:px-5 lg:px-6 flex items-center justify-between">
           {/* 4. LOGO + TEXT FIX (VISIBLE) */}
           <Link to="/" className="flex items-center gap-2 group z-[60]" id="nav-logo">
             <img 
               src={siteConfig.brand.logo} 
-              alt={siteConfig.brand.name} 
+              alt={`${siteConfig.brand.name} logo`} 
               className="w-8 h-auto transition-transform group-hover:scale-105" 
             />
             <span className="text-sm font-semibold text-black tracking-tight uppercase whitespace-nowrap">
@@ -75,7 +75,7 @@ export const Navbar = () => {
               href={siteConfig.contact.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-brand-dark transition-all duration-300"
+              className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,106,0,0.2)] hover:shadow-[0_18px_40px_rgba(255,106,0,0.28)] hover:-translate-y-0.5 focus-visible:ring-offset-white"
             >
               Get in touch
             </a>
@@ -144,7 +144,7 @@ export const Navbar = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setIsOpen(false)}
-                    className="block text-center bg-brand-orange text-white py-3.5 rounded-full font-bold shadow-lg shadow-brand-orange/20"
+                    className="block text-center bg-brand-orange text-white py-3.5 rounded-full font-bold shadow-[0_12px_30px_rgba(255,106,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(255,106,0,0.28)]"
                   >
                     Get in touch
                   </a>
@@ -157,4 +157,3 @@ export const Navbar = () => {
     </header>
   );
 };
-

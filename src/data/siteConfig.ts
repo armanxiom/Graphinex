@@ -25,7 +25,7 @@ export const siteConfig = {
   hero: {
     heading: "We Turn Content Into Clients",
     headingHighlights: ["Content", "Clients"],
-    subheading: "High-performing videos, thumbnails & branding that actually convert — not just look good.",
+    subheading: "Graphinex Creative is a modern creative agency helping brands grow through powerful video editing, graphic design, and branding strategies.",
     video: "/Videos/showreel.mp4", // Note: Hero video needs a direct file path, not a YouTube link.
     placeholder: "https://i.ibb.co/Xrwgy0Bw/Whats-App-Image-2026-04-28-at-11-07-52-PM.jpg"
   },
@@ -58,19 +58,19 @@ export const siteConfig = {
       id: "videoEditing",
       title: "Video Editing", 
       icon: "🎬",
-      description: "High-impact storytelling through cinematic video and professional post-production.",
-    },
+      description: "Video editing for brands that want cinematic storytelling, sharper retention, and more qualified leads.",
+    }, 
     { 
       id: "graphicDesign",
       title: "Graphic Design", 
       icon: "🎨",
-      description: "Crafting iconic visual identities that resonate with your audience and define your market presence.",
-    },
+      description: "Graphic design that turns social posts, ads, thumbnails, and brand assets into conversion-ready visuals.",
+    }, 
     { 
       id: "branding",
       title: "Branding", 
       icon: "🚀",
-      description: "Bespoke digital content strategies built with engagement and aesthetics in mind.",
+      description: "Branding systems that make your business look premium, memorable, and ready to scale.",
     }
   ],
 

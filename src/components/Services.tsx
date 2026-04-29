@@ -9,6 +9,7 @@ import { siteConfig } from '../data/siteConfig';
 import { useInView } from 'motion/react';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
+import Tilt from 'react-parallax-tilt';
 
 const categoryMap: Record<string, string> = {
   videoEditing: 'video-editing',
@@ -21,56 +22,70 @@ export const Services = () => {
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-32 relative bg-brand-light" id="services">
+    <section className="py-28 md:py-32 relative bg-brand-light" id="services">
       <div className="container-boxed">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-8">
           <div className="max-w-2xl">
-            <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Expertise</span>
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] text-brand-dark mb-0">
-              Agency <span className="text-brand-orange">Specializations</span>
+            <span className="luxury-section-kicker mb-6 block">Our Services</span>
+            <h2 className="luxury-heading">
+              Our <span className="text-brand-orange">Services</span>
             </h2>
           </div>
-          <p className="text-muted font-normal max-w-xs text-sm md:text-base leading-relaxed mb-4">
-            We focus on high-impact visual mediums that drive engagement and business growth.
+          <p className="luxury-subcopy max-w-xs md:text-right mb-2">
+            We create SEO-friendly video editing, graphic design, and branding systems that help brands attract attention and convert faster.
           </p>
         </div>
 
-        <div ref={containerRef} className="grid grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+        <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {siteConfig.serviceOverviews.map((service: any, index: number) => (
             <Link
               key={service.id}
               to={`/portfolio?category=${categoryMap[service.id] || service.id}`}
               className="block"
+              aria-label={`${service.title} portfolio examples`}
             >
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="group relative bg-white p-4 sm:p-10 rounded-2xl sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center min-h-[150px] sm:min-h-[420px] cursor-pointer hover:shadow-2xl hover:-translate-y-2 sm:hover:-translate-y-4 transition-all duration-500 border border-black/5"
+              <Tilt
+                tiltMaxAngleX={8}
+                tiltMaxAngleY={8}
+                perspective={1200}
+                scale={1.01}
+                transitionSpeed={1400}
+                glareEnable
+                glareMaxOpacity={0.1}
+                className="block h-full"
               >
-                <div className="relative z-10 w-full flex flex-col items-center">
-                  <div className="text-3xl sm:text-6xl mb-3 sm:mb-12 transform group-hover:scale-110 transition-transform duration-500">
-                    {service.icon}
-                  </div>
-                  <h3 className="text-xs md:text-2xl font-bold uppercase tracking-tight leading-tight md:leading-none mb-2 md:mb-5 break-words w-full">
-                    {service.title}
-                  </h3>
-                  <p className="hidden md:block text-sm text-muted font-normal leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {service.description}
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-2 sm:gap-4 text-brand-orange font-black text-[8px] sm:text-xs uppercase tracking-widest mt-2 sm:mt-10">
-                  <span className="hidden sm:inline">Highlights</span>
-                  <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-brand-orange/10 flex items-center justify-center group-hover:bg-brand-orange group-hover:border-brand-orange transition-all duration-300">
-                    <ArrowRight size={12} className="sm:w-4 sm:h-4 group-hover:text-white transition-colors" />
-                  </div>
-                </div>
+                <motion.article
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="premium-card premium-card-hover group relative bg-white p-5 sm:p-8 lg:p-10 flex flex-col items-center justify-between text-center min-h-[260px] sm:min-h-[360px] lg:min-h-[440px] cursor-pointer overflow-hidden transform-gpu"
+                >
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-orange/0 via-brand-orange/35 to-brand-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                <div className="absolute top-2 right-2 sm:top-12 sm:right-12 text-[24px] sm:text-[80px] font-black text-brand-dark/5 leading-none select-none">
-                  0{index + 1}
-                </div>
-              </motion.div>
+                  <div className="relative z-10 w-full flex flex-col items-center justify-center flex-1 [transform:translateZ(40px)]">
+                    <div className="text-4xl sm:text-5xl lg:text-6xl mb-6 sm:mb-10 transform group-hover:scale-110 transition-transform duration-500">
+                      {service.icon}
+                    </div>
+                    <h3 className="text-xs sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-3 md:mb-4 break-words w-full">
+                      {service.title}
+                    </h3>
+                    <p className="text-sm text-muted font-normal leading-relaxed max-w-sm mx-auto opacity-85 group-hover:opacity-100 transition-opacity duration-300">
+                      {service.description}
+                    </p>
+                  </div>
+                  
+                  <div className="relative z-10 flex items-center gap-2 sm:gap-4 text-brand-orange font-black text-[8px] sm:text-xs uppercase tracking-widest mt-4 sm:mt-8 [transform:translateZ(30px)]">
+                    <span className="hidden sm:inline">Highlights</span>
+                    <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-brand-orange/10 flex items-center justify-center group-hover:bg-brand-orange group-hover:border-brand-orange transition-all duration-300 shadow-[0_0_0_0_rgba(255,106,0,0)] group-hover:shadow-[0_12px_25px_rgba(255,106,0,0.18)]">
+                      <ArrowRight size={12} className="sm:w-4 sm:h-4 group-hover:text-white transition-colors" />
+                    </div>
+                  </div>
+
+                  <div className="absolute top-3 right-3 sm:top-10 sm:right-10 text-[24px] sm:text-[72px] font-black text-brand-dark/5 leading-none select-none">
+                    0{index + 1}
+                  </div>
+                </motion.article>
+              </Tilt>
             </Link>
           ))}
         </div>

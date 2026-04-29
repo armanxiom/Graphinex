@@ -20,12 +20,17 @@ import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
+import { SEO } from './components/SEO';
 import PortfolioPage from './pages/Portfolio';
 import { siteConfig } from './data/siteConfig';
 import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+
+const GlobalSystems = lazy(() =>
+  import('./components/GlobalSystems').then((module) => ({ default: module.GlobalSystems }))
+);
 
 function ScrollToHash() {
   const { pathname, hash } = useLocation();
@@ -34,10 +39,18 @@ function ScrollToHash() {
     if (hash) {
       const element = document.getElementById(hash.substring(1));
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        if (window.__lenis) {
+          window.__lenis.scrollTo(element, { offset: -72 });
+        } else {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.__lenis) {
+        window.__lenis.scrollTo(0);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   }, [pathname, hash]);
 
@@ -57,9 +70,9 @@ function HomePage() {
       <div className="pb-20 sm:pb-24 text-center">
         <motion.a
           href="/portfolio"
-          whileHover={{ scale: 1.03 }}
+          whileHover={{ scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.98 }}
-          className="inline-flex items-center gap-3 rounded-full bg-brand-orange px-6 py-3 text-white font-bold uppercase tracking-[0.22em] text-[10px] sm:text-xs shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] transition-all border border-brand-orange/20"
+          className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] border border-brand-orange/20 premium-focus"
         >
           Explore Full Portfolio
           <ArrowRight size={13} />
@@ -75,19 +88,24 @@ function HomePage() {
 export default function App() {
   return (
     <Router>
+      <SEO />
       <ScrollToHash />
       <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <HomePage />
-              <Footer />
-            </>
-          } />
-          <Route path="/portfolio" element={<PortfolioPage />} />
-        </Routes>
-
+        <Suspense fallback={null}>
+          <GlobalSystems />
+        </Suspense>
+        <div className="relative z-10">
+          <Routes>
+            <Route path="/" element={
+              <>
+                <Navbar />
+                <HomePage />
+                <Footer />
+              </>
+            } />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+          </Routes>
+        </div>
         <WhatsAppCTA />
       </main>
     </Router>

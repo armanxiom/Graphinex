@@ -6,6 +6,9 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Play, X } from 'lucide-react';
+import Tilt from 'react-parallax-tilt';
+
+const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -23,18 +26,19 @@ function MediaSection({
   id: SectionKey;
   title: string;
   items: any[];
-}) {
+  }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
 
   return (
-    <section className="py-12 sm:py-20" id={id}>
+    <section className="py-16 sm:py-20 relative" id={id}>
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent" />
       <div className="container-boxed">
         <div className="mb-8 sm:mb-10">
-          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-4 block">
+          <span className="luxury-section-kicker mb-4 block">
             Category
           </span>
-          <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter text-brand-dark leading-none">
+          <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-semibold uppercase tracking-[-0.05em] text-brand-dark leading-[0.96]">
             {title}
           </h2>
           <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
@@ -43,85 +47,111 @@ function MediaSection({
         {isSingleVideoFocus ? (
           <div className="flex justify-center">
             {items.map((item: any, idx: number) => (
-              <motion.div
+              <Tilt
                 key={`${id}-${idx}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
-                viewport={{ once: true, margin: '-80px' }}
-                onClick={() => setSelectedMedia(item)}
-                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                tiltMaxAngleX={8}
+                tiltMaxAngleY={8}
+                perspective={1200}
+                scale={1.02}
+                transitionSpeed={1400}
+                glareEnable
+                glareMaxOpacity={0.1}
+                className="block w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px]"
               >
-                {item.type === 'video' ? (
-                  <video
-                    src={item.src}
-                    poster={item.poster}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    controls
-                    controlsList="nodownload noplaybackrate"
-                  />
-                ) : (
-                  <img
-                    src={item.src}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                )}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  onClick={() => setSelectedMedia(item)}
+                  whileHover={{ y: -6 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative w-full aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                >
+                  {item.type === 'video' ? (
+                    <video
+                      src={item.src}
+                      poster={item.poster}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      controls
+                      controlsList="nodownload noplaybackrate"
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={getAltText(item)}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
 
-                <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
-              </motion.div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.div>
+              </Tilt>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {items.map((item: any, idx: number) => (
-              <motion.div
+              <Tilt
                 key={`${id}-${idx}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
-                viewport={{ once: true, margin: '-80px' }}
-                onClick={() => setSelectedMedia(item)}
-                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                tiltMaxAngleX={8}
+                tiltMaxAngleY={8}
+                perspective={1200}
+                scale={1.02}
+                transitionSpeed={1400}
+                glareEnable
+                glareMaxOpacity={0.1}
+                className="block aspect-[3/4] sm:aspect-square"
               >
-                {item.type === 'video' ? (
-                  <video
-                    src={item.src}
-                    poster={item.poster}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay={idx === 0}
-                    muted
-                    loop={idx === 0}
-                    playsInline
-                    preload="auto"
-                    controls
-                    controlsList="nodownload noplaybackrate"
-                  />
-                ) : (
-                  <img
-                    src={item.src}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                )}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  onClick={() => setSelectedMedia(item)}
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative h-full rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                >
+                  {item.type === 'video' ? (
+                    <video
+                      src={item.src}
+                      poster={item.poster}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      autoPlay={idx === 0}
+                      muted
+                      loop={idx === 0}
+                      playsInline
+                      preload="auto"
+                      controls
+                      controlsList="nodownload noplaybackrate"
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={getAltText(item)}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
 
-                <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                {item.type === 'video' && (
-                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full backdrop-blur-md bg-white/70 flex items-center justify-center text-brand-dark opacity-90">
-                    <Play size={12} className="fill-current" />
-                  </div>
-                )}
-              </motion.div>
+                  {item.type === 'video' && (
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full backdrop-blur-md bg-white/75 flex items-center justify-center text-brand-dark opacity-90 shadow-sm">
+                      <Play size={12} className="fill-current" />
+                    </div>
+                  )}
+                </motion.div>
+              </Tilt>
             ))}
           </div>
         )}
@@ -136,12 +166,12 @@ function MediaSection({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden"
+            className="relative w-full max-w-4xl bg-black rounded-[1.5rem] overflow-hidden shadow-[0_24px_90px_rgba(0,0,0,0.35)]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedMedia(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300"
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             >
               <X size={20} />
             </button>
@@ -157,7 +187,7 @@ function MediaSection({
             ) : (
               <img
                 src={selectedMedia.src}
-                alt={selectedMedia.title}
+                alt={getAltText(selectedMedia)}
                 className="w-full h-auto max-h-[80vh] object-contain bg-black"
               />
             )}

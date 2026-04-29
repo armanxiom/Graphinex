@@ -10,15 +10,15 @@ export const Footer = () => {
   const registrationLinks = siteConfig.trustCertificates || [];
 
   return (
-    <footer className="bg-black text-white px-5 py-10 md:py-16" id="contact">
-      <div className="max-w-6xl mx-auto flex flex-col gap-8 md:grid md:grid-cols-3 md:gap-16">
+    <footer className="bg-black text-white px-5 py-12 md:py-16" id="contact">
+      <div className="max-w-6xl mx-auto pt-8 md:pt-12 border-t border-white/10 flex flex-col gap-10 md:grid md:grid-cols-3 md:gap-16">
         
         {/* Brand Section */}
         <div className="flex flex-col gap-3" id="footer-brand">
           <div className="flex items-center gap-2">
             <img 
               src={siteConfig.brand.logo} 
-              alt="Logo" 
+              alt={`${siteConfig.brand.name} logo`} 
               className="w-7 h-auto" 
             />
             <span className="text-base font-semibold tracking-tight uppercase">
@@ -32,7 +32,7 @@ export const Footer = () => {
         </div>
 
         {/* Desktop Grouped Grid on Mobile */}
-        <div className="grid grid-cols-2 gap-6 md:contents">
+        <div className="grid grid-cols-2 gap-8 md:contents">
           {/* Navigation Block */}
           <div className="flex flex-col gap-2" id="footer-nav">
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
@@ -101,7 +101,7 @@ export const Footer = () => {
         </div>
 
         {/* Social Section */}
-        <div className="flex gap-4 text-[11px] text-gray-500 uppercase tracking-widest font-medium md:col-span-3">
+        <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 uppercase tracking-widest font-medium md:col-span-3 pt-2">
           {["Instagram", "LinkedIn", "YouTube", "Twitter"].map((item, i) => (
             <a
               key={i}
@@ -115,7 +115,7 @@ export const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-6xl mx-auto mt-10 pt-4 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 gap-4">
+      <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 gap-4">
         <span className="font-normal text-center sm:text-left">© {new Date().getFullYear()} {siteConfig.brand.name} Agency. All rights reserved.</span>
         <div className="flex gap-6 font-normal">
           <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
