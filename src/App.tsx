@@ -20,7 +20,6 @@ import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
-import { HomeSEOContent } from './components/HomeSEOContent';
 import { SEO } from './components/SEO';
 import { siteConfig } from './data/siteConfig';
 import { useLocation } from 'react-router-dom';
@@ -69,7 +68,6 @@ function HomePage() {
       <Hero />
       <Showreel />
       <Services />
-      <HomeSEOContent />
       <Portfolio />
       <PortfolioCollections collections={collections} />
       <div className="pb-20 sm:pb-24 text-center">
