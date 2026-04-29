@@ -119,7 +119,7 @@ export default function App() {
           {showSystems ? <GlobalSystems /> : (
             <div
               aria-hidden="true"
-              className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.06),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(255,106,0,0.03),transparent_28%)]"
+              className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(15,15,15,0.04),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,249,249,1))]"
             />
           )}
         </Suspense>

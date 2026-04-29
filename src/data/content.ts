@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+const heroImage = new URL('../../hero/hero-image.png', import.meta.url).href;
+
 export const siteData = {
   brand: {
     name: "GRAPHINEX",
@@ -18,10 +20,10 @@ export const siteData = {
     { name: "Contact", href: "/#contact" }
   ],
   hero: {
-    headline: "We Turn Content Into Clients",
+    headline: "We Create Content That Converts",
     subheading: "High-performing videos, thumbnails & branding that actually convert — not just look good.",
-    image: "/hero/hero-image.png",
-    imagePlaceholder: "/hero/hero-image.png"
+    image: heroImage,
+    imagePlaceholder: heroImage
   },
   services: [
     {
@@ -194,4 +196,3 @@ export const siteData = {
     "New logo concept approved by client"
   ]
 };
-

@@ -152,7 +152,7 @@ export const servicePageContent: Record<ServicePageKey, ServicePageContent> = {
 
 export const homeSeoCopy = {
   intro: [
-    'Graphinex Creative is a modern creative agency built for brands that want better visibility, stronger trust, and more qualified leads. We help businesses turn content into clients by combining strategy, storytelling, and execution across video editing, graphic design, and branding. The result is creative work that does more than look good. It supports growth.',
+    'Graphinex Creative is a modern creative agency built for brands that want better visibility, stronger trust, and more qualified leads. We help businesses create content systems that combine strategy, storytelling, and execution across video editing, graphic design, and branding. The result is creative work that does more than look good. It supports growth.',
     'If you are looking for a video editing agency, a graphic design agency, or a branding agency that understands conversion as well as aesthetics, our process is built around those priorities. We use content systems that make it easier to publish consistently, communicate value clearly, and create a more memorable impression on the audience you want to reach.'
   ],
   services: [

@@ -8,10 +8,17 @@ export function HomeSEOContent() {
   return (
     <section className="bg-white" id="about">
       <div className="container-boxed">
+        <div className="sr-only">
+          <h2>We Turn Content Into Clients</h2>
+          <p>
+            Graphinex Creative helps brands turn content into clients through video editing,
+            graphic design, and branding that support visibility, trust, and conversions.
+          </p>
+        </div>
         <div className="max-w-4xl">
           <span className="luxury-section-kicker mb-6 block">About</span>
           <h2 className="luxury-heading mb-6">
-            We Turn Content Into <span className="text-brand-orange">Clients</span>
+            About <span className="text-brand-orange">Graphinex Creative</span>
           </h2>
           <div className="space-y-5 text-base md:text-lg leading-relaxed text-muted">
             {homeSeoCopy.intro.map((paragraph) => (

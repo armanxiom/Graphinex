@@ -27,7 +27,7 @@ export const Showreel = () => {
             {siteConfig.showreel.title}
           </motion.h2>
           <p className="text-sm md:text-base text-white/65 max-w-2xl mx-auto leading-relaxed">
-            Watch how we turn content into clients through strategic editing, polished motion, and brand-first creative direction.
+            Watch how strategic editing, polished motion, and brand-first creative direction bring ideas to life.
           </p>
         </div>
 

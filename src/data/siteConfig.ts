@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+const heroImage = new URL('../../hero/hero-image.png', import.meta.url).href;
+
 export const siteConfig = {
   // 🎯 BRANDING & IDENTITY
   brand: {
@@ -23,18 +25,18 @@ export const siteConfig = {
 
   // 🎯 HERO SECTION
   hero: {
-    heading: "We Turn Content Into Clients",
-    headingHighlights: ["Content", "Clients"],
+    heading: "We Create Content That Converts",
+    headingHighlights: ["Create", "Converts"],
     subheading: "Graphinex Creative is a modern creative agency helping brands grow through powerful video editing, graphic design, and branding strategies.",
-    image: "/hero/hero-image.png",
-    placeholder: "/hero/hero-image.png"
+    image: heroImage,
+    placeholder: heroImage
   },
 
   // 🎯 SHOWREEL
   showreel: {
     title: "Our Showreel",
     youtubeId: "KdSOa66eXrA",
-    caption: "Watch how we turn content into clients"
+    caption: "Watch how our creative direction helps brands grow"
   },
 
   trustCertificates: [
