@@ -29,6 +29,8 @@
   
   section {
     @apply py-[88px] md:py-[120px];
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
   }
   
   h1, h2, h3, h4, h5, h6 {

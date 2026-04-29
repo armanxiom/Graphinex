@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Play, X } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
+import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
 
 const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
@@ -29,6 +30,7 @@ function MediaSection({
   }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
+  const { shouldUseHeavyEffects, shouldReduceMotion } = usePerformanceFlags();
 
   return (
     <section className="py-16 sm:py-20 relative" id={id}>
@@ -47,18 +49,67 @@ function MediaSection({
         {isSingleVideoFocus ? (
           <div className="flex justify-center">
             {items.map((item: any, idx: number) => (
-              <Tilt
-                key={`${id}-${idx}`}
-                tiltMaxAngleX={8}
-                tiltMaxAngleY={8}
-                perspective={1200}
-                scale={1.02}
-                transitionSpeed={1400}
-                glareEnable
-                glareMaxOpacity={0.1}
-                className="block w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px]"
-              >
+              shouldUseHeavyEffects ? (
+                <Tilt
+                  key={`${id}-${idx}`}
+                  tiltMaxAngleX={8}
+                  tiltMaxAngleY={8}
+                  perspective={1200}
+                  scale={1.02}
+                  transitionSpeed={1400}
+                  glareEnable
+                  glareMaxOpacity={0.1}
+                  className="block w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px]"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: idx * 0.05 }}
+                    viewport={{ once: true, margin: '-80px' }}
+                    onClick={() => setSelectedMedia(item)}
+                    whileHover={{ y: -6 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group relative w-full aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                  >
+                    {item.type === 'video' ? (
+                      shouldReduceMotion ? (
+                        <img
+                          src={item.poster}
+                          alt={getAltText(item)}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <video
+                          src={item.src}
+                          poster={item.poster}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          controls
+                          controlsList="nodownload noplaybackrate"
+                        />
+                      )
+                    ) : (
+                      <img
+                        src={item.src}
+                        alt={getAltText(item)}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </motion.div>
+                </Tilt>
+              ) : (
                 <motion.div
+                  key={`${id}-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.45, delay: idx * 0.05 }}
@@ -69,17 +120,12 @@ function MediaSection({
                   className="group relative w-full aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                 >
                   {item.type === 'video' ? (
-                    <video
-                      src={item.src}
-                      poster={item.poster}
+                    <img
+                      src={item.poster}
+                      alt={getAltText(item)}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="auto"
-                      controls
-                      controlsList="nodownload noplaybackrate"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <img
@@ -93,24 +139,79 @@ function MediaSection({
 
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
-              </Tilt>
+              )
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {items.map((item: any, idx: number) => (
-              <Tilt
-                key={`${id}-${idx}`}
-                tiltMaxAngleX={8}
-                tiltMaxAngleY={8}
-                perspective={1200}
-                scale={1.02}
-                transitionSpeed={1400}
-                glareEnable
-                glareMaxOpacity={0.1}
-                className="block aspect-[3/4] sm:aspect-square"
-              >
+              shouldUseHeavyEffects ? (
+                <Tilt
+                  key={`${id}-${idx}`}
+                  tiltMaxAngleX={8}
+                  tiltMaxAngleY={8}
+                  perspective={1200}
+                  scale={1.02}
+                  transitionSpeed={1400}
+                  glareEnable
+                  glareMaxOpacity={0.1}
+                  className="block aspect-[3/4] sm:aspect-square"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: idx * 0.05 }}
+                    viewport={{ once: true, margin: '-80px' }}
+                    onClick={() => setSelectedMedia(item)}
+                    whileHover={{ y: -5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group relative h-full rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                  >
+                    {item.type === 'video' ? (
+                      shouldReduceMotion || idx !== 0 ? (
+                        <img
+                          src={item.poster}
+                          alt={getAltText(item)}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <video
+                          src={item.src}
+                          poster={item.poster}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          controls
+                          controlsList="nodownload noplaybackrate"
+                        />
+                      )
+                    ) : (
+                      <img
+                        src={item.src}
+                        alt={getAltText(item)}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                    {item.type === 'video' && (
+                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full backdrop-blur-md bg-white/75 flex items-center justify-center text-brand-dark opacity-90 shadow-sm">
+                        <Play size={12} className="fill-current" />
+                      </div>
+                    )}
+                  </motion.div>
+                </Tilt>
+              ) : (
                 <motion.div
+                  key={`${id}-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.45, delay: idx * 0.05 }}
@@ -120,28 +221,13 @@ function MediaSection({
                   whileTap={{ scale: 0.98 }}
                   className="group relative h-full rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                 >
-                  {item.type === 'video' ? (
-                    <video
-                      src={item.src}
-                      poster={item.poster}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      autoPlay={idx === 0}
-                      muted
-                      loop={idx === 0}
-                      playsInline
-                      preload="auto"
-                      controls
-                      controlsList="nodownload noplaybackrate"
-                    />
-                  ) : (
-                    <img
-                      src={item.src}
-                      alt={getAltText(item)}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  )}
+                  <img
+                    src={item.type === 'video' ? item.poster : item.src}
+                    alt={getAltText(item)}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    loading="lazy"
+                    decoding="async"
+                  />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -151,7 +237,7 @@ function MediaSection({
                     </div>
                   )}
                 </motion.div>
-              </Tilt>
+              )
             ))}
           </div>
         )}

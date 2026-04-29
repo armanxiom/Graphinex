@@ -22,16 +22,16 @@ import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
 import { HomeSEOContent } from './components/HomeSEOContent';
 import { SEO } from './components/SEO';
-import PortfolioPage from './pages/Portfolio';
-import VideoEditingPage from './pages/VideoEditing';
-import LogoDesignPage from './pages/LogoDesign';
-import SocialMediaDesignPage from './pages/SocialMediaDesign';
 import { siteConfig } from './data/siteConfig';
 import { useLocation } from 'react-router-dom';
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 
+const PortfolioPage = lazy(() => import('./pages/Portfolio'));
+const VideoEditingPage = lazy(() => import('./pages/VideoEditing'));
+const LogoDesignPage = lazy(() => import('./pages/LogoDesign'));
+const SocialMediaDesignPage = lazy(() => import('./pages/SocialMediaDesign'));
 const GlobalSystems = lazy(() =>
   import('./components/GlobalSystems').then((module) => ({ default: module.GlobalSystems }))
 );
@@ -91,28 +91,54 @@ function HomePage() {
 }
 
 export default function App() {
+  const [showSystems, setShowSystems] = useState(false);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+
+    if (prefersReducedMotion || !isDesktop) return;
+
+    const idleCallback = window.requestIdleCallback ?? ((cb: IdleRequestCallback) => window.setTimeout(() => cb({
+      didTimeout: false,
+      timeRemaining: () => 0
+    }), 900));
+    const cancelIdleCallback = window.cancelIdleCallback ?? window.clearTimeout;
+
+    const handle = idleCallback(() => setShowSystems(true));
+
+    return () => cancelIdleCallback(handle);
+  }, []);
+
   return (
     <Router>
       <SEO />
       <ScrollToHash />
       <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
         <Suspense fallback={null}>
-          <GlobalSystems />
+          {showSystems ? <GlobalSystems /> : (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.06),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(255,106,0,0.03),transparent_28%)]"
+            />
+          )}
         </Suspense>
         <div className="relative z-10">
-          <Routes>
-            <Route path="/" element={
-              <>
-                <Navbar />
-                <HomePage />
-                <Footer />
-              </>
-            } />
-            <Route path="/portfolio" element={<PortfolioPage />} />
-            <Route path="/video-editing" element={<VideoEditingPage />} />
-            <Route path="/logo-design" element={<LogoDesignPage />} />
-            <Route path="/social-media-design" element={<SocialMediaDesignPage />} />
-          </Routes>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <Navbar />
+                  <HomePage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/portfolio" element={<PortfolioPage />} />
+              <Route path="/video-editing" element={<VideoEditingPage />} />
+              <Route path="/logo-design" element={<LogoDesignPage />} />
+              <Route path="/social-media-design" element={<SocialMediaDesignPage />} />
+            </Routes>
+          </Suspense>
         </div>
         <WhatsAppCTA />
       </main>
