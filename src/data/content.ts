@@ -20,8 +20,8 @@ export const siteData = {
   hero: {
     headline: "We Turn Content Into Clients",
     subheading: "High-performing videos, thumbnails & branding that actually convert — not just look good.",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-business-people-working-together-in-office-2284-large.mp4",
-    videoPlaceholder: "https://i.ibb.co/Xrwgy0Bw/Whats-App-Image-2026-04-28-at-11-07-52-PM.jpg"
+    image: "/hero/hero-image.png",
+    imagePlaceholder: "/hero/hero-image.png"
   },
   services: [
     {
@@ -194,3 +194,4 @@ export const siteData = {
     "New logo concept approved by client"
   ]
 };
+

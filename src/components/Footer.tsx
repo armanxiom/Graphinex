@@ -85,7 +85,7 @@ export const Footer = () => {
                 Registered Business
               </span>
               <span>
-                GRAPHITO ENTERPRISES
+                Graphinex Enterprises
               </span>
               <a
                 href={registrationLinks[0]?.pdfUrl || "#"}
@@ -117,15 +117,36 @@ export const Footer = () => {
 
         {/* Social Section */}
         <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 uppercase tracking-widest font-medium md:col-span-3 pt-2">
-          {["Instagram", "LinkedIn", "YouTube", "Twitter"].map((item, i) => (
-            <a
-              key={i}
-              href="#"
-              className="hover:text-white transition-colors"
-            >
-              {item}
-            </a>
-          ))}
+          <a
+            href="https://www.instagram.com/graphinex.in?igsh=Z3cxYjZ0MDd3NmFq"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Instagram
+          </a>
+          <a
+            href="#"
+            className="hover:text-white transition-colors"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://youtube.com/@graphinexagency?si=REwhReV49mnBllr2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            YouTube
+          </a>
+          <a
+            href="https://x.com/Graphinex_in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Twitter
+          </a>
         </div>
       </div>
 

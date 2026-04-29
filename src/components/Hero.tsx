@@ -5,11 +5,9 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
-import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
 
 export const Hero = () => {
   const words = siteConfig.hero.heading.split(' ');
-  const { shouldReduceMotion } = usePerformanceFlags();
   
   return (
     <section className="relative min-h-screen pt-28 pb-24 md:pt-32 md:pb-28 flex items-center overflow-hidden bg-brand-light" id="hero">
