@@ -6,26 +6,14 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { Camera, Video } from 'lucide-react';
-import heroBackground from '../../hero/hero.jpeg';
+
+const heroBackground = '/hero.jpeg';
 
 export const Hero = () => {
   const words = siteConfig.hero.heading.split(' ');
   
   return (
     <section className="relative min-h-screen pt-24 pb-20 flex items-center overflow-hidden bg-brand-light" id="hero">
-      <div className="absolute inset-0 -z-20">
-        <img
-          src={heroBackground}
-          alt=""
-          aria-hidden="true"
-          className="h-full w-full object-cover object-center"
-          loading="eager"
-          decoding="async"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/88 via-white/78 to-white/52" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-brand-light/30" />
-      </div>
-
       <div className="container-boxed grid lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
         {/* Left Text */}
         <div className="z-10" id="hero-text">
@@ -91,22 +79,21 @@ export const Hero = () => {
         {/* Right Media */}
         <div className="relative mt-12 lg:mt-0" id="hero-media">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.96, y: 18 }}
+            initial={{ opacity: 0, scale: 1.05, y: 18 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className="relative aspect-[10/12] bg-white rounded-[2rem] sm:rounded-3xl overflow-hidden border-[4px] sm:border-8 border-white shadow-2xl z-10" 
             id="hero-video-container"
           >
-            <video 
-                autoPlay 
-                loop 
-                muted 
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.95]"
-                poster={siteConfig.hero.placeholder}
-            >
-                <source src={siteConfig.hero.video} type="video/mp4" />
-            </video>
+            <img
+              src={heroBackground}
+              alt="Graphinex workspace"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              loading="eager"
+              decoding="async"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 hero-grain opacity-25 mix-blend-overlay pointer-events-none" />
             
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 bg-gradient-to-t from-black/80 to-transparent z-20">
                 <p className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.4em] mb-2">Showreel 2026</p>
