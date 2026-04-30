@@ -18,12 +18,12 @@ export const Hero = () => {
           src={heroBackground}
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover object-[center_28%] opacity-[0.18]"
+          className="h-full w-full object-cover object-center"
           loading="eager"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/94 via-white/84 to-white/60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-brand-light/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/88 via-white/78 to-white/52" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-brand-light/30" />
       </div>
 
       <div className="container-boxed grid lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
@@ -97,14 +97,16 @@ export const Hero = () => {
             className="relative aspect-[10/12] bg-white rounded-[2rem] sm:rounded-3xl overflow-hidden border-[4px] sm:border-8 border-white shadow-2xl z-10" 
             id="hero-video-container"
           >
-            <img
-              src={heroBackground}
-              alt="Graphinex workspace"
-              className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
-              loading="eager"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/18 to-transparent" />
+            <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.95]"
+                poster={siteConfig.hero.placeholder}
+            >
+                <source src={siteConfig.hero.video} type="video/mp4" />
+            </video>
             
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 bg-gradient-to-t from-black/80 to-transparent z-20">
                 <p className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.4em] mb-2">Showreel 2026</p>
