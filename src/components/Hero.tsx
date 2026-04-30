@@ -6,13 +6,27 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { Camera, Video } from 'lucide-react';
+import heroBackground from '../../hero/hero.jpeg';
 
 export const Hero = () => {
   const words = siteConfig.hero.heading.split(' ');
   
   return (
     <section className="relative min-h-screen pt-24 pb-20 flex items-center overflow-hidden bg-brand-light" id="hero">
-      <div className="container-boxed grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <div className="absolute inset-0 -z-20">
+        <img
+          src={heroBackground}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover object-center"
+          loading="eager"
+          decoding="async"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/88 via-white/78 to-white/52" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-brand-light/30" />
+      </div>
+
+      <div className="container-boxed grid lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
         {/* Left Text */}
         <div className="z-10" id="hero-text">
           <motion.div
@@ -121,9 +135,6 @@ export const Hero = () => {
           >
             <Video size={window.innerWidth < 640 ? 24 : 32} />
           </motion.div>
-          
-          <div className="absolute top-1/4 -right-20 w-80 h-80 bg-brand-orange/10 rounded-full blur-[100px] -z-10" />
-          <div className="absolute bottom-1/4 -left-20 w-80 h-80 bg-brand-orange/5 rounded-full blur-[100px] -z-10" />
         </div>
       </div>
     </section>

@@ -269,6 +269,11 @@ export const siteConfig = {
         type: "image",
         title: "Branding 03",
         src: "/assets/branding/b3.jpeg"
+      },
+      {
+        type: "image",
+        title: "Branding 04",
+        src: "/assets/branding/b4.jpeg"
       }
     ]
   },
