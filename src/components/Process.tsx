@@ -6,6 +6,7 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
+import { premiumCardTransition } from '../lib/motion';
 
 export const Process = () => {
   return (
@@ -18,31 +19,31 @@ export const Process = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-[34rem] grid-cols-1 gap-4 sm:gap-5">
           {siteConfig.process.map((step, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1, ease: "easeInOut" }}
-              whileHover={{ y: -6 }}
-              className={`group p-4 sm:p-9 bg-white premium-card premium-card-hover relative overflow-hidden min-h-[180px] sm:min-h-[260px] flex flex-col justify-between border-black/5 shadow-[0_14px_48px_rgba(15,15,15,0.05)] ${i === 3 ? 'col-start-2 sm:col-start-auto lg:col-start-auto' : ''}`}
+              transition={{ ...premiumCardTransition, delay: i * 0.08 }}
+              whileHover={{ y: -4 }}
+              className="group p-4 sm:p-6 md:p-7 bg-white premium-card premium-card-hover relative overflow-hidden min-h-[160px] sm:min-h-[180px] flex flex-col justify-between border-black/5 shadow-[0_14px_48px_rgba(15,15,15,0.05)]"
             >
               <div className="relative z-10">
-                <span className="text-brand-orange text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.32em] mb-4 sm:mb-8 block">
+                <span className="text-brand-orange text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.32em] mb-3 sm:mb-6 block">
                   Step {step.step}
                 </span>
-                <h3 className="text-[0.72rem] sm:text-2xl font-semibold mb-3 sm:mb-4 uppercase tracking-[-0.05em] text-brand-dark leading-none whitespace-nowrap">
+                <h3 className="text-[0.8rem] sm:text-2xl font-semibold mb-3 sm:mb-4 uppercase tracking-[-0.05em] text-brand-dark leading-none whitespace-nowrap">
                   {step.name}
                 </h3>
-                <p className="text-[12px] sm:text-[15px] text-muted font-normal leading-relaxed max-w-xs">
+                <p className="text-[12px] sm:text-[15px] text-muted font-normal leading-relaxed max-w-md">
                   {step.description}
                 </p>
               </div>
 
               {/* Decorative Number Background */}
-              <div className="absolute -bottom-2 -right-1 sm:-bottom-4 sm:-right-2 text-[42px] sm:text-[110px] font-bold text-brand-dark/8 sm:text-brand-dark/5 leading-none select-none">
+              <div className="absolute -bottom-2 -right-1 sm:-bottom-4 sm:-right-2 text-[42px] sm:text-[100px] font-bold text-brand-dark/8 sm:text-brand-dark/5 leading-none select-none">
                 {step.step}
               </div>
             </motion.div>

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import { premiumMagneticTransition } from '../lib/motion';
 
 declare global {
   interface Window {
@@ -33,13 +34,13 @@ export function GlobalSystems() {
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const lenis = new Lenis({
-      duration: isMobile ? 0.75 : 0.9,
+      duration: isMobile ? 0.95 : 1.08,
       easing: (t) => 1 - Math.pow(1 - t, 4),
       smoothWheel: true,
       syncTouch: isMobile,
-      syncTouchLerp: 0.08,
-      touchInertiaExponent: 1.7,
-      touchMultiplier: isMobile ? 1.15 : 1,
+      syncTouchLerp: 0.05,
+      touchInertiaExponent: 1.55,
+      touchMultiplier: isMobile ? 1.08 : 1,
       wheelMultiplier: 1,
     });
 
@@ -77,15 +78,15 @@ export function GlobalSystems() {
 
     const resetTarget = (target: HTMLElement | null) => {
       if (!target) return;
+      target.style.transition = `transform ${premiumMagneticTransition.duration * 1000}ms cubic-bezier(0.22, 1, 0.36, 1)`;
       target.style.transform = '';
-      target.style.transition = '';
       target.style.willChange = 'auto';
     };
 
     const setTarget = (target: HTMLElement, x: number, y: number) => {
-      target.style.transition = 'transform 120ms cubic-bezier(0.22, 1, 0.36, 1)';
+      target.style.transition = `transform ${premiumMagneticTransition.duration * 1000}ms cubic-bezier(0.22, 1, 0.36, 1)`;
       target.style.willChange = 'transform';
-      target.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.03)`;
+      target.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.02)`;
     };
 
     const handleMove = (event: PointerEvent) => {

@@ -11,6 +11,7 @@ import { Play, X } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
 import { SectionReveal } from './SectionReveal';
+import { premiumCardTransition } from '../lib/motion';
 
 const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
@@ -79,10 +80,10 @@ export const Portfolio = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1, ease: "easeInOut" }}
+                transition={{ ...premiumCardTransition, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 onClick={() => item.type === 'video' && setSelectedVideo(item)}
-                whileHover={{ y: -6 }}
+                whileHover={{ y: -4, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 className="group relative aspect-[4/5] bg-brand-light rounded-[1.5rem] overflow-hidden cursor-pointer premium-card transition-all duration-500 shadow-[0_12px_30px_rgba(15,15,15,0.05)] transform-gpu"
               >
@@ -108,7 +109,7 @@ export const Portfolio = () => {
                 tiltMaxAngleY={8}
                 perspective={1200}
                 scale={1.02}
-                transitionSpeed={1400}
+                transitionSpeed={2200}
                 glareEnable
                 glareMaxOpacity={0.1}
                 className="block h-full"

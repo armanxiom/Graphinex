@@ -28,7 +28,7 @@ export function usePerformanceFlags() {
   return {
     isMobile,
     prefersReducedMotion,
-    shouldReduceMotion: isMobile || prefersReducedMotion,
+    shouldReduceMotion: prefersReducedMotion,
     shouldUseHeavyEffects: !isMobile && !prefersReducedMotion,
   };
 }

@@ -25,6 +25,7 @@ import { siteConfig } from './data/siteConfig';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { premiumButtonTransition, premiumRevealTransition } from './lib/motion';
 
 const PortfolioPage = lazy(() => import('./pages/Portfolio'));
 const VideoEditingPage = lazy(() => import('./pages/VideoEditing'));
@@ -74,6 +75,7 @@ function HomePage() {
           href="/portfolio"
           whileHover={{ scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.98 }}
+          transition={premiumButtonTransition}
           className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] border border-brand-orange/20 premium-focus"
         >
           Explore Full Portfolio
@@ -122,10 +124,10 @@ function AppShell() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={`${location.pathname}${location.search}`}
-            initial={{ opacity: 0, y: 18, scale: 0.995, filter: 'blur(6px)' }}
+            initial={{ opacity: 0, y: 18, scale: 0.995, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -12, scale: 0.995, filter: 'blur(6px)' }}
-            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: -12, scale: 0.995, filter: 'blur(10px)' }}
+            transition={{ ...premiumRevealTransition, duration: 0.55 }}
             className="relative z-10"
             style={{ willChange: 'transform, opacity, filter' }}
           >

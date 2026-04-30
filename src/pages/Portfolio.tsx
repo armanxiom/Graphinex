@@ -6,6 +6,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { ExternalLink, Play, X } from 'lucide-react';
 import { SectionReveal } from '../components/SectionReveal';
+import { premiumCardTransition, premiumRevealTransition } from '../lib/motion';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -60,10 +61,12 @@ function PortfolioMediaSection({
                 key={`${id}-${idx}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
+                transition={{ ...premiumCardTransition, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => onSelect(item)}
-                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                whileHover={{ y: -4, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
                 {item.type === 'video' ? (
                   <video
@@ -99,10 +102,12 @@ function PortfolioMediaSection({
                 key={`${id}-${idx}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
+                transition={{ ...premiumCardTransition, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => onSelect(item)}
-                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                whileHover={{ y: -4, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
                 {item.type === 'video' ? (
                   <video
@@ -203,7 +208,7 @@ export default function Portfolio() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ ...premiumRevealTransition, duration: 0.75, delay: 0.1 }}
             className="text-[40px] sm:text-[64px] md:text-[96px] font-black uppercase tracking-tighter leading-[1.1] sm:leading-[0.9] text-brand-dark mb-8 break-words"
           >
             {hero.title}
@@ -211,7 +216,7 @@ export default function Portfolio() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ ...premiumRevealTransition, duration: 0.8, delay: 0.2 }}
             className="text-base sm:text-lg md:text-xl text-muted font-medium max-w-2xl mx-auto px-4"
           >
             {hero.subtitle}

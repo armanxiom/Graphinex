@@ -6,6 +6,7 @@
 import { motion } from 'motion/react';
 import { siteConfig } from "../data/siteConfig";
 import { Link } from "react-router-dom";
+import { premiumRevealTransition } from '../lib/motion';
 
 export const Footer = () => {
   const registrationLinks = siteConfig.trustCertificates || [];
@@ -14,9 +15,9 @@ export const Footer = () => {
     <motion.footer
       className="bg-black text-white px-5 py-12 md:py-16"
       id="contact"
-      initial={{ opacity: 0, y: 22, scale: 0.99, filter: 'blur(6px)' }}
+      initial={{ opacity: 0, y: 22, scale: 0.99, filter: 'blur(10px)' }}
       whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ ...premiumRevealTransition, duration: 0.85 }}
       viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
       style={{ willChange: 'transform, opacity, filter' }}
     >

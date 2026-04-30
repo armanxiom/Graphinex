@@ -5,14 +5,15 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
+import { premiumButtonTransition } from '../lib/motion';
 
 export const WhatsAppCTA = () => {
   return (
-    <div className="fixed bottom-6 right-6 z-[100] group" id="whatsapp-container">
+    <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[100] group" id="whatsapp-container">
       {/* Tooltip */}
-      <div className="absolute bottom-full right-0 mb-4 px-4 py-2 bg-brand-dark text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-xl">
+      <div className="absolute bottom-full left-0 mb-4 px-4 py-2 bg-brand-dark text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 pointer-events-none whitespace-nowrap shadow-xl">
         Chat on WhatsApp
-        <div className="absolute top-full right-6 -translate-y-1/2 rotate-45 w-2 h-2 bg-brand-dark" />
+        <div className="absolute top-full left-6 -translate-y-1/2 rotate-45 w-2 h-2 bg-brand-dark" />
       </div>
 
       <motion.a
@@ -21,9 +22,9 @@ export const WhatsAppCTA = () => {
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1 }}
+        whileHover={{ scale: 1.03, y: -1 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ ...premiumButtonTransition, delay: 1.1 }}
         className="relative w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-[0_16px_40px_rgba(37,211,102,0.22)] hover:shadow-[0_22px_55px_rgba(37,211,102,0.3)] hover:bg-[#20ba59] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
         aria-label="Contact on WhatsApp"
         id="whatsapp-floating-button"

@@ -6,6 +6,9 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { SectionReveal } from './SectionReveal';
+import { premiumButtonTransition } from '../lib/motion';
+
+const MotionLink = motion(Link);
 
 export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
   const page = servicePageContent[slug];
@@ -31,22 +34,37 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
               {page.hero}
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <a
+              <motion.a
                 href={siteConfig.contact.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.03, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={premiumButtonTransition}
                 className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] border border-brand-orange/20 premium-focus"
               >
                 <MessageCircle size={14} />
                 Start on WhatsApp
-              </a>
-              <Link to={portfolioCategory} className="premium-button bg-white text-brand-dark border border-black/10 premium-focus">
+              </motion.a>
+              <MotionLink
+                to={portfolioCategory}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={premiumButtonTransition}
+                className="premium-button bg-white text-brand-dark border border-black/10 premium-focus"
+              >
                 Portfolio Section
                 <ArrowRight size={13} />
-              </Link>
-              <Link to="/" className="premium-button bg-white text-brand-dark border border-black/10 premium-focus">
+              </MotionLink>
+              <MotionLink
+                to="/"
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={premiumButtonTransition}
+                className="premium-button bg-white text-brand-dark border border-black/10 premium-focus"
+              >
                 Back to Home
-              </Link>
+              </MotionLink>
             </div>
           </div>
         </SectionReveal>
@@ -119,19 +137,28 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
-                <a
+                <motion.a
                   href={siteConfig.contact.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={premiumButtonTransition}
                   className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] border border-brand-orange/20 premium-focus"
                 >
                   <MessageCircle size={14} />
                   {page.cta.primaryLabel}
-                </a>
-                <Link to={portfolioCategory} className="premium-button bg-white text-brand-dark border border-white/10 premium-focus">
+                </motion.a>
+                <MotionLink
+                  to={portfolioCategory}
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={premiumButtonTransition}
+                  className="premium-button bg-white text-brand-dark border border-white/10 premium-focus"
+                >
                   {page.cta.secondaryLabel}
                   <ArrowRight size={13} />
-                </Link>
+                </MotionLink>
               </div>
             </div>
           </div>

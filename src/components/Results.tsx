@@ -6,6 +6,7 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
+import { premiumCardTransition } from '../lib/motion';
 
 const stripLabels = ['Generated', 'Growth', 'Delivered', 'Clients'];
 
@@ -31,7 +32,7 @@ export const Results = () => {
               key={index}
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
+              transition={{ ...premiumCardTransition, delay: index * 0.08 }}
               viewport={{ once: true, margin: '-80px' }}
               className="text-center md:text-left"
             >

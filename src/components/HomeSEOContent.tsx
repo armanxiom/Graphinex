@@ -4,6 +4,7 @@ import { homeSeoCopy } from '../data/seoContent';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
+import { premiumButtonTransition, premiumCardTransition } from '../lib/motion';
 
 export function HomeSEOContent() {
   return (
@@ -37,7 +38,7 @@ export function HomeSEOContent() {
               key={service.title}
               initial={{ opacity: 0, y: 18, scale: 0.985 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={premiumCardTransition}
               viewport={{ once: true, margin: '-80px' }}
               className="premium-card p-6 sm:p-8"
             >
@@ -79,16 +80,19 @@ export function HomeSEOContent() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <a
+              <motion.a
                 href={siteConfig.contact.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.03, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={premiumButtonTransition}
                 className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] border border-brand-orange/20 premium-focus"
               >
                 <MessageCircle size={14} />
                 Contact on WhatsApp
-              </a>
-              <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+              </motion.a>
+              <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} transition={premiumButtonTransition}>
                 <Link to="/video-editing" className="premium-button bg-white text-brand-dark border border-white/20 premium-focus">
                   Explore Services
                   <ArrowRight size={13} />

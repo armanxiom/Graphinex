@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { premiumDrawerTransition } from '../lib/motion';
 
 const activityItems = [
   "Client from Dubai booked Branding Package",
@@ -101,7 +102,7 @@ export const Navbar = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black z-[90]"
+                className="fixed inset-0 bg-black/65 backdrop-blur-[2px] z-[90]"
               />
 
               {/* SIDE MENU DRAWER */}
@@ -109,12 +110,12 @@ export const Navbar = () => {
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="fixed top-0 right-0 h-[100dvh] w-[86vw] max-w-[340px] bg-white z-[100] flex flex-col shadow-2xl rounded-l-[1.75rem] overflow-y-auto overscroll-contain"
+                transition={premiumDrawerTransition}
+                className="fixed top-0 right-0 h-[100dvh] w-[82vw] max-w-[320px] bg-white z-[100] flex flex-col shadow-2xl rounded-l-[1.75rem] overflow-y-auto overscroll-contain"
               >
                 {/* HEADER */}
-                <div className="flex justify-between items-center px-6 pt-[max(1.1rem,env(safe-area-inset-top))] pb-5 border-b border-black/5">
-                  <span className="text-base sm:text-lg font-bold text-black tracking-tight uppercase">Menu</span>
+                <div className="flex justify-between items-center px-5 pt-[max(0.9rem,env(safe-area-inset-top))] pb-4 border-b border-black/5">
+                  <span className="text-[0.95rem] sm:text-lg font-bold text-black tracking-[-0.04em] uppercase">Menu</span>
                   <button 
                     onClick={() => setIsOpen(false)}
                     className="p-2 -mr-2 text-brand-dark"
@@ -124,13 +125,13 @@ export const Navbar = () => {
                 </div>
 
                 {/* LINKS */}
-                <div className="flex flex-col gap-5 px-6 py-7">
+                <div className="flex flex-col gap-3 px-5 py-5">
                   {siteConfig.navigation.map((item) => (
                     <Link
                       key={item.href}
                       to={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="text-base sm:text-lg font-semibold text-black hover:text-brand-orange transition-colors"
+                      className="text-[1.02rem] sm:text-[1.08rem] font-semibold text-black hover:text-brand-orange transition-colors leading-none tracking-[-0.03em] py-1"
                     >
                       {item.name}
                     </Link>
@@ -138,13 +139,13 @@ export const Navbar = () => {
                 </div>
 
                 {/* CTA */}
-                <div className="mt-auto px-6 pb-8">
+                <div className="mt-auto px-5 pb-6">
                   <a
                     href={siteConfig.contact.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setIsOpen(false)}
-                    className="block text-center bg-brand-orange text-white py-3.5 rounded-full font-bold shadow-[0_12px_30px_rgba(255,106,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(255,106,0,0.28)]"
+                    className="block text-center bg-brand-orange text-white py-3.5 rounded-full font-bold shadow-[0_12px_30px_rgba(255,106,0,0.2)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(255,106,0,0.28)]"
                   >
                     Get in touch
                   </a>

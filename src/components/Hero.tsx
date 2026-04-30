@@ -6,6 +6,7 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
+import { premiumButtonTransition, premiumRevealTransition } from '../lib/motion';
 
 export const Hero = () => {
   const words = siteConfig.hero.heading.split(' ');
@@ -19,7 +20,7 @@ export const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={premiumRevealTransition}
             className="space-y-8"
           >
             <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-black/5 text-brand-orange text-[10px] font-bold tracking-[0.22em] uppercase shadow-[0_8px_24px_rgba(15,15,15,0.04)]">
@@ -69,6 +70,7 @@ export const Hero = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
+                transition={premiumButtonTransition}
                 className="premium-button mx-auto sm:mx-0 bg-brand-orange text-white shadow-[0_16px_36px_rgba(255,106,0,0.22)] hover:shadow-[0_20px_48px_rgba(255,106,0,0.3)] premium-focus"
               >
                 Get in touch

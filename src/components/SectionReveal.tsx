@@ -1,6 +1,7 @@
 import { forwardRef, ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
+import { premiumRevealTransition } from '../lib/motion';
 
 type SectionRevealProps = {
   id?: string;
@@ -10,8 +11,6 @@ type SectionRevealProps = {
   amount?: number;
   once?: boolean;
 };
-
-const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 export const SectionReveal = forwardRef<HTMLElement, SectionRevealProps>(function SectionReveal(
   {
@@ -25,8 +24,8 @@ export const SectionReveal = forwardRef<HTMLElement, SectionRevealProps>(functio
   ref,
 ) {
   const { isMobile, shouldReduceMotion } = usePerformanceFlags();
-  const distance = isMobile ? 16 : 28;
-  const duration = shouldReduceMotion ? 0.01 : isMobile ? 0.55 : 0.85;
+  const distance = isMobile ? 14 : 32;
+  const duration = shouldReduceMotion ? 0.01 : isMobile ? 0.7 : 1.0;
 
   return (
     <motion.section
@@ -36,7 +35,7 @@ export const SectionReveal = forwardRef<HTMLElement, SectionRevealProps>(functio
       initial={
         shouldReduceMotion
           ? { opacity: 1, y: 0, scale: 1, filter: 'none' }
-          : { opacity: 0, y: distance, scale: 0.985, filter: 'blur(8px)' }
+          : { opacity: 0, y: distance, scale: 0.98, filter: 'blur(12px)' }
       }
       whileInView={
         shouldReduceMotion
@@ -44,9 +43,9 @@ export const SectionReveal = forwardRef<HTMLElement, SectionRevealProps>(functio
           : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }
       }
       transition={{
+        ...premiumRevealTransition,
         duration,
         delay,
-        ease: premiumEase,
       }}
       viewport={{
         once,

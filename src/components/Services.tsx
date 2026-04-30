@@ -10,7 +10,9 @@ import { useInView } from 'motion/react';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
+import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
 import { SectionReveal } from './SectionReveal';
+import { premiumCardTransition } from '../lib/motion';
 
 const servicePageMap: Record<string, string> = {
   videoEditing: '/portfolio?category=video-editing',
@@ -21,6 +23,7 @@ const servicePageMap: Record<string, string> = {
 export const Services = () => {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const { isMobile } = usePerformanceFlags();
 
   return (
     <SectionReveal className="py-28 md:py-32 relative bg-brand-light" id="services">
@@ -37,7 +40,7 @@ export const Services = () => {
           </p>
         </div>
 
-        <div ref={containerRef} className="grid grid-cols-3 items-stretch gap-2 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+        <div ref={containerRef} className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8 items-stretch">
           {siteConfig.serviceOverviews.map((service: any, index: number) => (
             <Link
               key={service.id}
@@ -46,11 +49,12 @@ export const Services = () => {
               aria-label={`${service.title} service page`}
             >
               <Tilt
-                tiltMaxAngleX={8}
-                tiltMaxAngleY={8}
+                tiltEnable={!isMobile}
+                tiltMaxAngleX={6}
+                tiltMaxAngleY={6}
                 perspective={1200}
-                scale={1.01}
-                transitionSpeed={1400}
+                scale={isMobile ? 1 : 1.01}
+                transitionSpeed={2200}
                 glareEnable
                 glareMaxOpacity={0.1}
                 className="block h-full w-full"
@@ -58,24 +62,24 @@ export const Services = () => {
                 <motion.article
                   initial={{ opacity: 0, y: 30 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="premium-card premium-card-hover group relative w-full bg-white px-2 py-3 sm:p-8 lg:p-10 flex flex-col items-center justify-between text-center min-h-[190px] sm:min-h-[360px] lg:min-h-[440px] cursor-pointer overflow-hidden transform-gpu"
+                  transition={{ ...premiumCardTransition, delay: index * 0.12 }}
+                  className="premium-card premium-card-hover group relative w-full bg-white px-5 py-5 sm:p-8 lg:p-10 flex flex-col items-center justify-between text-center min-h-[200px] sm:min-h-[320px] lg:min-h-[440px] cursor-pointer overflow-hidden transform-gpu"
                 >
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-orange/0 via-brand-orange/35 to-brand-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   <div className="relative z-10 w-full flex flex-col items-center justify-start sm:justify-center flex-1 gap-2 sm:gap-0 [transform:translateZ(40px)]">
-                    <div className="flex h-8 items-center justify-center text-2xl sm:h-auto sm:text-5xl lg:text-6xl mb-1 sm:mb-10 transform group-hover:scale-110 transition-transform duration-500">
+                    <div className="flex h-8 items-center justify-center text-2xl sm:h-auto sm:text-5xl lg:text-6xl mb-1 sm:mb-10 transform group-hover:scale-110 transition-transform duration-700">
                       {service.icon}
                     </div>
-                    <h3 className="flex min-h-[2.1rem] items-center justify-center text-[10px] sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-1 sm:mb-4 break-words w-full">
+                    <h3 className="flex min-h-[2.1rem] items-center justify-center text-[11px] sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-1 sm:mb-4 break-words w-full">
                       {service.title}
                     </h3>
-                    <p className="flex min-h-[4.75rem] items-start justify-center text-[11px] sm:text-sm text-muted font-normal leading-snug sm:leading-relaxed max-w-sm mx-auto opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="flex min-h-[4.75rem] items-start justify-center text-[12px] sm:text-sm text-muted font-normal leading-snug sm:leading-relaxed max-w-sm mx-auto opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                       {service.description}
                     </p>
                   </div>
                   
-                  <div className="relative z-10 flex items-center justify-center gap-2 sm:gap-4 text-brand-orange font-black text-[8px] sm:text-xs uppercase tracking-widest mt-3 sm:mt-8 [transform:translateZ(30px)]">
+                  <div className="relative z-10 flex items-center justify-center gap-2 sm:gap-4 text-brand-orange font-black text-[8px] sm:text-xs uppercase tracking-widest mt-4 sm:mt-8 [transform:translateZ(30px)]">
                     <span className="hidden sm:inline">Highlights</span>
                     <div className="w-5 h-5 sm:w-10 sm:h-10 rounded-full border border-brand-orange/10 flex items-center justify-center group-hover:bg-brand-orange group-hover:border-brand-orange transition-all duration-300 shadow-[0_0_0_0_rgba(255,106,0,0)] group-hover:shadow-[0_12px_25px_rgba(255,106,0,0.18)]">
                       <ArrowRight size={12} className="sm:w-4 sm:h-4 group-hover:text-white transition-colors" />

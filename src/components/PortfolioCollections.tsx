@@ -9,6 +9,7 @@ import { Play, X } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
 import { SectionReveal } from './SectionReveal';
+import { premiumCardTransition } from '../lib/motion';
 
 const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
@@ -57,7 +58,7 @@ function MediaSection({
                   tiltMaxAngleY={8}
                   perspective={1200}
                   scale={1.02}
-                  transitionSpeed={1400}
+                  transitionSpeed={2200}
                   glareEnable
                   glareMaxOpacity={0.1}
                   className="block w-full max-w-[300px] sm:max-w-[420px] md:max-w-[480px]"
@@ -65,10 +66,10 @@ function MediaSection({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: idx * 0.05 }}
+                    transition={{ ...premiumCardTransition, delay: idx * 0.05 }}
                     viewport={{ once: true, margin: '-80px' }}
                     onClick={() => setSelectedMedia(item)}
-                    whileHover={{ y: -6 }}
+                    whileHover={{ y: -4, scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     className="group relative w-full aspect-[4/5] sm:aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                   >
@@ -113,10 +114,10 @@ function MediaSection({
                   key={`${id}-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+                  transition={{ ...premiumCardTransition, delay: idx * 0.05 }}
                   viewport={{ once: true, margin: '-80px' }}
                   onClick={() => setSelectedMedia(item)}
-                  whileHover={{ y: -6 }}
+                  whileHover={{ y: -4, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                     className="group relative w-full aspect-[4/5] sm:aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                 >
@@ -153,7 +154,7 @@ function MediaSection({
                   tiltMaxAngleY={8}
                   perspective={1200}
                   scale={1.02}
-                  transitionSpeed={1400}
+                  transitionSpeed={2200}
                   glareEnable
                   glareMaxOpacity={0.1}
                   className="block aspect-[4/5] sm:aspect-square"
@@ -161,10 +162,10 @@ function MediaSection({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: idx * 0.05 }}
+                    transition={{ ...premiumCardTransition, delay: idx * 0.05 }}
                     viewport={{ once: true, margin: '-80px' }}
                     onClick={() => setSelectedMedia(item)}
-                    whileHover={{ y: -5 }}
+                    whileHover={{ y: -4, scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     className="group relative h-full rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                   >
@@ -215,10 +216,10 @@ function MediaSection({
                   key={`${id}-${idx}`}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+                  transition={{ ...premiumCardTransition, delay: idx * 0.05 }}
                   viewport={{ once: true, margin: '-80px' }}
                   onClick={() => setSelectedMedia(item)}
-                  whileHover={{ y: -5 }}
+                  whileHover={{ y: -4, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   className="group relative aspect-[4/5] sm:aspect-square rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                 >
