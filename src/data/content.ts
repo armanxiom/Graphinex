@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-const heroImage = new URL('../../hero/hero-image.png', import.meta.url).href;
-
 export const siteData = {
   brand: {
     name: "GRAPHINEX",
@@ -20,10 +18,10 @@ export const siteData = {
     { name: "Contact", href: "/#contact" }
   ],
   hero: {
-    headline: "We Create Content That Converts",
+    headline: "We Turn Content Into Clients",
     subheading: "High-performing videos, thumbnails & branding that actually convert — not just look good.",
-    image: heroImage,
-    imagePlaceholder: heroImage
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-business-people-working-together-in-office-2284-large.mp4",
+    videoPlaceholder: "https://i.ibb.co/Xrwgy0Bw/Whats-App-Image-2026-04-28-at-11-07-52-PM.jpg"
   },
   services: [
     {

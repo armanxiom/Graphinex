@@ -5,48 +5,49 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
-import { SectionReveal } from './SectionReveal';
-import { ScrollReveal } from './ScrollReveal';
 
 export const Process = () => {
   return (
-    <SectionReveal className="bg-white py-24 md:py-28" id="process">
+    <section className="bg-white" id="process">
       <div className="container-boxed">
-        <ScrollReveal className="mb-12 md:mb-16" distance={22} blur={8}>
-          <span className="luxury-section-kicker mb-6 block">Our Workflow</span>
-          <h2 className="luxury-heading mb-0">
+        <div className="mb-12 md:mb-16">
+          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Workflow</span>
+          <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] text-brand-dark mb-0">
             The Creative Journey
           </h2>
-        </ScrollReveal>
+        </div>
 
-        <div className="mx-auto grid max-w-[34rem] grid-cols-1 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {siteConfig.process.map((step, i) => (
-            <ScrollReveal key={i} delay={i * 0.08} distance={22} blur={6}>
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="group p-4 sm:p-5 md:p-6 bg-white premium-card premium-card-hover relative overflow-hidden min-h-[140px] sm:min-h-[160px] flex flex-col justify-between border-black/5 shadow-[0_14px_48px_rgba(15,15,15,0.05)]"
-              >
-                <div className="relative z-10">
-                  <span className="text-brand-orange text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.32em] mb-3 sm:mb-5 block">
-                    Step {step.step}
-                  </span>
-                  <h3 className="text-[0.8rem] sm:text-xl font-semibold mb-3 sm:mb-4 uppercase tracking-[-0.05em] text-brand-dark leading-none whitespace-nowrap">
-                    {step.name}
-                  </h3>
-                  <p className="text-[12px] sm:text-[14px] text-muted font-normal leading-relaxed max-w-md">
-                    {step.description}
-                  </p>
-                </div>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1, ease: "easeInOut" }}
+              className="group p-8 bg-brand-light rounded-2xl border border-black/5 hover:bg-white hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+            >
+              <div className="relative z-10">
+                <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.3em] mb-8 block">
+                  Step {step.step}
+                </span>
+                <h3 className="text-xl font-bold mb-4 uppercase tracking-tight text-brand-dark leading-none">
+                  {step.name}
+                </h3>
+                <p className="text-sm text-muted font-normal leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
 
-                {/* Decorative Number Background */}
-                <div className="absolute -bottom-2 -right-1 sm:-bottom-4 sm:-right-2 text-[42px] sm:text-[88px] font-bold text-brand-dark/8 sm:text-brand-dark/5 leading-none select-none">
-                  {step.step}
-                </div>
-              </motion.div>
-            </ScrollReveal>
+              {/* Decorative Number Background */}
+              <div className="absolute -bottom-2 -right-2 text-[80px] font-bold text-brand-dark/5 leading-none select-none">
+                {step.step}
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </SectionReveal>
+    </section>
   );
 };
+

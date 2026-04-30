@@ -8,32 +8,25 @@ import { siteConfig } from '../data/siteConfig';
 import { useInView } from 'motion/react';
 import { useRef, useState } from 'react';
 import { Play, X } from 'lucide-react';
-import Tilt from 'react-parallax-tilt';
-import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
-import { SectionReveal } from './SectionReveal';
-import { premiumCardTransition } from '../lib/motion';
-
-const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
 export const Portfolio = () => {
   const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-50px" });
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const featuredWorks = siteConfig.featuredWorks.slice(0, 4);
-  const { shouldUseHeavyEffects, shouldReduceMotion } = usePerformanceFlags();
 
   return (
-    <SectionReveal className="bg-white relative" id="work">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+    <section className="bg-white" id="work">
       <div className="container-boxed mb-12 md:mb-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="max-w-xl">
-            <span className="luxury-section-kicker mb-6 block">Our Portfolio</span>
-            <h2 className="luxury-heading mb-0">
+            <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Portfolio</span>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] text-brand-dark mb-0">
               Featured <span className="text-brand-orange">Works</span>
             </h2>
           </div>
           <div className="hidden lg:block pb-2">
-            <p className="luxury-subcopy max-w-[280px]">
+            <p className="text-muted max-w-[280px] text-sm md:text-base font-normal leading-relaxed">
               Transforming businesses through elite-level visuals and creative strategy.
             </p>
           </div>
@@ -41,83 +34,59 @@ export const Portfolio = () => {
       </div>
 
       <div className="container-boxed">
-        <div ref={containerRef} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
-          {featuredWorks.map((item, index) => {
-            const media = item.type === 'video'
-              ? index === 0 && !shouldReduceMotion
-                ? (
-                  <video
-                    src={item.src}
+        <div ref={containerRef} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+          {featuredWorks.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1, ease: "easeInOut" }}
+              viewport={{ once: true }}
+              onClick={() => item.type === 'video' && setSelectedVideo(item)}
+              className="group relative aspect-[4/5] bg-brand-light rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
+            >
+              {/* Media */}
+              {item.type === "video" ? (
+                index === 0 ? (
+                  <video 
+                    src={item.src} 
                     poster={item.poster}
-                    autoPlay
-                    muted
-                    loop
+                    autoPlay 
+                    muted 
+                    loop 
                     playsInline
-                    preload="metadata"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                )
-                : (
-                  <img
+                ) : (
+                  <img 
                     src={item.poster}
-                    alt={getAltText(item)}
-                    loading="eager"
+                    alt={item.title}
+                    loading="lazy"
                     decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )
-              : (
-                <img
-                  src={item.src}
-                  alt={getAltText(item)}
-                  loading="eager"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+              ) : (
+                <img 
+                  src={item.src} 
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-              );
+              )}
+              
+              {/* Overlay */}
+              <div 
+                className="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+              />
 
-            const card = (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ ...premiumCardTransition, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                onClick={() => item.type === 'video' && setSelectedVideo(item)}
-                whileHover={{ y: -4, scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative aspect-[4/5] bg-brand-light rounded-[1.5rem] overflow-hidden cursor-pointer premium-card transition-all duration-500 shadow-[0_12px_30px_rgba(15,15,15,0.05)] transform-gpu"
-              >
-                {media}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/45 via-brand-dark/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {item.type === 'video' && (
-                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full backdrop-blur-md bg-white/20 border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
+              {item.type === 'video' && (
+                <div className="absolute top-6 right-6 w-10 h-10 rounded-full backdrop-blur-md bg-white/20 border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <Play size={14} className="fill-current" />
-                  </div>
-                )}
-              </motion.div>
-            );
-
-            if (!shouldUseHeavyEffects) {
-              return <div key={index}>{card}</div>;
-            }
-
-            return (
-              <Tilt
-                key={index}
-                tiltMaxAngleX={8}
-                tiltMaxAngleY={8}
-                perspective={1200}
-                scale={1.02}
-                transitionSpeed={2200}
-                glareEnable
-                glareMaxOpacity={0.1}
-                className="block h-full"
-              >
-                {card}
-              </Tilt>
-            );
-          })}
+                </div>
+              )}
+            </motion.div>
+          ))}
         </div>
         
       </div>
@@ -154,6 +123,6 @@ export const Portfolio = () => {
           </motion.div>
         </div>
       )}
-    </SectionReveal>
+    </section>
   );
 };

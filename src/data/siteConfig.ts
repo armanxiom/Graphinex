@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-const heroImage = new URL('../../hero/hero-image.png', import.meta.url).href;
-
 export const siteConfig = {
   // 🎯 BRANDING & IDENTITY
   brand: {
@@ -25,18 +23,18 @@ export const siteConfig = {
 
   // 🎯 HERO SECTION
   hero: {
-    heading: "We Create Content That Converts",
-    headingHighlights: ["Create", "Converts"],
-    subheading: "Graphinex Creative is a modern creative agency helping brands grow through powerful video editing, graphic design, and branding strategies.",
-    image: heroImage,
-    placeholder: heroImage
+    heading: "We Turn Content Into Clients",
+    headingHighlights: ["Content", "Clients"],
+    subheading: "High-performing videos, thumbnails & branding that actually convert — not just look good.",
+    video: "/Videos/showreel.mp4", // Note: Hero video needs a direct file path, not a YouTube link.
+    placeholder: "https://i.ibb.co/Xrwgy0Bw/Whats-App-Image-2026-04-28-at-11-07-52-PM.jpg"
   },
 
   // 🎯 SHOWREEL
   showreel: {
     title: "Our Showreel",
     youtubeId: "KdSOa66eXrA",
-    caption: "Watch how our creative direction helps brands grow"
+    caption: "Watch how we turn content into clients"
   },
 
   trustCertificates: [
@@ -60,19 +58,19 @@ export const siteConfig = {
       id: "videoEditing",
       title: "Video Editing", 
       icon: "🎬",
-      description: "High-retention editing for reels, ads, testimonials, and story-driven brand content that keeps viewers watching longer.",
-    }, 
+      description: "High-impact storytelling through cinematic video and professional post-production.",
+    },
     { 
       id: "graphicDesign",
       title: "Graphic Design", 
       icon: "🎨",
-      description: "Conversion-ready social media design, thumbnails, and campaign graphics that make your brand easier to trust.",
-    }, 
+      description: "Crafting iconic visual identities that resonate with your audience and define your market presence.",
+    },
     { 
       id: "branding",
       title: "Branding", 
       icon: "🚀",
-      description: "Brand identity and logo direction that make your business look premium, memorable, and ready to scale.",
+      description: "Bespoke digital content strategies built with engagement and aesthetics in mind.",
     }
   ],
 
@@ -214,13 +212,6 @@ export const siteConfig = {
         src: "/assets/videos/work-6.mp4",
         poster: "/assets/videos/work-6.png",
         link: "#"
-      },
-      {
-        title: "Brand Film 03",
-        category: "Branding",
-        src: "/assets/videos/work-6.mp4",
-        poster: "/assets/videos/work-6.png",
-        link: "#"
       }
     ]
   },
@@ -278,11 +269,6 @@ export const siteConfig = {
         type: "image",
         title: "Branding 03",
         src: "/assets/branding/b3.jpeg"
-      },
-      {
-        type: "image",
-        title: "Branding 04",
-        src: "/assets/branding/b4.jpeg"
       }
     ]
   },

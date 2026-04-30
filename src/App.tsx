@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Services } from './components/Services';
@@ -20,20 +20,12 @@ import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
-import { SEO } from './components/SEO';
+import PortfolioPage from './pages/Portfolio';
 import { siteConfig } from './data/siteConfig';
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import { premiumButtonTransition, premiumRevealTransition } from './lib/motion';
-
-const PortfolioPage = lazy(() => import('./pages/Portfolio'));
-const VideoEditingPage = lazy(() => import('./pages/VideoEditing'));
-const LogoDesignPage = lazy(() => import('./pages/LogoDesign'));
-const SocialMediaDesignPage = lazy(() => import('./pages/SocialMediaDesign'));
-const GlobalSystems = lazy(() =>
-  import('./components/GlobalSystems').then((module) => ({ default: module.GlobalSystems }))
-);
 
 function ScrollToHash() {
   const { pathname, hash } = useLocation();
@@ -42,18 +34,10 @@ function ScrollToHash() {
     if (hash) {
       const element = document.getElementById(hash.substring(1));
       if (element) {
-        if (window.__lenis) {
-          window.__lenis.scrollTo(element, { offset: -72 });
-        } else {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      if (window.__lenis) {
-        window.__lenis.scrollTo(0);
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pathname, hash]);
 
@@ -73,10 +57,9 @@ function HomePage() {
       <div className="pb-20 sm:pb-24 text-center">
         <motion.a
           href="/portfolio"
-          whileHover={{ scale: 1.03, y: -2 }}
+          whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
-          transition={premiumButtonTransition}
-          className="premium-button bg-brand-orange text-white shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] border border-brand-orange/20 premium-focus"
+          className="inline-flex items-center gap-3 rounded-full bg-brand-orange px-6 py-3 text-white font-bold uppercase tracking-[0.22em] text-[10px] sm:text-xs shadow-[0_12px_30px_rgba(255,122,0,0.28)] hover:shadow-[0_16px_36px_rgba(255,122,0,0.34)] transition-all border border-brand-orange/20"
         >
           Explore Full Portfolio
           <ArrowRight size={13} />
@@ -89,75 +72,24 @@ function HomePage() {
   );
 }
 
-function AppShell() {
-  const [showSystems, setShowSystems] = useState(false);
-  const location = useLocation();
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
-    const idleCallback = window.requestIdleCallback ?? ((cb: IdleRequestCallback) => window.setTimeout(() => cb({
-      didTimeout: false,
-      timeRemaining: () => 0
-    }), 900));
-    const cancelIdleCallback = window.cancelIdleCallback ?? window.clearTimeout;
-
-    const handle = idleCallback(() => setShowSystems(true));
-
-    return () => cancelIdleCallback(handle);
-  }, []);
-
-  return (
-    <>
-      <SEO />
-      <ScrollToHash />
-      <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
-        <Suspense fallback={null}>
-          {showSystems ? <GlobalSystems /> : (
-            <div
-              aria-hidden="true"
-              className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(15,15,15,0.04),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(249,249,249,1))]"
-            />
-          )}
-        </Suspense>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={`${location.pathname}${location.search}`}
-            initial={{ opacity: 0, y: 18, scale: 0.995, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -12, scale: 0.995, filter: 'blur(10px)' }}
-            transition={{ ...premiumRevealTransition, duration: 0.55 }}
-            className="relative z-10"
-            style={{ willChange: 'transform, opacity, filter' }}
-          >
-            <Suspense fallback={null}>
-              <Routes location={location}>
-                <Route path="/" element={
-                  <>
-                    <Navbar />
-                    <HomePage />
-                    <Footer />
-                  </>
-                } />
-                <Route path="/portfolio" element={<PortfolioPage />} />
-                <Route path="/video-editing" element={<VideoEditingPage />} />
-                <Route path="/logo-design" element={<LogoDesignPage />} />
-                <Route path="/social-media-design" element={<SocialMediaDesignPage />} />
-              </Routes>
-            </Suspense>
-          </motion.div>
-        </AnimatePresence>
-        <WhatsAppCTA />
-      </main>
-    </>
-  );
-}
-
 export default function App() {
   return (
     <Router>
-      <AppShell />
+      <ScrollToHash />
+      <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
+        <Routes>
+          <Route path="/" element={
+            <>
+              <Navbar />
+              <HomePage />
+              <Footer />
+            </>
+          } />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+        </Routes>
+
+        <WhatsAppCTA />
+      </main>
     </Router>
   );
 }

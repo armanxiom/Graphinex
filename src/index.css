@@ -2,8 +2,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", sans-serif;
   
   --color-brand-orange: #FF6A00;
   --color-brand-dark: #0F0F0F;
@@ -19,82 +19,28 @@
   }
   body {
     @apply bg-white text-brand-dark font-sans antialiased selection:bg-brand-orange selection:text-white overflow-x-hidden w-full;
-    font-weight: 500;
-    letter-spacing: -0.012em;
-    line-height: 1.55;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  #main-content {
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    isolation: isolate;
   }
   
   section {
-    @apply py-16 md:py-[120px];
+    @apply py-[80px] md:py-[100px];
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold tracking-[-0.055em] leading-tight break-words;
-    text-wrap: balance;
+    @apply font-display tracking-tight leading-tight break-words;
   }
 }
 
 @layer components {
   .container-boxed {
-    @apply max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 w-full;
+    @apply max-w-6xl mx-auto px-5 w-full;
   }
 
   .bento-card {
-    @apply bg-brand-light border border-black/5 rounded-2xl overflow-hidden transition-all duration-500;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    @apply bg-brand-light border border-black/5 rounded-xl overflow-hidden transition-all duration-300;
   }
   
   .bento-card:hover {
-    @apply border-brand-orange/20 bg-white shadow-lg;
-  }
-
-  .luxury-section-kicker {
-    @apply block text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em];
-  }
-
-  .luxury-heading {
-    @apply text-[clamp(2rem,6vw,3.25rem)] md:text-5xl font-semibold uppercase tracking-[-0.04em] leading-[0.96] text-brand-dark;
-  }
-
-  .luxury-subcopy {
-    @apply text-sm md:text-base text-muted leading-relaxed font-normal;
-  }
-
-  .luxury-divider {
-    @apply h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent;
-  }
-
-  .premium-card {
-    @apply rounded-[1.5rem] border border-black/5 bg-white shadow-[0_12px_40px_rgba(15,15,15,0.06)] transition-all duration-500;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: transform, box-shadow;
-  }
-  
-  .premium-card-hover {
-    @apply hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_18px_60px_rgba(15,15,15,0.12)] hover:border-brand-orange/15;
-  }
-
-  .premium-focus {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange/35 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
-  }
-
-  .premium-button {
-    @apply inline-flex items-center justify-center gap-3 rounded-full px-5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.22em] transition-all duration-300 active:scale-[0.98];
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: transform, box-shadow;
+    @apply border-brand-orange/20 bg-white shadow-sm;
   }
 }
 
@@ -119,45 +65,4 @@
 
 .animate-scroll {
   animation: scroll 25s linear infinite;
-}
-
-@keyframes gradient-float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(18px, -24px, 0) scale(1.06);
-  }
-}
-
-@keyframes gradient-drift {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(-22px, 18px, 0) scale(1.04);
-  }
-}
-
-@keyframes gradient-pulse {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale(0.98);
-    opacity: 0.82;
-  }
-  50% {
-    transform: translate3d(0, -10px, 0) scale(1.03);
-    opacity: 1;
-  }
-}
-
-.animate-gradient-float {
-  animation: gradient-float 18s ease-in-out infinite;
-}
-
-.animate-gradient-drift {
-  animation: gradient-drift 24s ease-in-out infinite;
-}
-
-.animate-gradient-pulse {
-  animation: gradient-pulse 20s ease-in-out infinite;
 }
