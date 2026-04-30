@@ -31,8 +31,8 @@ export const Hero = () => {
               hidden: {},
               show: {
                 transition: {
-                  staggerChildren: 0.08,
-                  delayChildren: 0.05,
+                  staggerChildren: 0.07,
+                  delayChildren: 0.08,
                 },
               },
             }}
@@ -40,7 +40,7 @@ export const Hero = () => {
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="inline-block px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-brand-orange text-[10px] font-bold tracking-[0.2em] uppercase mb-8 shadow-sm backdrop-blur-[2px]"
             >
               Creative Agency Based in India
@@ -51,7 +51,7 @@ export const Hero = () => {
                   key={i}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.15 + (i * 0.08), ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.52, delay: 0.14 + (i * 0.07), ease: [0.22, 1, 0.36, 1] }}
                   className={siteConfig.hero.headingHighlights.includes(word.replace(/[,.!]/, '')) ? "text-brand-orange" : ""}
                 >
                   {word}{' '}
@@ -61,7 +61,7 @@ export const Hero = () => {
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.5, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
               className="text-base md:text-lg text-white/78 max-w-sm mb-10 leading-relaxed font-normal"
             >
               {siteConfig.hero.subheading}
@@ -70,7 +70,7 @@ export const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.5, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-wrap gap-8"
             >
                {siteConfig.results.slice(0, 2).map((res, i) => (

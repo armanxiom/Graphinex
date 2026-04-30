@@ -76,7 +76,7 @@ export const Navbar = () => {
               href={siteConfig.contact.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-brand-dark transition-all duration-300"
+              className="bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-brand-dark hover:scale-[1.03] active:scale-[0.98] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
             >
               Get in touch
             </a>
@@ -131,7 +131,7 @@ export const Navbar = () => {
                       key={item.href}
                       to={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="text-[1.05rem] font-semibold text-black hover:text-brand-orange transition-colors"
+                      className="text-[1.1rem] font-semibold text-black hover:text-brand-orange transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -145,7 +145,7 @@ export const Navbar = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setIsOpen(false)}
-                    className="block text-center bg-brand-orange text-white py-3.5 rounded-full font-bold shadow-lg shadow-brand-orange/20"
+                    className="block text-center bg-brand-orange text-white py-3.5 rounded-full font-bold shadow-lg shadow-brand-orange/20 hover:scale-[1.03] active:scale-[0.98] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
                   >
                     Get in touch
                   </a>

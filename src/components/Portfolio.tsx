@@ -25,11 +25,6 @@ export const Portfolio = () => {
               Featured Works
             </h2>
           </div>
-          <div className="hidden lg:block pb-2">
-            <p className="text-muted max-w-[280px] text-sm md:text-base font-normal leading-relaxed">
-              Transforming businesses through elite-level visuals and creative strategy.
-            </p>
-          </div>
         </div>
       </div>
 

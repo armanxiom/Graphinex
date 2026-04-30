@@ -5,10 +5,20 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
+import { useRevealOnView } from '../hooks/useRevealOnView';
 
 export const Process = () => {
+  const { ref, isVisible } = useRevealOnView<HTMLElement>();
+
   return (
-    <section className="bg-white" id="process">
+    <motion.section
+      ref={ref}
+      initial={{ opacity: 0, y: 18 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-white"
+      id="process"
+    >
       <div className="container-boxed">
         <div className="mb-12 md:mb-16">
           <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Workflow</span>
@@ -25,6 +35,8 @@ export const Process = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.65, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.99 }}
               className="group p-8 bg-brand-light rounded-2xl border border-black/5 hover:bg-white hover:shadow-xl transition-all duration-300 relative overflow-hidden"
             >
               <div className="relative z-10">
@@ -47,7 +59,7 @@ export const Process = () => {
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

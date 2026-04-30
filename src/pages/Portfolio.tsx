@@ -62,7 +62,9 @@ function PortfolioMediaSection({
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => onSelect(item)}
-                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.99 }}
+                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
                 {item.type === 'video' ? (
                   <video
@@ -101,7 +103,9 @@ function PortfolioMediaSection({
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => onSelect(item)}
-                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.99 }}
+                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
                 {item.type === 'video' ? (
                   <video
@@ -360,7 +364,9 @@ export default function Portfolio() {
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
                 viewport={{ once: true }}
                 onClick={() => setSelectedMedia(item)}
-                className="group relative aspect-[3/4] sm:aspect-square overflow-hidden rounded-2xl bg-brand-light shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.99 }}
+                className="group relative aspect-[3/4] sm:aspect-square overflow-hidden rounded-2xl bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
                 <img
                   src={item.src}
@@ -390,12 +396,14 @@ export default function Portfolio() {
             className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
+            <motion.button
               onClick={() => setSelectedMedia(null)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
             >
               <X size={20} />
-            </button>
+            </motion.button>
 
             {selectedMedia.type === 'video' ? (
               <video

@@ -139,12 +139,14 @@ function MediaSection({
             className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
+            <motion.button
               onClick={() => setSelectedMedia(null)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
             >
               <X size={20} />
-            </button>
+            </motion.button>
 
             {selectedMedia.type === 'video' ? (
               <video

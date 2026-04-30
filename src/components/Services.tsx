@@ -6,9 +6,9 @@
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
-import { useInView } from 'motion/react';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useRevealOnView } from '../hooks/useRevealOnView';
 
 const categoryMap: Record<string, string> = {
   videoEditing: 'video-editing',
@@ -18,10 +18,17 @@ const categoryMap: Record<string, string> = {
 
 export const Services = () => {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const { ref, isVisible } = useRevealOnView<HTMLElement>();
 
   return (
-    <section className="py-32 relative bg-brand-light" id="services">
+    <motion.section
+      ref={ref}
+      initial={{ opacity: 0, y: 18 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="py-32 relative bg-brand-light"
+      id="services"
+    >
       <div className="container-boxed">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
           <div className="max-w-2xl">
@@ -44,9 +51,11 @@ export const Services = () => {
             >
               <motion.div
                 initial={{ opacity: 0, y: 24, scale: 0.99 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="group relative bg-white p-4 sm:p-10 rounded-2xl sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center min-h-[150px] sm:min-h-[420px] cursor-pointer hover:shadow-2xl hover:-translate-y-2 sm:hover:-translate-y-4 transition-all duration-500 border border-black/5"
+                animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+                transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.99 }}
+                className="group relative bg-white p-4 sm:p-10 rounded-2xl sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center min-h-[150px] sm:min-h-[420px] cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-300 border border-black/5"
               >
                 <div className="relative z-10 w-full flex flex-col items-center">
                   <div className="text-3xl sm:text-6xl mb-3 sm:mb-12 transform group-hover:scale-110 transition-transform duration-500">
@@ -75,6 +84,6 @@ export const Services = () => {
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };

@@ -28,10 +28,10 @@ export const SocialProof = () => {
           {currentReview && (
             <motion.div
               key={currentReview.id}
-              initial={{ x: -40, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -40, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              initial={{ x: -28, opacity: 0, scale: 0.98 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: -28, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="bg-white shadow-lg rounded-lg px-3 py-2 w-[240px] border border-black/5 pointer-events-auto"
             >
               <div className="flex items-center gap-2">
