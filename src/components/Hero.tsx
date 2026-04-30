@@ -92,6 +92,13 @@ export const Hero = () => {
             className="relative aspect-[10/12] rounded-[2rem] sm:rounded-3xl overflow-hidden border border-white/18 bg-white/8 shadow-2xl z-10" 
             id="hero-video-container"
           >
+            <img
+              src="/hero-image.png"
+              alt="Graphinex team workspace"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              loading="eager"
+              decoding="async"
+            />
             <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-white/5" />
             <div className="absolute inset-0 hero-grain opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="absolute inset-0 flex items-end p-6 sm:p-8">
