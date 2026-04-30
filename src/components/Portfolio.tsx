@@ -59,7 +59,7 @@ export const Portfolio = () => {
                   <img
                     src={item.poster}
                     alt={getAltText(item)}
-                    loading="lazy"
+                    loading="eager"
                     decoding="async"
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                   />
@@ -68,7 +68,7 @@ export const Portfolio = () => {
                 <img
                   src={item.src}
                   alt={getAltText(item)}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 />

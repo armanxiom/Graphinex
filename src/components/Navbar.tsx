@@ -110,11 +110,11 @@ export const Navbar = () => {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="fixed top-0 right-0 h-full w-[70%] max-w-[280px] bg-white z-[100] flex flex-col shadow-2xl rounded-l-2xl"
+                className="fixed top-0 right-0 h-[100dvh] w-[86vw] max-w-[340px] bg-white z-[100] flex flex-col shadow-2xl rounded-l-[1.75rem] overflow-y-auto overscroll-contain"
               >
                 {/* HEADER */}
-                <div className="flex justify-between items-center px-6 py-5 border-b border-black/5">
-                  <span className="text-lg font-bold text-black tracking-tight uppercase">Menu</span>
+                <div className="flex justify-between items-center px-6 pt-[max(1.1rem,env(safe-area-inset-top))] pb-5 border-b border-black/5">
+                  <span className="text-base sm:text-lg font-bold text-black tracking-tight uppercase">Menu</span>
                   <button 
                     onClick={() => setIsOpen(false)}
                     className="p-2 -mr-2 text-brand-dark"
@@ -124,13 +124,13 @@ export const Navbar = () => {
                 </div>
 
                 {/* LINKS */}
-                <div className="flex flex-col gap-6 px-6 py-8">
+                <div className="flex flex-col gap-5 px-6 py-7">
                   {siteConfig.navigation.map((item) => (
                     <Link
                       key={item.href}
                       to={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="text-lg font-semibold text-black hover:text-brand-orange transition-colors"
+                      className="text-base sm:text-lg font-semibold text-black hover:text-brand-orange transition-colors"
                     >
                       {item.name}
                     </Link>

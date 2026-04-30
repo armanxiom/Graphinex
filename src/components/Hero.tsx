@@ -24,7 +24,7 @@ export const Hero = () => {
             <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-black/5 text-brand-orange text-[10px] font-bold tracking-[0.22em] uppercase shadow-[0_8px_24px_rgba(15,15,15,0.04)]">
               Creative Agency Based in India
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-[0.92] text-brand-dark uppercase tracking-[-0.06em]">
+            <h1 className="text-[clamp(2.25rem,10vw,4.5rem)] sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-[0.92] text-brand-dark uppercase tracking-[-0.06em]">
               {words.map((word, wordIndex) => (
                 <span
                   key={wordIndex}
@@ -50,7 +50,7 @@ export const Hero = () => {
             
             <div className="flex flex-wrap gap-3 sm:gap-4 pt-2">
                {siteConfig.results.slice(0, 2).map((res, i) => (
-                 <div key={i} className="min-w-[150px] sm:min-w-[180px]">
+                 <div key={i} className="min-w-[132px] sm:min-w-[180px]">
                    <div className="premium-card premium-card-hover group px-4 sm:px-5 py-4 sm:py-5 bg-white/92 backdrop-blur-sm transform-gpu">
                      <div className="text-3xl md:text-4xl font-semibold text-brand-dark tracking-tight leading-none mb-2">{res.value}</div>
                      <div className="text-[10px] text-muted uppercase font-semibold tracking-[0.22em] leading-none">{res.label}</div>

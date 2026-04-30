@@ -59,7 +59,7 @@ function MediaSection({
                   transitionSpeed={1400}
                   glareEnable
                   glareMaxOpacity={0.1}
-                  className="block w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px]"
+                  className="block w-full max-w-[300px] sm:max-w-[420px] md:max-w-[480px]"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -69,7 +69,7 @@ function MediaSection({
                     onClick={() => setSelectedMedia(item)}
                     whileHover={{ y: -6 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group relative w-full aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                    className="group relative w-full aspect-[4/5] sm:aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                   >
                     {item.type === 'video' ? (
                       shouldReduceMotion ? (
@@ -77,7 +77,7 @@ function MediaSection({
                           src={item.poster}
                           alt={getAltText(item)}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                          loading="lazy"
+                          loading="eager"
                           decoding="async"
                         />
                       ) : (
@@ -99,7 +99,7 @@ function MediaSection({
                         src={item.src}
                         alt={getAltText(item)}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                        loading="lazy"
+                        loading="eager"
                         decoding="async"
                       />
                     )}
@@ -117,14 +117,14 @@ function MediaSection({
                   onClick={() => setSelectedMedia(item)}
                   whileHover={{ y: -6 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group relative w-full aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                    className="group relative w-full aspect-[4/5] sm:aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                 >
                   {item.type === 'video' ? (
                     <img
                       src={item.poster}
                       alt={getAltText(item)}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      loading="lazy"
+                      loading="eager"
                       decoding="async"
                     />
                   ) : (
@@ -132,7 +132,7 @@ function MediaSection({
                       src={item.src}
                       alt={getAltText(item)}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      loading="lazy"
+                      loading="eager"
                       decoding="async"
                     />
                   )}
@@ -155,7 +155,7 @@ function MediaSection({
                   transitionSpeed={1400}
                   glareEnable
                   glareMaxOpacity={0.1}
-                  className="block aspect-[3/4] sm:aspect-square"
+                  className="block aspect-[4/5] sm:aspect-square"
                 >
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -173,7 +173,7 @@ function MediaSection({
                           src={item.poster}
                           alt={getAltText(item)}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                          loading="lazy"
+                          loading="eager"
                           decoding="async"
                         />
                       ) : (
@@ -195,7 +195,7 @@ function MediaSection({
                         src={item.src}
                         alt={getAltText(item)}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                        loading="lazy"
+                        loading="eager"
                         decoding="async"
                       />
                     )}
@@ -225,7 +225,7 @@ function MediaSection({
                     src={item.type === 'video' ? item.poster : item.src}
                     alt={getAltText(item)}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    loading="lazy"
+                      loading="eager"
                     decoding="async"
                   />
 

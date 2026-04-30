@@ -17,7 +17,7 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
         <section className="container-boxed">
           <div className="max-w-4xl">
             <span className="luxury-section-kicker mb-6 block">Service</span>
-            <h1 className="text-[40px] sm:text-[64px] md:text-[88px] font-black uppercase tracking-tighter leading-[0.95] text-brand-dark break-words">
+            <h1 className="text-[clamp(2rem,8vw,3.75rem)] sm:text-[64px] md:text-[88px] font-black uppercase tracking-tighter leading-[0.95] text-brand-dark break-words">
               {page.title}
             </h1>
             <p className="mt-6 text-base sm:text-lg md:text-xl text-muted leading-relaxed max-w-3xl">

@@ -28,9 +28,7 @@
   }
   
   section {
-    @apply py-[88px] md:py-[120px];
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 900px;
+    @apply py-16 md:py-[120px];
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -57,7 +55,7 @@
   }
 
   .luxury-heading {
-    @apply text-3xl md:text-5xl font-semibold uppercase tracking-[-0.04em] leading-[0.96] text-brand-dark;
+    @apply text-[clamp(2rem,6vw,3.25rem)] md:text-5xl font-semibold uppercase tracking-[-0.04em] leading-[0.96] text-brand-dark;
   }
 
   .luxury-subcopy {
@@ -82,7 +80,7 @@
   }
 
   .premium-button {
-    @apply inline-flex items-center justify-center gap-3 rounded-full px-6 py-3 text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-3 rounded-full px-5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.22em] transition-all duration-300;
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 }

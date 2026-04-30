@@ -58,18 +58,18 @@ export const Services = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="premium-card premium-card-hover group relative bg-white p-5 sm:p-8 lg:p-10 flex flex-col items-center justify-between text-center min-h-[260px] sm:min-h-[360px] lg:min-h-[440px] cursor-pointer overflow-hidden transform-gpu"
+                className="premium-card premium-card-hover group relative bg-white p-4 sm:p-8 lg:p-10 flex flex-col items-center justify-between text-center min-h-[220px] sm:min-h-[360px] lg:min-h-[440px] cursor-pointer overflow-hidden transform-gpu"
                 >
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-orange/0 via-brand-orange/35 to-brand-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   <div className="relative z-10 w-full flex flex-col items-center justify-center flex-1 [transform:translateZ(40px)]">
-                    <div className="text-4xl sm:text-5xl lg:text-6xl mb-6 sm:mb-10 transform group-hover:scale-110 transition-transform duration-500">
+                    <div className="text-3xl sm:text-5xl lg:text-6xl mb-5 sm:mb-10 transform group-hover:scale-110 transition-transform duration-500">
                       {service.icon}
                     </div>
-                    <h3 className="text-xs sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-3 md:mb-4 break-words w-full">
+                    <h3 className="text-sm sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-3 md:mb-4 break-words w-full">
                       {service.title}
                     </h3>
-                    <p className="text-sm text-muted font-normal leading-relaxed max-w-sm mx-auto opacity-85 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-[13px] sm:text-sm text-muted font-normal leading-relaxed max-w-sm mx-auto opacity-85 group-hover:opacity-100 transition-opacity duration-300">
                       {service.description}
                     </p>
                   </div>
