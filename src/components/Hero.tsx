@@ -36,7 +36,7 @@ export const Hero = () => {
             >
               Creative Agency Based in India
             </motion.span>
-            <motion.h1 className="text-4xl md:text-6xl font-bold leading-[1.1] mb-8 text-brand-dark uppercase tracking-tight">
+            <motion.h1 className="text-4xl md:text-6xl font-extrabold leading-[1.08] mb-8 text-brand-dark uppercase tracking-[-0.05em]">
               {words.map((word, i) => (
                 <motion.span
                   key={i}

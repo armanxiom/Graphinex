@@ -195,7 +195,7 @@ export default function Portfolio() {
         <motion.span
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block neon-orange-soft"
+          className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block"
         >
           Showcase
         </motion.span>
@@ -203,7 +203,7 @@ export default function Portfolio() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-[40px] sm:text-[64px] md:text-[96px] font-black uppercase tracking-tighter leading-[1.1] sm:leading-[0.9] mb-8 break-words neon-orange"
+          className="text-[40px] sm:text-[64px] md:text-[96px] font-black uppercase tracking-tighter leading-[1.05] sm:leading-[0.92] mb-8 break-words"
         >
           {hero.title}
         </motion.h1>
@@ -246,7 +246,7 @@ export default function Portfolio() {
       <section className="py-12 sm:py-20" id="featured-works">
         <div className="container-boxed">
           <div className="mb-10 sm:mb-12">
-            <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none neon-orange">
+            <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none ios-bold">
               Our Works
             </h2>
             <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
@@ -345,7 +345,7 @@ export default function Portfolio() {
       <section className="py-12 sm:py-20" id="logos">
         <div className="container-boxed">
           <div className="mb-10 sm:mb-12">
-            <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none neon-orange">
+            <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none ios-bold">
               Logos
             </h2>
             <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />

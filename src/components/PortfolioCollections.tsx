@@ -31,10 +31,10 @@ function MediaSection({
     <section className="py-12 sm:py-20" id={id}>
       <div className="container-boxed">
         <div className="mb-8 sm:mb-10">
-          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-4 block neon-orange-soft">
+          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-4 block">
             Category
           </span>
-          <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none neon-orange">
+          <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none ios-bold">
             {title}
           </h2>
           <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />

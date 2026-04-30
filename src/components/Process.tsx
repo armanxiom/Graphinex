@@ -11,8 +11,8 @@ export const Process = () => {
     <section className="bg-white" id="process">
       <div className="container-boxed">
         <div className="mb-12 md:mb-16">
-          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block neon-orange-soft">Our Workflow</span>
-          <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-0 neon-orange">
+          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Workflow</span>
+          <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-0 ios-bold">
             The Creative Journey
           </h2>
         </div>

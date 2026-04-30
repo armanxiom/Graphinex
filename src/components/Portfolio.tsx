@@ -20,8 +20,8 @@ export const Portfolio = () => {
       <div className="container-boxed mb-12 md:mb-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="max-w-xl">
-            <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block neon-orange-soft">Our Portfolio</span>
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-0 neon-orange">
+            <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Portfolio</span>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-0 ios-bold">
               Featured Works
             </h2>
           </div>
