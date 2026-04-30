@@ -8,6 +8,12 @@ import { ArrowRight, MessageCircle } from 'lucide-react';
 
 export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
   const page = servicePageContent[slug];
+  const portfolioCategory =
+    slug === 'video-editing'
+      ? '/portfolio?category=video-editing'
+      : slug === 'logo-design'
+        ? '/portfolio?category=branding'
+        : '/portfolio?category=graphic-design';
 
   return (
     <div className="bg-brand-light min-h-screen">
@@ -33,8 +39,8 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
                 <MessageCircle size={14} />
                 Start on WhatsApp
               </a>
-              <Link to="/#contact" className="premium-button bg-white text-brand-dark border border-black/10 premium-focus">
-                Contact Section
+              <Link to={portfolioCategory} className="premium-button bg-white text-brand-dark border border-black/10 premium-focus">
+                Portfolio Section
                 <ArrowRight size={13} />
               </Link>
               <Link to="/" className="premium-button bg-white text-brand-dark border border-black/10 premium-focus">
@@ -121,7 +127,7 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
                   <MessageCircle size={14} />
                   {page.cta.primaryLabel}
                 </a>
-                <Link to={slug === 'video-editing' ? '/social-media-design' : slug === 'logo-design' ? '/video-editing' : '/logo-design'} className="premium-button bg-white text-brand-dark border border-white/10 premium-focus">
+                <Link to={portfolioCategory} className="premium-button bg-white text-brand-dark border border-white/10 premium-focus">
                   {page.cta.secondaryLabel}
                   <ArrowRight size={13} />
                 </Link>

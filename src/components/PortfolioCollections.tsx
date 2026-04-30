@@ -219,7 +219,7 @@ function MediaSection({
                   onClick={() => setSelectedMedia(item)}
                   whileHover={{ y: -5 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group relative h-full rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
+                  className="group relative aspect-[4/5] sm:aspect-square rounded-[1.5rem] overflow-hidden bg-brand-light premium-card premium-card-hover cursor-pointer"
                 >
                   <img
                     src={item.type === 'video' ? item.poster : item.src}

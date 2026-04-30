@@ -48,25 +48,27 @@ export const Hero = () => {
               {siteConfig.hero.subheading}
             </p>
             
-            <div className="flex flex-wrap gap-3 sm:gap-4 pt-2">
+            <div className="flex justify-center sm:justify-start pt-2">
+              <div className="grid w-full max-w-[340px] grid-cols-2 gap-3 sm:max-w-none sm:flex sm:flex-wrap sm:gap-4">
                {siteConfig.results.slice(0, 2).map((res, i) => (
-                 <div key={i} className="min-w-[132px] sm:min-w-[180px]">
-                   <div className="premium-card premium-card-hover group px-4 sm:px-5 py-4 sm:py-5 bg-white/92 backdrop-blur-sm transform-gpu">
+                 <div key={i} className="w-full sm:min-w-[180px]">
+                   <div className="premium-card premium-card-hover group h-full w-full px-4 sm:px-5 py-4 sm:py-5 bg-white/92 backdrop-blur-sm transform-gpu">
                      <div className="text-3xl md:text-4xl font-semibold text-brand-dark tracking-tight leading-none mb-2">{res.value}</div>
                      <div className="text-[10px] text-muted uppercase font-semibold tracking-[0.22em] leading-none">{res.label}</div>
                    </div>
                  </div>
                ))}
+              </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex justify-center sm:justify-start">
               <motion.a
                 href={siteConfig.contact.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="premium-button bg-brand-orange text-white shadow-[0_16px_36px_rgba(255,106,0,0.22)] hover:shadow-[0_20px_48px_rgba(255,106,0,0.3)] premium-focus"
+                className="premium-button mx-auto sm:mx-0 bg-brand-orange text-white shadow-[0_16px_36px_rgba(255,106,0,0.22)] hover:shadow-[0_20px_48px_rgba(255,106,0,0.3)] premium-focus"
               >
                 Get in touch
               </motion.a>
