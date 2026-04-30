@@ -53,9 +53,9 @@ export const Navbar = () => {
   }, [isOpen]);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
+    <header className="fixed top-0 left-0 w-full z-[60]">
       {/* 2. TOP ACTIVITY BAR (SCROLLING) */}
-      <div className="w-full bg-black text-white text-[10px] uppercase tracking-widest overflow-hidden border-b border-white/10 h-8 flex items-center">
+      <div className="fixed top-0 left-0 z-[70] flex h-8 w-full items-center overflow-hidden border-b border-white/10 bg-black text-[10px] uppercase tracking-widest text-white">
         <div className="whitespace-nowrap flex animate-scroll gap-10">
           {[...activityItems, ...activityItems].map((item, i) => (
             <span key={i} className="flex items-center gap-3 opacity-70">
@@ -68,10 +68,10 @@ export const Navbar = () => {
 
       {/* 3. NAVBAR BELOW TOP BAR */}
       <nav 
-        className="pt-3 pb-3 md:pt-4 md:pb-0 flex items-center justify-center"
+        className="flex items-center justify-center pt-12 md:pt-0"
         id="navbar"
       >
-        <div className="hidden md:flex w-full max-w-6xl items-center justify-between gap-4 px-4">
+        <div className="hidden md:flex fixed left-1/2 top-12 z-[80] w-[min(94vw,1120px)] -translate-x-1/2 items-center justify-between gap-4 rounded-full border border-black/8 bg-white/82 px-4 py-3 shadow-[0_18px_50px_rgba(15,15,15,0.12)] backdrop-blur-2xl">
           <Link to="/" className="flex items-center gap-2 group z-[60] shrink-0" id="nav-logo">
             <img
               src={siteConfig.brand.logo}
@@ -101,7 +101,7 @@ export const Navbar = () => {
           </a>
         </div>
 
-        <div className="flex md:hidden w-full items-center justify-between px-4">
+        <div className="flex w-full items-center justify-between px-4 md:hidden">
           <Link to="/" className="flex items-center gap-2 group z-[60]">
             <img
               src={siteConfig.brand.logo}
