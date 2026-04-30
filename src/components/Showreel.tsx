@@ -16,7 +16,7 @@ export const Showreel = () => {
             initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-            className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block"
+            className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block neon-orange-soft"
           >
             Creative Masterpiece
           </motion.span>
@@ -24,7 +24,7 @@ export const Showreel = () => {
             initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-3xl md:text-5xl lg:text-7xl font-bold uppercase tracking-tight leading-[1.1] text-white mb-8"
+            className="text-3xl md:text-5xl lg:text-7xl font-bold uppercase tracking-tight leading-[1.1] mb-8 neon-orange"
           >
             {siteConfig.showreel.title}
           </motion.h2>
