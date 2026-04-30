@@ -18,6 +18,30 @@ const activityItems = [
   "Thumbnail CTR boosted to 12%+",
 ];
 
+function HoverNavItem({
+  to,
+  label
+}: {
+  to: string;
+  label: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group relative overflow-hidden rounded-full border border-transparent px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-dark/70 transition-colors duration-300 hover:border-black hover:bg-black hover:text-white"
+    >
+      <span className="relative block h-4 overflow-hidden">
+        <span className="block translate-y-0 transition-transform duration-300 ease-in-out group-hover:-translate-y-full motion-optimised">
+          {label}
+        </span>
+        <span className="absolute left-0 top-0 block translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0 motion-optimised">
+          {label}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,48 +68,56 @@ export const Navbar = () => {
 
       {/* 3. NAVBAR BELOW TOP BAR */}
       <nav 
-        className="bg-white border-b border-black/5 h-14 flex items-center"
+        className="pt-3 pb-3 md:pt-4 md:pb-0 flex items-center justify-center"
         id="navbar"
       >
-        <div className="max-w-6xl mx-auto w-full px-4 flex items-center justify-between">
-          {/* 4. LOGO + TEXT FIX (VISIBLE) */}
-          <Link to="/" className="flex items-center gap-2 group z-[60]" id="nav-logo">
-            <img 
-              src={siteConfig.brand.logo} 
-              alt={siteConfig.brand.name} 
-              className="w-8 h-auto transition-transform group-hover:scale-105" 
+        <div className="hidden md:flex w-full max-w-6xl items-center justify-between gap-4 px-4">
+          <Link to="/" className="flex items-center gap-2 group z-[60] shrink-0" id="nav-logo">
+            <img
+              src={siteConfig.brand.logo}
+              alt={siteConfig.brand.name}
+              className="w-8 h-auto transition-transform duration-300 group-hover:scale-105 motion-optimised"
+              loading="eager"
+              decoding="async"
             />
             <span className="text-sm font-semibold text-black tracking-tight uppercase whitespace-nowrap">
               {siteConfig.brand.name}
             </span>
           </Link>
-          
-          {/* DESKTOP NAV */}
-          <div className="hidden md:flex items-center gap-8" id="nav-links-desktop">
+
+          <div className="flex items-center gap-2 rounded-full border border-black/8 bg-white/75 px-2 py-2 shadow-[0_12px_40px_rgba(15,15,15,0.08)] backdrop-blur-xl">
             {siteConfig.navigation.map((item) => (
-              <Link 
-                key={item.href} 
-                to={item.href}
-                className="group relative text-sm font-medium text-brand-dark/70 hover:text-brand-dark transition-colors"
-              >
-                {item.name}
-                <span className="absolute left-0 -bottom-1 h-px w-full origin-left scale-x-0 bg-brand-orange transition-transform duration-300 ease-out group-hover:scale-x-100" />
-              </Link>
+              <HoverNavItem key={item.href} to={item.href} label={item.name} />
             ))}
-            <a 
-              href={siteConfig.contact.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-brand-dark hover:scale-[1.03] active:scale-[0.98] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
-            >
-              Get in touch
-            </a>
           </div>
-          
-          {/* 5. MOBILE MENU ICON FIX */}
-          <button 
+
+          <a
+            href={siteConfig.contact.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="premium-button shrink-0 rounded-full bg-black px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-transform duration-300 hover:scale-[1.05]"
+          >
+            Get in touch
+          </a>
+        </div>
+
+        <div className="flex md:hidden w-full items-center justify-between px-4">
+          <Link to="/" className="flex items-center gap-2 group z-[60]">
+            <img
+              src={siteConfig.brand.logo}
+              alt={siteConfig.brand.name}
+              className="w-8 h-auto transition-transform duration-300 group-hover:scale-105 motion-optimised"
+              loading="eager"
+              decoding="async"
+            />
+            <span className="text-sm font-semibold text-black tracking-tight uppercase whitespace-nowrap">
+              {siteConfig.brand.name}
+            </span>
+          </Link>
+
+          <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-brand-dark z-[60] p-2 flex items-center justify-center"
+            className="text-brand-dark z-[60] p-2 flex items-center justify-center"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={22} /> : <Menu size={22} />}

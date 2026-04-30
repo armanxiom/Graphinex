@@ -50,7 +50,7 @@ function MediaSection({
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedMedia(item)}
-                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                className="premium-card group relative w-full max-w-[360px] cursor-pointer overflow-hidden aspect-[3/4] sm:max-w-[420px] md:max-w-[480px]"
               >
                 {item.type === 'video' ? (
                   <video
@@ -61,7 +61,7 @@ function MediaSection({
                     muted
                     loop
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     controls
                     controlsList="nodownload noplaybackrate"
                   />
@@ -89,7 +89,7 @@ function MediaSection({
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedMedia(item)}
-                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                className="premium-card group relative aspect-[3/4] cursor-pointer overflow-hidden sm:aspect-square"
               >
                 {item.type === 'video' ? (
                   <video
@@ -100,7 +100,7 @@ function MediaSection({
                     muted
                     loop={idx === 0}
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     controls
                     controlsList="nodownload noplaybackrate"
                   />
@@ -136,7 +136,7 @@ function MediaSection({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden"
+            className="relative w-full max-w-4xl overflow-hidden rounded-xl bg-black"
             onClick={(e) => e.stopPropagation()}
           >
             <motion.button

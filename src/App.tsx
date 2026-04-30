@@ -20,6 +20,7 @@ import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
+import { PageTransition } from './components/PageTransition';
 import PortfolioPage from './pages/Portfolio';
 import { siteConfig } from './data/siteConfig';
 import { useLocation } from 'react-router-dom';
@@ -77,16 +78,18 @@ export default function App() {
     <Router>
       <ScrollToHash />
       <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <HomePage />
-              <Footer />
-            </>
-          } />
-          <Route path="/portfolio" element={<PortfolioPage />} />
-        </Routes>
+        <PageTransition>
+          <Routes>
+            <Route path="/" element={
+              <>
+                <Navbar />
+                <HomePage />
+                <Footer />
+              </>
+            } />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+          </Routes>
+        </PageTransition>
 
         <WhatsAppCTA />
       </main>

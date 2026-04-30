@@ -13,8 +13,8 @@ export const Process = () => {
   return (
     <motion.section
       ref={ref}
-      initial={{ opacity: 0, y: 18 }}
-      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+      animate={isVisible ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 20, filter: 'blur(10px)' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="bg-white"
       id="process"
@@ -37,7 +37,7 @@ export const Process = () => {
               transition={{ duration: 0.65, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.99 }}
-              className="group p-8 bg-brand-light rounded-2xl border border-black/5 hover:bg-white hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+              className="premium-card group relative overflow-hidden p-8 transition-all duration-300"
             >
               <div className="relative z-10">
                 <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.3em] mb-8 block">

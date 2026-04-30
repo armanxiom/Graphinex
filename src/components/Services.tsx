@@ -23,8 +23,8 @@ export const Services = () => {
   return (
     <motion.section
       ref={ref}
-      initial={{ opacity: 0, y: 18 }}
-      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+      animate={isVisible ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 20, filter: 'blur(10px)' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="py-32 relative bg-brand-light"
       id="services"
@@ -49,16 +49,16 @@ export const Services = () => {
               to={`/portfolio?category=${categoryMap[service.id] || service.id}`}
               className="block"
             >
-              <motion.div
+            <motion.div
                 initial={{ opacity: 0, y: 24, scale: 0.99 }}
                 animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
-                transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.65, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.99 }}
-                className="group relative bg-white p-4 sm:p-10 rounded-2xl sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center min-h-[150px] sm:min-h-[420px] cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-300 border border-black/5"
+                className="premium-card group relative flex min-h-[150px] cursor-pointer flex-col items-center justify-center overflow-hidden p-4 text-center transition-all duration-300 sm:min-h-[420px] sm:rounded-[2.5rem] sm:p-10"
               >
                 <div className="relative z-10 w-full flex flex-col items-center">
-                  <div className="text-3xl sm:text-6xl mb-3 sm:mb-12 transform group-hover:scale-110 transition-transform duration-500">
+                  <div className="mb-3 text-3xl transition-transform duration-500 sm:mb-12 sm:text-6xl group-hover:scale-110 motion-optimised">
                     {service.icon}
                   </div>
                   <h3 className="text-xs md:text-2xl font-bold uppercase tracking-tight leading-tight md:leading-none mb-2 md:mb-5 break-words w-full">
@@ -71,7 +71,7 @@ export const Services = () => {
                 
                 <div className="flex items-center gap-2 sm:gap-4 text-brand-orange font-black text-[8px] sm:text-xs uppercase tracking-widest mt-2 sm:mt-10">
                   <span className="hidden sm:inline">Highlights</span>
-                  <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-brand-orange/10 flex items-center justify-center group-hover:bg-brand-orange group-hover:border-brand-orange transition-all duration-300">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full border border-brand-orange/10 transition-all duration-300 group-hover:border-brand-orange group-hover:bg-brand-orange sm:h-10 sm:w-10">
                     <ArrowRight size={12} className="sm:w-4 sm:h-4 group-hover:text-white transition-colors" />
                   </div>
                 </div>

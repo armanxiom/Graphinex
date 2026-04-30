@@ -94,8 +94,8 @@ export const Results = () => {
   return (
     <motion.section
       ref={sectionRef}
-      initial={{ opacity: 0, y: 18 }}
-      animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+      animate={hasEntered ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 20, filter: 'blur(10px)' }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="bg-brand-dark overflow-hidden relative"
       id="about"
@@ -111,7 +111,7 @@ export const Results = () => {
               initial={{ opacity: 0, y: 14, scale: 0.99 }}
               animate={hasEntered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.99 }}
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center gap-2 group"
+              className="group flex flex-col items-center gap-2 motion-optimised"
             >
               <StatValue key={`${index}-${playId}`} result={result.value} active={hasEntered} />
               <div className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-[0.2em] leading-tight max-w-[120px] mx-auto opacity-70 group-hover:opacity-100 transition-opacity">

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
-import { ExternalLink, Play, X } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -37,19 +37,19 @@ function PortfolioMediaSection({
     <section
       ref={registerRef}
       id={id}
-      className={`py-12 sm:py-20 scroll-mt-32 transition-all duration-300 ${
+      className={`scroll-mt-32 py-12 transition-all duration-300 sm:py-20 ${
         active ? 'rounded-[2rem] bg-brand-orange/5 shadow-[0_0_0_1px_rgba(255,122,0,0.12)]' : ''
       }`}
     >
       <div className="container-boxed">
         <div className="mb-8 sm:mb-10">
-          <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-4 block">
+          <span className="mb-4 block text-[10px] font-bold uppercase tracking-[0.35em] text-brand-orange">
             Category
           </span>
-          <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter text-brand-dark leading-none">
+          <h2 className="text-[28px] font-black uppercase leading-none tracking-tighter text-brand-dark sm:text-[32px] md:text-[48px]">
             {title}
           </h2>
-          <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
+          <div className="mt-3 h-1 w-16 bg-brand-orange sm:mt-4 sm:h-1.5 sm:w-20" />
         </div>
 
         {isSingleVideoFocus ? (
@@ -57,25 +57,25 @@ function PortfolioMediaSection({
             {items.map((item: any, idx: number) => (
               <motion.div
                 key={`${id}-${idx}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 20, scale: 0.99 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.45, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => onSelect(item)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.99 }}
-                className="group relative w-full max-w-[360px] sm:max-w-[420px] md:max-w-[480px] aspect-[3/4] rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="premium-card motion-optimised group relative aspect-[3/4] w-full max-w-[360px] cursor-pointer overflow-hidden sm:max-w-[420px] md:max-w-[480px]"
               >
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
                     poster={item.poster}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay
                     muted
                     loop
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     controls
                     controlsList="nodownload noplaybackrate"
                   />
@@ -83,40 +83,40 @@ function PortfolioMediaSection({
                   <img
                     src={item.src}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                     decoding="async"
                   />
                 )}
 
-                <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-brand-dark/0 transition-colors duration-300 group-hover:bg-brand-dark/10" />
               </motion.div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-4">
             {items.map((item: any, idx: number) => (
               <motion.div
                 key={`${id}-${idx}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 20, scale: 0.99 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.45, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => onSelect(item)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.99 }}
-                className="group relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="premium-card motion-optimised group relative aspect-[3/4] cursor-pointer overflow-hidden sm:aspect-square"
               >
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
                     poster={item.poster}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay={idx === 0}
                     muted
                     loop={idx === 0}
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     controls
                     controlsList="nodownload noplaybackrate"
                   />
@@ -124,16 +124,16 @@ function PortfolioMediaSection({
                   <img
                     src={item.src}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                     decoding="async"
                   />
                 )}
 
-                <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-brand-dark/0 transition-colors duration-300 group-hover:bg-brand-dark/10" />
 
                 {item.type === 'video' && (
-                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/70 flex items-center justify-center text-brand-dark opacity-90">
+                  <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-brand-dark opacity-90 sm:right-3 sm:top-3 sm:h-8 sm:w-8">
                     <Play size={12} className="fill-current" />
                   </div>
                 )}
@@ -185,64 +185,65 @@ export default function Portfolio() {
 
   const { hero } = siteConfig.portfolioPage;
   const showreel = siteConfig.showreel;
-  const stats = siteConfig.results;
   const works = siteConfig.featuredWorks;
   const logos = (siteConfig as any).logos || [];
   const collections = (siteConfig as any).portfolioCollections || {};
 
   return (
-    <div className="bg-brand-light min-h-screen">
+    <div className="min-h-screen bg-brand-light">
       <Navbar />
 
-      <section className="pt-40 pb-20 relative overflow-hidden" id="portfolio-hero">
-      <div className="container-boxed text-center relative z-10">
-        <motion.span
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block"
-        >
-          Showcase
-        </motion.span>
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-[40px] sm:text-[64px] md:text-[96px] font-black uppercase tracking-tighter leading-[1.05] sm:leading-[0.92] mb-8 break-words"
-        >
-          {hero.title}
-        </motion.h1>
+      <section className="relative overflow-hidden pt-40 pb-20" id="portfolio-hero">
+        <div className="container-boxed relative z-10 text-center">
+          <motion.span
+            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-6 block text-[10px] font-bold uppercase tracking-[0.4em] text-brand-orange"
+          >
+            Showcase
+          </motion.span>
+          <motion.h1
+            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8 text-[40px] font-black uppercase tracking-tighter leading-[1.05] sm:text-[64px] md:text-[96px] sm:leading-[0.92]"
+          >
+            {hero.title}
+          </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg md:text-xl text-muted font-medium max-w-2xl mx-auto px-4"
+            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 0.18, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto max-w-2xl px-4 text-base font-medium text-muted sm:text-lg md:text-xl"
           >
             {hero.subtitle}
           </motion.p>
         </div>
 
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-brand-orange/5 rounded-full blur-3xl -z-10 pointer-events-none" />
+        <div className="pointer-events-none absolute right-0 top-0 -z-10 h-[600px] w-[600px] -translate-y-1/2 translate-x-1/2 rounded-full bg-brand-orange/5 blur-3xl" />
       </section>
 
       <section className="py-20" id="showreel">
-        <div className="container-boxed max-w-5xl">
+        <div className="container-boxed max-w-6xl">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, scale: 0.96, y: 18 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
-            className="rounded-[1.5rem] sm:rounded-3xl overflow-hidden shadow-2xl bg-black border-[4px] sm:border-8 border-white aspect-video relative group"
+            className="relative aspect-video overflow-hidden rounded-[1.5rem] border-[4px] border-white bg-black shadow-[0_12px_40px_rgba(0,0,0,0.22)] sm:rounded-3xl sm:border-8"
           >
             <iframe
-              src={`https://www.youtube.com/embed/${showreel.youtubeId}`}
-              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${showreel.youtubeId}?rel=0`}
+              className="h-full w-full"
               title="Agency Showreel"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              loading="lazy"
             />
           </motion.div>
-          <p className="text-center mt-8 text-brand-dark/50 font-bold uppercase tracking-[0.2em] text-[10px] sm:text-xs px-5">
-            â€œ{showreel.caption}â€
+          <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-brand-dark/50 sm:text-xs">
+            “{showreel.caption}”
           </p>
         </div>
       </section>
@@ -250,41 +251,41 @@ export default function Portfolio() {
       <section className="py-12 sm:py-20" id="featured-works">
         <div className="container-boxed">
           <div className="mb-10 sm:mb-12">
-            <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none ios-bold">
+            <h2 className="text-[28px] font-black uppercase tracking-tighter leading-none ios-bold sm:text-[32px] md:text-[48px]">
               Our Works
             </h2>
-            <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
+            <div className="mt-3 h-1 w-16 bg-brand-orange sm:mt-4 sm:h-1.5 sm:w-20" />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 sm:gap-6">
             {works.map((item: any, idx: number) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                initial={{ opacity: 0, y: 24, scale: 0.99 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true }}
                 onClick={() => item.type === 'video' && setSelectedMedia(item)}
-                className="group relative bg-brand-light rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 aspect-[3/4] cursor-pointer"
+                className="premium-card motion-optimised group relative aspect-[3/4] cursor-pointer overflow-hidden"
               >
-                <div className="w-full h-full overflow-hidden bg-brand-dark/5">
+                <div className="h-full w-full overflow-hidden bg-brand-dark/5">
                   {item.type === 'video' ? (
                     idx === 0 ? (
                       <video
                         src={item.src}
                         poster={item.poster}
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         autoPlay
                         muted
                         loop
                         playsInline
-                        preload="auto"
+                        preload="metadata"
                       />
                     ) : (
                       <img
                         src={item.poster}
                         alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                         decoding="async"
                       />
@@ -293,16 +294,18 @@ export default function Portfolio() {
                     <img
                       src={item.src}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
 
-                  <div className="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  <div className="absolute inset-0 bg-brand-dark/55 opacity-0 transition-all duration-300 group-hover:opacity-100" />
 
                   {item.type === 'video' && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-white/20 p-3 rounded-full text-white">
-                        <Play className="w-6 h-6 fill-current" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="rounded-full bg-white/20 p-3 text-white">
+                        <Play className="h-6 w-6 fill-current" />
                       </div>
                     </div>
                   )}
@@ -349,29 +352,29 @@ export default function Portfolio() {
       <section className="py-12 sm:py-20" id="logos">
         <div className="container-boxed">
           <div className="mb-10 sm:mb-12">
-            <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter leading-none ios-bold">
+            <h2 className="text-[28px] font-black uppercase tracking-tighter leading-none ios-bold sm:text-[32px] md:text-[48px]">
               Logos
             </h2>
-            <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
+            <div className="mt-3 h-1 w-16 bg-brand-orange sm:mt-4 sm:h-1.5 sm:w-20" />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-4">
             {logos.map((item: any, idx: number) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.08 }}
+                initial={{ opacity: 0, y: 20, scale: 0.99 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true }}
                 onClick={() => setSelectedMedia(item)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.99 }}
-                className="group relative aspect-[3/4] sm:aspect-square overflow-hidden rounded-2xl bg-brand-light shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="premium-card motion-optimised group relative aspect-[3/4] cursor-pointer overflow-hidden sm:aspect-square"
               >
                 <img
                   src={item.src}
                   alt={item.title}
-                  className="absolute inset-0 w-full h-full object-contain p-0 transition-transform duration-300 group-hover:scale-105"
+                  className="absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
@@ -386,21 +389,21 @@ export default function Portfolio() {
 
       {selectedMedia && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setSelectedMedia(null)}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden"
+            className="relative w-full max-w-4xl overflow-hidden rounded-xl bg-black"
             onClick={(e) => e.stopPropagation()}
           >
             <motion.button
               onClick={() => setSelectedMedia(null)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/20 text-white transition-all duration-300 hover:bg-white/40"
             >
               <X size={20} />
             </motion.button>
@@ -411,13 +414,16 @@ export default function Portfolio() {
                 poster={selectedMedia.poster}
                 controls
                 autoPlay
-                className="w-full h-auto max-h-[80vh] object-contain"
+                className="h-auto w-full max-h-[80vh] object-contain"
+                preload="metadata"
               />
             ) : (
               <img
                 src={selectedMedia.src}
                 alt={selectedMedia.title}
-                className="w-full h-auto max-h-[80vh] object-contain bg-black"
+                className="h-auto w-full max-h-[80vh] bg-black object-contain"
+                loading="lazy"
+                decoding="async"
               />
             )}
           </motion.div>

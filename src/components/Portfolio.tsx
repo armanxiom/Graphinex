@@ -38,7 +38,7 @@ export const Portfolio = () => {
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
               onClick={() => item.type === 'video' && setSelectedVideo(item)}
-              className="group relative aspect-[4/5] bg-brand-light rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
+              className="premium-card group relative aspect-[4/5] cursor-pointer overflow-hidden transition-all duration-300"
             >
               {/* Media */}
               {item.type === "video" ? (
@@ -50,7 +50,7 @@ export const Portfolio = () => {
                     muted 
                     loop 
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
@@ -66,6 +66,8 @@ export const Portfolio = () => {
                 <img 
                   src={item.src} 
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               )}
@@ -76,7 +78,7 @@ export const Portfolio = () => {
               />
 
               {item.type === 'video' && (
-                <div className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/20 text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
                     <Play size={14} className="fill-current" />
                 </div>
               )}
@@ -96,7 +98,7 @@ export const Portfolio = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden"
+            className="relative w-full max-w-4xl overflow-hidden rounded-xl bg-black"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
