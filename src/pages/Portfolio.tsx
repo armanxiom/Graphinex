@@ -129,7 +129,7 @@ function PortfolioMediaSection({
                 <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
 
                 {item.type === 'video' && (
-                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full backdrop-blur-md bg-white/70 flex items-center justify-center text-brand-dark opacity-90">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/70 flex items-center justify-center text-brand-dark opacity-90">
                     <Play size={12} className="fill-current" />
                   </div>
                 )}
@@ -297,7 +297,7 @@ export default function Portfolio() {
 
                   {item.type === 'video' && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white">
+                      <div className="bg-white/20 p-3 rounded-full text-white">
                         <Play className="w-6 h-6 fill-current" />
                       </div>
                     </div>
@@ -380,7 +380,7 @@ export default function Portfolio() {
 
       {selectedMedia && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedMedia(null)}
         >
           <motion.div
@@ -392,7 +392,7 @@ export default function Portfolio() {
           >
             <button
               onClick={() => setSelectedMedia(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300"
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
             >
               <X size={20} />
             </button>

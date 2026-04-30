@@ -13,7 +13,7 @@ export const Showreel = () => {
       <div className="container-boxed relative z-10">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <motion.span 
-            initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block neon-orange-soft"
@@ -21,7 +21,7 @@ export const Showreel = () => {
             Creative Masterpiece
           </motion.span>
           <motion.h2 
-            initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="text-3xl md:text-5xl lg:text-7xl font-bold uppercase tracking-tight leading-[1.1] mb-8 neon-orange"
@@ -31,7 +31,7 @@ export const Showreel = () => {
         </div>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.94, y: 18 }}
+          initial={{ opacity: 0, scale: 0.96, y: 14 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
           className="relative aspect-video max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(255,107,0,0.15)] border border-white/10 group"

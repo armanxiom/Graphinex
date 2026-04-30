@@ -43,7 +43,7 @@ export const Services = () => {
               className="block"
             >
               <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.98, filter: 'blur(8px)' }}
+                initial={{ opacity: 0, y: 24, scale: 0.99 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
                 className="group relative bg-white p-4 sm:p-10 rounded-2xl sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center min-h-[150px] sm:min-h-[420px] cursor-pointer hover:shadow-2xl hover:-translate-y-2 sm:hover:-translate-y-4 transition-all duration-500 border border-black/5"

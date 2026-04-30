@@ -29,8 +29,8 @@ export const Hero = () => {
             }}
           >
             <motion.span
-              initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="inline-block px-4 py-1.5 rounded-full bg-white border border-black/5 text-brand-orange text-[10px] font-bold tracking-[0.2em] uppercase mb-8 shadow-sm"
             >
@@ -40,8 +40,8 @@ export const Hero = () => {
               {words.map((word, i) => (
                 <motion.span
                   key={i}
-                  initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.15 + (i * 0.08), ease: [0.16, 1, 0.3, 1] }}
                   className={siteConfig.hero.headingHighlights.includes(word.replace(/[,.!]/, '')) ? "text-brand-orange" : ""}
                 >
@@ -50,8 +50,8 @@ export const Hero = () => {
               ))}
             </motion.h1>
             <motion.p
-              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="text-base md:text-lg text-muted max-w-sm mb-10 leading-relaxed font-normal"
             >
@@ -59,8 +59,8 @@ export const Hero = () => {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-wrap gap-8"
             >
@@ -77,7 +77,7 @@ export const Hero = () => {
         {/* Right Media */}
         <div className="relative mt-12 lg:mt-0" id="hero-media">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.94, y: 24 }}
+            initial={{ opacity: 0, scale: 0.96, y: 18 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className="relative aspect-[10/12] bg-white rounded-[2rem] sm:rounded-3xl overflow-hidden border-[4px] sm:border-8 border-white shadow-2xl z-10" 
@@ -100,7 +100,7 @@ export const Hero = () => {
             </div>
 
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/40 flex items-center justify-center backdrop-blur-md bg-white/10 hover:bg-white/20 transition-all cursor-pointer group shadow-2xl">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/40 flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all cursor-pointer group shadow-2xl">
                   <div className="w-0 h-0 border-t-[8px] sm:border-t-[10px] border-t-transparent border-b-[8px] sm:border-b-[10px] border-b-transparent border-left-[12px] sm:border-left-[15px] border-left-white ml-1.5 sm:ml-2 transition-transform group-hover:scale-110"></div>
                 </div>
             </div>

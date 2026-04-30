@@ -38,7 +38,7 @@ export const Portfolio = () => {
           {featuredWorks.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 24, scale: 0.98, filter: 'blur(8px)' }}
+              initial={{ opacity: 0, y: 18, scale: 0.99 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
@@ -81,7 +81,7 @@ export const Portfolio = () => {
               />
 
               {item.type === 'video' && (
-                <div className="absolute top-6 right-6 w-10 h-10 rounded-full backdrop-blur-md bg-white/20 border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <Play size={14} className="fill-current" />
                 </div>
               )}
@@ -94,7 +94,7 @@ export const Portfolio = () => {
       {/* Video Modal */}
       {selectedVideo && (
         <div 
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedVideo(null)}
         >
           <motion.div
@@ -107,7 +107,7 @@ export const Portfolio = () => {
             {/* Close Button */}
             <button
               onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300"
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
             >
               <X size={20} />
             </button>

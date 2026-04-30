@@ -117,7 +117,7 @@ function MediaSection({
                 <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
 
                 {item.type === 'video' && (
-                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full backdrop-blur-md bg-white/70 flex items-center justify-center text-brand-dark opacity-90">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/70 flex items-center justify-center text-brand-dark opacity-90">
                     <Play size={12} className="fill-current" />
                   </div>
                 )}
@@ -129,7 +129,7 @@ function MediaSection({
 
       {selectedMedia && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedMedia(null)}
         >
           <motion.div
@@ -141,7 +141,7 @@ function MediaSection({
           >
             <button
               onClick={() => setSelectedMedia(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300"
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
             >
               <X size={20} />
             </button>

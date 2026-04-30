@@ -21,7 +21,7 @@ export const Process = () => {
           {siteConfig.process.map((step, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 24, scale: 0.98, filter: 'blur(6px)' }}
+              initial={{ opacity: 0, y: 18, scale: 0.99 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.65, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}

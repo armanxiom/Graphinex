@@ -17,7 +17,7 @@ export const Results = () => {
           {siteConfig.results.map((result, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20, scale: 0.98, filter: 'blur(6px)' }}
+              initial={{ opacity: 0, y: 14, scale: 0.99 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
