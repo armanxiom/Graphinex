@@ -4,7 +4,8 @@ import { homeSeoCopy } from '../data/seoContent';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
-import { premiumButtonTransition, premiumCardTransition } from '../lib/motion';
+import { ScrollReveal } from './ScrollReveal';
+import { premiumButtonTransition } from '../lib/motion';
 
 export function HomeSEOContent() {
   return (
@@ -34,21 +35,18 @@ export function HomeSEOContent() {
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
           {homeSeoCopy.services.map((service) => (
-            <motion.article
-              key={service.title}
-              initial={{ opacity: 0, y: 18, scale: 0.985 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={premiumCardTransition}
-              viewport={{ once: true, margin: '-80px' }}
-              className="premium-card p-6 sm:p-8"
-            >
-              <h3 className="text-lg sm:text-xl font-semibold uppercase tracking-[-0.03em] text-brand-dark mb-4">
-                {service.title}
-              </h3>
-              <p className="text-sm sm:text-base leading-relaxed text-muted">
-                {service.text}
-              </p>
-            </motion.article>
+            <ScrollReveal key={service.title} distance={20} blur={6}>
+              <motion.article
+                className="premium-card p-5 sm:p-7"
+              >
+                <h3 className="text-lg sm:text-xl font-semibold uppercase tracking-[-0.03em] text-brand-dark mb-4">
+                  {service.title}
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted">
+                  {service.text}
+                </p>
+              </motion.article>
+            </ScrollReveal>
           ))}
         </div>
 
@@ -70,6 +68,7 @@ export function HomeSEOContent() {
             </div>
           </div>
 
+          <ScrollReveal distance={22} blur={8}>
           <div className="premium-card bg-brand-dark text-white p-6 sm:p-8">
             <span className="luxury-section-kicker mb-4 block text-white/50">CTA</span>
             <h2 className="text-2xl sm:text-3xl font-semibold uppercase tracking-[-0.04em] leading-tight mb-4">
@@ -115,6 +114,7 @@ export function HomeSEOContent() {
               </Link>
             </div>
           </div>
+          </ScrollReveal>
         </div>
       </div>
     </SectionReveal>

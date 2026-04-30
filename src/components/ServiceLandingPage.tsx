@@ -6,6 +6,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { SectionReveal } from './SectionReveal';
+import { ScrollReveal } from './ScrollReveal';
 import { premiumButtonTransition } from '../lib/motion';
 
 const MotionLink = motion(Link);
@@ -26,13 +27,18 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
       <main className="relative pt-40 pb-20">
         <SectionReveal className="container-boxed">
           <div className="max-w-4xl">
+            <ScrollReveal distance={22} blur={8}>
             <span className="luxury-section-kicker mb-6 block">Service</span>
             <h1 className="text-[clamp(2rem,8vw,3.75rem)] sm:text-[64px] md:text-[88px] font-black uppercase tracking-tighter leading-[0.95] text-brand-dark break-words">
               {page.title}
             </h1>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08} distance={18} blur={6}>
             <p className="mt-6 text-base sm:text-lg md:text-xl text-muted leading-relaxed max-w-3xl">
               {page.hero}
             </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.16} distance={18} blur={6}>
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <motion.a
                 href={siteConfig.contact.whatsapp}
@@ -66,16 +72,18 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
                 Back to Home
               </MotionLink>
             </div>
+            </ScrollReveal>
           </div>
         </SectionReveal>
 
         <SectionReveal className="container-boxed mt-12">
           <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-start">
-            <div className="space-y-5 text-base md:text-lg leading-relaxed text-muted">
+            <ScrollReveal className="space-y-5 text-base md:text-lg leading-relaxed text-muted" distance={18} blur={6}>
               {page.intro.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
-            </div>
+            </ScrollReveal>
+            <ScrollReveal distance={24} blur={8}>
             <aside className="premium-card p-6 sm:p-8 bg-white">
               <span className="luxury-section-kicker mb-4 block">Intent</span>
               <h2 className="text-2xl sm:text-3xl font-semibold uppercase tracking-[-0.04em] text-brand-dark mb-4">
@@ -101,12 +109,14 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
                 </a>
               </div>
             </aside>
+            </ScrollReveal>
           </div>
         </SectionReveal>
 
         <SectionReveal className="container-boxed mt-14 space-y-10">
           {page.sections.map((section, index) => (
-            <article key={section.heading} className="grid lg:grid-cols-[0.45fr_0.55fr] gap-6 lg:gap-10 border-t border-black/10 pt-8">
+            <ScrollReveal key={section.heading} delay={index * 0.08} distance={20} blur={6}>
+            <article className="grid lg:grid-cols-[0.45fr_0.55fr] gap-6 lg:gap-10 border-t border-black/10 pt-8">
               <div>
                 <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-3 block">
                   0{index + 1}
@@ -121,10 +131,12 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
                 ))}
               </div>
             </article>
+            </ScrollReveal>
           ))}
         </SectionReveal>
 
         <SectionReveal className="container-boxed mt-14">
+          <ScrollReveal distance={24} blur={8}>
           <div className="premium-card bg-brand-dark text-white p-6 sm:p-8 lg:p-10">
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 items-center">
               <div>
@@ -162,6 +174,7 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         </SectionReveal>
       </main>
 

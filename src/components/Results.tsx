@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
-import { premiumCardTransition } from '../lib/motion';
+import { ScrollReveal } from './ScrollReveal';
 
 const stripLabels = ['Generated', 'Growth', 'Delivered', 'Clients'];
 
@@ -18,31 +17,26 @@ export const Results = () => {
       <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-white/5 blur-[140px]" />
 
       <div className="container-boxed relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center border-b border-white/10 pb-5 sm:pb-6">
+        <ScrollReveal className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center border-b border-white/10 pb-5 sm:pb-6" distance={18} blur={5}>
           {stripLabels.map((label) => (
             <div key={label} className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.42em] text-white/35">
               {label}
             </div>
           ))}
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-6 sm:pt-8">
           {siteConfig.results.map((result, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ ...premiumCardTransition, delay: index * 0.08 }}
-              viewport={{ once: true, margin: '-80px' }}
-              className="text-center md:text-left"
-            >
-              <div className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white leading-none tracking-[-0.05em]">
-                {result.value}
+            <ScrollReveal key={index} delay={index * 0.06} distance={18} blur={5} className="text-center md:text-left">
+              <div>
+                <div className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white leading-none tracking-[-0.05em]">
+                  {result.value}
+                </div>
+                <div className="mt-3 text-[10px] sm:text-xs font-medium uppercase tracking-[0.24em] text-white/45 leading-snug">
+                  {result.label}
+                </div>
               </div>
-              <div className="mt-3 text-[10px] sm:text-xs font-medium uppercase tracking-[0.24em] text-white/45 leading-snug">
-                {result.label}
-              </div>
-            </motion.div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

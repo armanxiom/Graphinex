@@ -3,54 +3,41 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
 import { siteConfig } from "../data/siteConfig";
 import { Link } from "react-router-dom";
-import { premiumRevealTransition } from '../lib/motion';
+import { ScrollReveal } from './ScrollReveal';
 
 export const Footer = () => {
   const registrationLinks = siteConfig.trustCertificates || [];
 
   return (
-    <motion.footer
-      className="bg-black text-white px-5 py-12 md:py-16"
-      id="contact"
-      initial={{ opacity: 0, y: 22, scale: 0.99, filter: 'blur(10px)' }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      transition={{ ...premiumRevealTransition, duration: 0.85 }}
-      viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
-      style={{ willChange: 'transform, opacity, filter' }}
-    >
-      <div className="max-w-6xl mx-auto pt-8 md:pt-12 border-t border-white/10 flex flex-col gap-10 md:grid md:grid-cols-3 md:gap-16">
-        
-        {/* Brand Section */}
+    <footer className="bg-black text-white px-5 py-12 md:py-16" id="contact">
+      <ScrollReveal className="max-w-6xl mx-auto pt-8 md:pt-12 border-t border-white/10 flex flex-col gap-10 md:grid md:grid-cols-3 md:gap-16" distance={24} blur={8}>
         <div className="flex flex-col gap-3" id="footer-brand">
           <div className="flex items-center gap-2">
-            <img 
-              src={siteConfig.brand.logo} 
-              alt={`${siteConfig.brand.name} logo`} 
-              className="w-7 h-auto" 
+            <img
+              src={siteConfig.brand.logo}
+              alt={`${siteConfig.brand.name} logo`}
+              className="w-7 h-auto"
             />
             <span className="text-base font-semibold tracking-tight uppercase">
               {siteConfig.brand.name}
             </span>
           </div>
           <p className="text-[13px] text-gray-400 leading-relaxed max-w-xs font-normal">
-            Transforming your content into a client-acquisition machine. 
+            Transforming your content into a client-acquisition machine.
             We build high-growth digital identities through elite-level production.
           </p>
         </div>
 
-        {/* Desktop Grouped Grid on Mobile */}
         <div className="grid grid-cols-2 gap-8 md:contents">
-          {/* Navigation Block */}
           <div className="flex flex-col gap-2" id="footer-nav">
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
               Navigation
             </span>
             <div className="flex flex-col gap-2">
               {siteConfig.navigation.map((item, i) => (
-                <Link 
+                <Link
                   key={i}
                   to={item.href}
                   className="text-sm text-gray-300 hover:text-white transition-colors w-fit"
@@ -77,7 +64,6 @@ export const Footer = () => {
             </div>
           </div>
 
-          {/* Contact Block */}
           <div className="flex flex-col gap-2" id="footer-contact">
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
               Contact
@@ -125,7 +111,6 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Social Section */}
         <div className="flex flex-wrap gap-4 text-[11px] text-gray-500 uppercase tracking-widest font-medium md:col-span-3 pt-2">
           <a
             href="https://www.instagram.com/graphinex.in?igsh=Z3cxYjZ0MDd3NmFq"
@@ -160,16 +145,15 @@ export const Footer = () => {
             Twitter
           </a>
         </div>
-      </div>
+      </ScrollReveal>
 
-      {/* Bottom Bar */}
-      <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 gap-4">
-        <span className="font-normal text-center sm:text-left">© {new Date().getFullYear()} {siteConfig.brand.name} Agency. All rights reserved.</span>
+      <ScrollReveal className="max-w-6xl mx-auto mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 gap-4" delay={0.08} distance={16} blur={5}>
+        <span className="font-normal text-center sm:text-left">Â© {new Date().getFullYear()} {siteConfig.brand.name} Agency. All rights reserved.</span>
         <div className="flex gap-6 font-normal">
           <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
           <span className="hover:text-white cursor-pointer transition-colors">Terms</span>
         </div>
-      </div>
-    </motion.footer>
+      </ScrollReveal>
+    </footer>
   );
 };

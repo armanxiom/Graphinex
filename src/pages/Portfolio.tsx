@@ -6,7 +6,8 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { ExternalLink, Play, X } from 'lucide-react';
 import { SectionReveal } from '../components/SectionReveal';
-import { premiumCardTransition, premiumRevealTransition } from '../lib/motion';
+import { ScrollReveal } from '../components/ScrollReveal';
+import { premiumCardTransition } from '../lib/motion';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -44,7 +45,7 @@ function PortfolioMediaSection({
       }`}
     >
       <div className="container-boxed">
-        <div className="mb-8 sm:mb-10">
+        <ScrollReveal className="mb-8 sm:mb-10" distance={18} blur={6}>
           <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-4 block">
             Category
           </span>
@@ -52,7 +53,7 @@ function PortfolioMediaSection({
             {title}
           </h2>
           <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
-        </div>
+        </ScrollReveal>
 
         {isSingleVideoFocus ? (
           <div className="flex justify-center">
@@ -198,29 +199,27 @@ export default function Portfolio() {
 
       <SectionReveal className="pt-40 pb-20 relative overflow-hidden" id="portfolio-hero">
         <div className="container-boxed text-center relative z-10">
+          <ScrollReveal distance={18} blur={6}>
           <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
             className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block"
           >
             Showcase
           </motion.span>
+          </ScrollReveal>
+          <ScrollReveal delay={0.08} distance={24} blur={8}>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...premiumRevealTransition, duration: 0.75, delay: 0.1 }}
             className="text-[40px] sm:text-[64px] md:text-[96px] font-black uppercase tracking-tighter leading-[1.1] sm:leading-[0.9] text-brand-dark mb-8 break-words"
           >
             {hero.title}
           </motion.h1>
+          </ScrollReveal>
+          <ScrollReveal delay={0.14} distance={18} blur={6}>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...premiumRevealTransition, duration: 0.8, delay: 0.2 }}
             className="text-base sm:text-lg md:text-xl text-muted font-medium max-w-2xl mx-auto px-4"
           >
             {hero.subtitle}
           </motion.p>
+          </ScrollReveal>
         </div>
 
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-brand-orange/5 rounded-full blur-3xl -z-10 pointer-events-none" />
@@ -228,13 +227,8 @@ export default function Portfolio() {
 
       <SectionReveal className="py-20" id="showreel">
         <div className="container-boxed max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="rounded-[1.5rem] sm:rounded-3xl overflow-hidden shadow-2xl bg-black border-[4px] sm:border-8 border-white aspect-video relative group"
-          >
+          <ScrollReveal distance={28} blur={8}>
+          <motion.div className="rounded-[1.5rem] sm:rounded-3xl overflow-hidden shadow-2xl bg-black border-[4px] sm:border-8 border-white aspect-video relative group">
             <iframe
               src={`https://www.youtube.com/embed/${showreel.youtubeId}`}
               className="w-full h-full"
@@ -243,6 +237,7 @@ export default function Portfolio() {
               allowFullScreen
             />
           </motion.div>
+          </ScrollReveal>
           <p className="text-center mt-8 text-brand-dark/50 font-bold uppercase tracking-[0.2em] text-[10px] sm:text-xs px-5">
             â€œ{showreel.caption}â€
           </p>
@@ -251,12 +246,12 @@ export default function Portfolio() {
 
       <SectionReveal className="py-12 sm:py-20" id="featured-works">
         <div className="container-boxed">
-          <div className="mb-10 sm:mb-12">
+          <ScrollReveal className="mb-10 sm:mb-12" distance={18} blur={6}>
             <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter text-brand-dark leading-none">
               Our Works
             </h2>
             <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 sm:gap-6">
             {works.map((item: any, idx: number) => (
@@ -350,12 +345,12 @@ export default function Portfolio() {
 
       <SectionReveal className="py-12 sm:py-20" id="logos">
         <div className="container-boxed">
-          <div className="mb-10 sm:mb-12">
+          <ScrollReveal className="mb-10 sm:mb-12" distance={18} blur={6}>
             <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter text-brand-dark leading-none">
               Logos
             </h2>
             <div className="w-16 sm:w-20 h-1 sm:h-1.5 bg-brand-orange mt-3 sm:mt-4" />
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-4">
             {logos.map((item: any, idx: number) => (

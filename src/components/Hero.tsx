@@ -6,6 +6,7 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { SectionReveal } from './SectionReveal';
+import { ScrollReveal } from './ScrollReveal';
 import { premiumButtonTransition, premiumRevealTransition } from '../lib/motion';
 
 export const Hero = () => {
@@ -16,7 +17,7 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.08),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,106,0,0.05),transparent_30%)] pointer-events-none" />
       <div className="container-boxed relative grid lg:grid-cols-[1.05fr_0.95fr] gap-14 lg:gap-20 xl:gap-24 items-center">
         {/* Left Text */}
-        <div className="z-10 max-w-xl xl:max-w-2xl" id="hero-text">
+        <ScrollReveal className="z-10 max-w-xl xl:max-w-2xl" id="hero-text" delay={0.04} distance={36} blur={10}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -26,7 +27,7 @@ export const Hero = () => {
             <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-black/5 text-brand-orange text-[10px] font-bold tracking-[0.22em] uppercase shadow-[0_8px_24px_rgba(15,15,15,0.04)]">
               Creative Agency Based in India
             </span>
-            <h1 className="text-[clamp(2.25rem,10vw,4.5rem)] sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-[0.92] text-brand-dark uppercase tracking-[-0.06em]">
+            <h1 className="text-[clamp(2.25rem,10vw,4.5rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] text-brand-dark uppercase tracking-[-0.085em]">
               {words.map((word, wordIndex) => (
                 <span
                   key={wordIndex}
@@ -50,7 +51,7 @@ export const Hero = () => {
               {siteConfig.hero.subheading}
             </p>
             
-            <div className="flex justify-center sm:justify-start pt-2">
+            <ScrollReveal className="flex justify-center sm:justify-start pt-2" delay={0.09} distance={24} blur={6}>
               <div className="grid w-full max-w-[340px] grid-cols-2 gap-3 sm:max-w-none sm:flex sm:flex-wrap sm:gap-4">
                {siteConfig.results.slice(0, 2).map((res, i) => (
                  <div key={i} className="w-full sm:min-w-[180px]">
@@ -61,9 +62,9 @@ export const Hero = () => {
                  </div>
                ))}
               </div>
-            </div>
+            </ScrollReveal>
 
-            <div className="pt-2 flex justify-center sm:justify-start">
+            <ScrollReveal className="pt-2 flex justify-center sm:justify-start" delay={0.16} distance={22} blur={6}>
               <motion.a
                 href={siteConfig.contact.whatsapp}
                 target="_blank"
@@ -75,12 +76,12 @@ export const Hero = () => {
               >
                 Get in touch
               </motion.a>
-            </div>
+            </ScrollReveal>
           </motion.div>
-        </div>
+        </ScrollReveal>
 
         {/* Right Media */}
-        <div className="relative mt-6 lg:mt-0" id="hero-media">
+        <ScrollReveal className="relative mt-6 lg:mt-0" id="hero-media" delay={0.12} distance={38} blur={10}>
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -98,7 +99,7 @@ export const Hero = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/12 via-transparent to-transparent pointer-events-none" />
           </motion.div>
-        </div>
+        </ScrollReveal>
       </div>
     </SectionReveal>
   );

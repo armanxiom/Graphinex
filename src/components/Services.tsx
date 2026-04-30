@@ -3,16 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
-import { useInView } from 'motion/react';
-import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
 import { SectionReveal } from './SectionReveal';
-import { premiumCardTransition } from '../lib/motion';
+import { ScrollReveal } from './ScrollReveal';
 
 const servicePageMap: Record<string, string> = {
   videoEditing: '/portfolio?category=video-editing',
@@ -21,26 +18,24 @@ const servicePageMap: Record<string, string> = {
 };
 
 export const Services = () => {
-  const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
   const { isMobile } = usePerformanceFlags();
 
   return (
     <SectionReveal className="py-28 md:py-32 relative bg-brand-light" id="services">
       <div className="container-boxed">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-8">
-          <div className="max-w-2xl">
+          <ScrollReveal className="max-w-2xl" distance={24} blur={8}>
             <span className="luxury-section-kicker mb-6 block">Our Services</span>
             <h2 className="luxury-heading">
               Our <span className="text-brand-orange">Services</span>
             </h2>
-          </div>
-          <p className="luxury-subcopy max-w-xs md:text-right mb-2">
+          </ScrollReveal>
+          <ScrollReveal className="max-w-xs md:text-right mb-2" delay={0.08} distance={18} blur={6}>
             We create SEO-friendly video editing, graphic design, and branding systems that help brands attract attention and convert faster.
-          </p>
+          </ScrollReveal>
         </div>
 
-        <div ref={containerRef} className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8 items-stretch">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8 items-stretch">
           {siteConfig.serviceOverviews.map((service: any, index: number) => (
             <Link
               key={service.id}
@@ -59,22 +54,18 @@ export const Services = () => {
                 glareMaxOpacity={0.1}
                 className="block h-full w-full"
               >
-                <motion.article
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ ...premiumCardTransition, delay: index * 0.12 }}
-                  className="premium-card premium-card-hover group relative w-full bg-white px-5 py-5 sm:p-8 lg:p-10 flex flex-col items-center justify-between text-center min-h-[200px] sm:min-h-[320px] lg:min-h-[440px] cursor-pointer overflow-hidden transform-gpu"
-                >
+                <ScrollReveal delay={index * 0.08} distance={24} blur={8} className="block h-full w-full">
+                <article className="premium-card premium-card-hover group relative w-full bg-white px-5 py-5 sm:p-7 lg:p-8 flex flex-col items-center justify-between text-center min-h-[180px] sm:min-h-[270px] lg:min-h-[360px] cursor-pointer overflow-hidden transform-gpu">
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-orange/0 via-brand-orange/35 to-brand-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   <div className="relative z-10 w-full flex flex-col items-center justify-start sm:justify-center flex-1 gap-2 sm:gap-0 [transform:translateZ(40px)]">
-                    <div className="flex h-8 items-center justify-center text-2xl sm:h-auto sm:text-5xl lg:text-6xl mb-1 sm:mb-10 transform group-hover:scale-110 transition-transform duration-700">
+                    <div className="flex h-8 items-center justify-center text-2xl sm:h-auto sm:text-5xl lg:text-6xl mb-1 sm:mb-8 transform group-hover:scale-110 transition-transform duration-700">
                       {service.icon}
                     </div>
-                    <h3 className="flex min-h-[2.1rem] items-center justify-center text-[11px] sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-1 sm:mb-4 break-words w-full">
+                    <h3 className="flex min-h-[2.1rem] items-center justify-center text-[11px] sm:text-lg md:text-xl font-semibold uppercase tracking-[-0.03em] leading-tight mb-1 sm:mb-3 break-words w-full">
                       {service.title}
                     </h3>
-                    <p className="flex min-h-[4.75rem] items-start justify-center text-[12px] sm:text-sm text-muted font-normal leading-snug sm:leading-relaxed max-w-sm mx-auto opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="flex min-h-[3.5rem] items-start justify-center text-[12px] sm:text-sm text-muted font-normal leading-snug sm:leading-relaxed max-w-sm mx-auto opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                       {service.description}
                     </p>
                   </div>
@@ -89,7 +80,8 @@ export const Services = () => {
                   <div className="absolute top-2 right-2 sm:top-10 sm:right-10 text-[20px] sm:text-[72px] font-black text-brand-dark/15 sm:text-brand-dark/5 leading-none select-none">
                     0{index + 1}
                   </div>
-                </motion.article>
+                </article>
+                </ScrollReveal>
               </Tilt>
             </Link>
           ))}
