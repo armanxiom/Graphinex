@@ -10,6 +10,7 @@ import { useInView } from 'motion/react';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
+import { SectionReveal } from './SectionReveal';
 
 const servicePageMap: Record<string, string> = {
   videoEditing: '/portfolio?category=video-editing',
@@ -22,7 +23,7 @@ export const Services = () => {
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-28 md:py-32 relative bg-brand-light" id="services">
+    <SectionReveal className="py-28 md:py-32 relative bg-brand-light" id="services">
       <div className="container-boxed">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-8">
           <div className="max-w-2xl">
@@ -90,6 +91,6 @@ export const Services = () => {
           ))}
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 };

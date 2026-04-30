@@ -1,9 +1,10 @@
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
+import { SectionReveal } from './SectionReveal';
 
 export const Showreel = () => {
   return (
-    <section className="bg-brand-dark overflow-hidden relative" id="showreel">
+    <SectionReveal className="bg-brand-dark overflow-hidden relative" id="showreel">
       <div className="absolute top-1/2 left-0 -translate-y-1/2 text-[15vw] font-bold uppercase text-white/5 whitespace-nowrap select-none pointer-events-none">
         Showcase Showcase Showcase Showcase
       </div>
@@ -51,6 +52,6 @@ export const Showreel = () => {
           {siteConfig.showreel.caption}
         </p>
       </div>
-    </section>
+    </SectionReveal>
   );
 };

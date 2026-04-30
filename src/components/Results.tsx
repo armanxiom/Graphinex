@@ -5,12 +5,13 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
+import { SectionReveal } from './SectionReveal';
 
 const stripLabels = ['Generated', 'Growth', 'Delivered', 'Clients'];
 
 export const Results = () => {
   return (
-    <section className="relative overflow-hidden bg-brand-dark py-14 sm:py-16 md:py-18" id="results">
+    <SectionReveal className="relative overflow-hidden bg-brand-dark py-14 sm:py-16 md:py-18" id="results">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,13,11,0.98),rgba(9,9,9,1))]" />
       <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-brand-orange/12 blur-[130px]" />
       <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-white/5 blur-[140px]" />
@@ -44,6 +45,6 @@ export const Results = () => {
           ))}
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 };

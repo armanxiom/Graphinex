@@ -3,10 +3,11 @@ import { motion } from 'motion/react';
 import { homeSeoCopy } from '../data/seoContent';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { siteConfig } from '../data/siteConfig';
+import { SectionReveal } from './SectionReveal';
 
 export function HomeSEOContent() {
   return (
-    <section className="bg-white" id="about">
+    <SectionReveal className="bg-white" id="about">
       <div className="container-boxed">
         <div className="sr-only">
           <h2>We Turn Content Into Clients</h2>
@@ -32,14 +33,21 @@ export function HomeSEOContent() {
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
           {homeSeoCopy.services.map((service) => (
-            <article key={service.title} className="premium-card p-6 sm:p-8">
+            <motion.article
+              key={service.title}
+              initial={{ opacity: 0, y: 18, scale: 0.985 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true, margin: '-80px' }}
+              className="premium-card p-6 sm:p-8"
+            >
               <h3 className="text-lg sm:text-xl font-semibold uppercase tracking-[-0.03em] text-brand-dark mb-4">
                 {service.title}
               </h3>
               <p className="text-sm sm:text-base leading-relaxed text-muted">
                 {service.text}
               </p>
-            </article>
+            </motion.article>
           ))}
         </div>
 
@@ -105,6 +113,6 @@ export function HomeSEOContent() {
           </div>
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 }

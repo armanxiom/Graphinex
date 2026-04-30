@@ -5,6 +5,7 @@ import { ServicePageKey, servicePageContent } from '../data/seoContent';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ArrowRight, MessageCircle } from 'lucide-react';
+import { SectionReveal } from './SectionReveal';
 
 export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
   const page = servicePageContent[slug];
@@ -20,7 +21,7 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
       <Navbar />
 
       <main className="relative pt-40 pb-20">
-        <section className="container-boxed">
+        <SectionReveal className="container-boxed">
           <div className="max-w-4xl">
             <span className="luxury-section-kicker mb-6 block">Service</span>
             <h1 className="text-[clamp(2rem,8vw,3.75rem)] sm:text-[64px] md:text-[88px] font-black uppercase tracking-tighter leading-[0.95] text-brand-dark break-words">
@@ -48,9 +49,9 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
               </Link>
             </div>
           </div>
-        </section>
+        </SectionReveal>
 
-        <section className="container-boxed mt-12">
+        <SectionReveal className="container-boxed mt-12">
           <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-start">
             <div className="space-y-5 text-base md:text-lg leading-relaxed text-muted">
               {page.intro.map((paragraph) => (
@@ -83,9 +84,9 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
               </div>
             </aside>
           </div>
-        </section>
+        </SectionReveal>
 
-        <section className="container-boxed mt-14 space-y-10">
+        <SectionReveal className="container-boxed mt-14 space-y-10">
           {page.sections.map((section, index) => (
             <article key={section.heading} className="grid lg:grid-cols-[0.45fr_0.55fr] gap-6 lg:gap-10 border-t border-black/10 pt-8">
               <div>
@@ -103,9 +104,9 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
               </div>
             </article>
           ))}
-        </section>
+        </SectionReveal>
 
-        <section className="container-boxed mt-14">
+        <SectionReveal className="container-boxed mt-14">
           <div className="premium-card bg-brand-dark text-white p-6 sm:p-8 lg:p-10">
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 items-center">
               <div>
@@ -134,7 +135,7 @@ export function ServiceLandingPage({ slug }: { slug: ServicePageKey }) {
               </div>
             </div>
           </div>
-        </section>
+        </SectionReveal>
       </main>
 
       <Footer />

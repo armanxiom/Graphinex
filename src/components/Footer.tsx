@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { motion } from 'motion/react';
 import { siteConfig } from "../data/siteConfig";
 import { Link } from "react-router-dom";
 
@@ -10,7 +11,15 @@ export const Footer = () => {
   const registrationLinks = siteConfig.trustCertificates || [];
 
   return (
-    <footer className="bg-black text-white px-5 py-12 md:py-16" id="contact">
+    <motion.footer
+      className="bg-black text-white px-5 py-12 md:py-16"
+      id="contact"
+      initial={{ opacity: 0, y: 22, scale: 0.99, filter: 'blur(6px)' }}
+      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
+      style={{ willChange: 'transform, opacity, filter' }}
+    >
       <div className="max-w-6xl mx-auto pt-8 md:pt-12 border-t border-white/10 flex flex-col gap-10 md:grid md:grid-cols-3 md:gap-16">
         
         {/* Brand Section */}
@@ -160,6 +169,6 @@ export const Footer = () => {
           <span className="hover:text-white cursor-pointer transition-colors">Terms</span>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };

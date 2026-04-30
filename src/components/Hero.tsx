@@ -5,12 +5,13 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
+import { SectionReveal } from './SectionReveal';
 
 export const Hero = () => {
   const words = siteConfig.hero.heading.split(' ');
   
   return (
-    <section className="relative min-h-screen pt-28 pb-24 md:pt-32 md:pb-28 flex items-center overflow-hidden bg-brand-light" id="hero">
+    <SectionReveal className="relative min-h-screen pt-28 pb-24 md:pt-32 md:pb-28 flex items-center overflow-hidden bg-brand-light" id="hero">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.08),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,106,0,0.05),transparent_30%)] pointer-events-none" />
       <div className="container-boxed relative grid lg:grid-cols-[1.05fr_0.95fr] gap-14 lg:gap-20 xl:gap-24 items-center">
         {/* Left Text */}
@@ -97,6 +98,6 @@ export const Hero = () => {
           </motion.div>
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 };

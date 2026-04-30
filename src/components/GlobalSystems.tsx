@@ -28,15 +28,24 @@ export function AmbientBackdrop() {
 
 export function GlobalSystems() {
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const lenis = new Lenis({
-      duration: 0.9,
+      duration: isMobile ? 0.75 : 0.9,
       easing: (t) => 1 - Math.pow(1 - t, 4),
       smoothWheel: true,
+      syncTouch: isMobile,
+      syncTouchLerp: 0.08,
+      touchInertiaExponent: 1.7,
+      touchMultiplier: isMobile ? 1.15 : 1,
       wheelMultiplier: 1,
-      touchMultiplier: 1,
     });
 
     window.__lenis = lenis;
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
 
     let rafId = 0;
     const raf = (time: number) => {
@@ -48,15 +57,88 @@ export function GlobalSystems() {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
       if (window.__lenis === lenis) {
         window.__lenis = undefined;
       }
     };
   }, []);
 
+  useEffect(() => {
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!finePointer || prefersReducedMotion) return;
+
+    const magneticTargets = '.premium-button';
+    let activeTarget: HTMLElement | null = null;
+    let lastX = 0;
+    let lastY = 0;
+
+    const resetTarget = (target: HTMLElement | null) => {
+      if (!target) return;
+      target.style.transform = '';
+      target.style.transition = '';
+      target.style.willChange = 'auto';
+    };
+
+    const setTarget = (target: HTMLElement, x: number, y: number) => {
+      target.style.transition = 'transform 120ms cubic-bezier(0.22, 1, 0.36, 1)';
+      target.style.willChange = 'transform';
+      target.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.03)`;
+    };
+
+    const handleMove = (event: PointerEvent) => {
+      const target = (event.target as HTMLElement | null)?.closest<HTMLElement>(magneticTargets);
+
+      if (!target) {
+        if (activeTarget) {
+          resetTarget(activeTarget);
+          activeTarget = null;
+        }
+        return;
+      }
+
+      const rect = target.getBoundingClientRect();
+      lastX = ((event.clientX - rect.left) / rect.width - 0.5) * 8;
+      lastY = ((event.clientY - rect.top) / rect.height - 0.5) * 8;
+
+      if (activeTarget !== target) {
+        if (activeTarget) {
+          resetTarget(activeTarget);
+        }
+        activeTarget = target;
+      }
+
+      setTarget(activeTarget, lastX, lastY);
+    };
+
+    const handleLeave = () => {
+      if (activeTarget) {
+        resetTarget(activeTarget);
+        activeTarget = null;
+      }
+    };
+
+    document.addEventListener('pointermove', handleMove, { passive: true });
+    window.addEventListener('blur', handleLeave);
+
+    return () => {
+      document.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('blur', handleLeave);
+      if (activeTarget) {
+        resetTarget(activeTarget);
+      }
+    };
+  }, []);
+
+  const showBackdrop =
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    window.matchMedia('(min-width: 1024px)').matches;
+
   return (
     <>
-      <AmbientBackdrop />
+      {showBackdrop ? <AmbientBackdrop /> : null}
     </>
   );
 }

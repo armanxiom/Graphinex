@@ -5,10 +5,11 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
+import { SectionReveal } from './SectionReveal';
 
 export const Process = () => {
   return (
-    <section className="bg-white py-24 md:py-28" id="process">
+    <SectionReveal className="bg-white py-24 md:py-28" id="process">
       <div className="container-boxed">
         <div className="mb-12 md:mb-16">
           <span className="luxury-section-kicker mb-6 block">Our Workflow</span>
@@ -48,6 +49,6 @@ export const Process = () => {
           ))}
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 };

@@ -5,6 +5,7 @@ import { siteConfig } from '../data/siteConfig';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { ExternalLink, Play, X } from 'lucide-react';
+import { SectionReveal } from '../components/SectionReveal';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -34,7 +35,7 @@ function PortfolioMediaSection({
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
 
   return (
-    <section
+    <SectionReveal
       ref={registerRef}
       id={id}
       className={`py-12 sm:py-20 scroll-mt-32 transition-all duration-300 ${
@@ -138,7 +139,7 @@ function PortfolioMediaSection({
           </div>
         )}
       </div>
-    </section>
+    </SectionReveal>
   );
 }
 
@@ -190,7 +191,7 @@ export default function Portfolio() {
     <div className="bg-brand-light min-h-screen">
       <Navbar />
 
-      <section className="pt-40 pb-20 relative overflow-hidden" id="portfolio-hero">
+      <SectionReveal className="pt-40 pb-20 relative overflow-hidden" id="portfolio-hero">
         <div className="container-boxed text-center relative z-10">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
@@ -218,9 +219,9 @@ export default function Portfolio() {
         </div>
 
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-brand-orange/5 rounded-full blur-3xl -z-10 pointer-events-none" />
-      </section>
+      </SectionReveal>
 
-      <section className="py-20" id="showreel">
+      <SectionReveal className="py-20" id="showreel">
         <div className="container-boxed max-w-5xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -241,9 +242,9 @@ export default function Portfolio() {
             â€œ{showreel.caption}â€
           </p>
         </div>
-      </section>
+      </SectionReveal>
 
-      <section className="py-12 sm:py-20" id="featured-works">
+      <SectionReveal className="py-12 sm:py-20" id="featured-works">
         <div className="container-boxed">
           <div className="mb-10 sm:mb-12">
             <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter text-brand-dark leading-none">
@@ -307,7 +308,7 @@ export default function Portfolio() {
             ))}
           </div>
         </div>
-      </section>
+      </SectionReveal>
 
       <PortfolioMediaSection
         id="video-editing"
@@ -342,7 +343,7 @@ export default function Portfolio() {
         }}
       />
 
-      <section className="py-12 sm:py-20" id="logos">
+      <SectionReveal className="py-12 sm:py-20" id="logos">
         <div className="container-boxed">
           <div className="mb-10 sm:mb-12">
             <h2 className="text-[28px] sm:text-[32px] md:text-[48px] font-black uppercase tracking-tighter text-brand-dark leading-none">
@@ -376,7 +377,7 @@ export default function Portfolio() {
             ))}
           </div>
         </div>
-      </section>
+      </SectionReveal>
 
       {selectedMedia && (
         <div

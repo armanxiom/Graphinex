@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Services } from './components/Services';
@@ -22,9 +22,8 @@ import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
 import { SEO } from './components/SEO';
 import { siteConfig } from './data/siteConfig';
-import { useLocation } from 'react-router-dom';
 import { Suspense, lazy, useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 
 const PortfolioPage = lazy(() => import('./pages/Portfolio'));
@@ -88,14 +87,13 @@ function HomePage() {
   );
 }
 
-export default function App() {
+function AppShell() {
   const [showSystems, setShowSystems] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-
-    if (prefersReducedMotion || !isDesktop) return;
+    if (prefersReducedMotion) return;
 
     const idleCallback = window.requestIdleCallback ?? ((cb: IdleRequestCallback) => window.setTimeout(() => cb({
       didTimeout: false,
@@ -109,7 +107,7 @@ export default function App() {
   }, []);
 
   return (
-    <Router>
+    <>
       <SEO />
       <ScrollToHash />
       <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
@@ -121,25 +119,43 @@ export default function App() {
             />
           )}
         </Suspense>
-        <div className="relative z-10">
-          <Suspense fallback={null}>
-            <Routes>
-              <Route path="/" element={
-                <>
-                  <Navbar />
-                  <HomePage />
-                  <Footer />
-                </>
-              } />
-              <Route path="/portfolio" element={<PortfolioPage />} />
-              <Route path="/video-editing" element={<VideoEditingPage />} />
-              <Route path="/logo-design" element={<LogoDesignPage />} />
-              <Route path="/social-media-design" element={<SocialMediaDesignPage />} />
-            </Routes>
-          </Suspense>
-        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={`${location.pathname}${location.search}`}
+            initial={{ opacity: 0, y: 18, scale: 0.995, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -12, scale: 0.995, filter: 'blur(6px)' }}
+            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10"
+            style={{ willChange: 'transform, opacity, filter' }}
+          >
+            <Suspense fallback={null}>
+              <Routes location={location}>
+                <Route path="/" element={
+                  <>
+                    <Navbar />
+                    <HomePage />
+                    <Footer />
+                  </>
+                } />
+                <Route path="/portfolio" element={<PortfolioPage />} />
+                <Route path="/video-editing" element={<VideoEditingPage />} />
+                <Route path="/logo-design" element={<LogoDesignPage />} />
+                <Route path="/social-media-design" element={<SocialMediaDesignPage />} />
+              </Routes>
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
         <WhatsAppCTA />
       </main>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AppShell />
     </Router>
   );
 }

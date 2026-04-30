@@ -10,6 +10,7 @@ import { useRef, useState } from 'react';
 import { Play, X } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
+import { SectionReveal } from './SectionReveal';
 
 const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
@@ -20,7 +21,7 @@ export const Portfolio = () => {
   const { shouldUseHeavyEffects, shouldReduceMotion } = usePerformanceFlags();
 
   return (
-    <section className="bg-white relative" id="work">
+    <SectionReveal className="bg-white relative" id="work">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent" />
       <div className="container-boxed mb-12 md:mb-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
@@ -152,6 +153,6 @@ export const Portfolio = () => {
           </motion.div>
         </div>
       )}
-    </section>
+    </SectionReveal>
   );
 };

@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { Play, X } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import { usePerformanceFlags } from '../hooks/usePerformanceFlags';
+import { SectionReveal } from './SectionReveal';
 
 const getAltText = (item: any) => `${item.title} by Graphinex Creative`;
 
@@ -33,7 +34,7 @@ function MediaSection({
   const { shouldUseHeavyEffects, shouldReduceMotion } = usePerformanceFlags();
 
   return (
-    <section className="py-16 sm:py-20 relative" id={id}>
+    <SectionReveal className="py-16 sm:py-20 relative" id={id}>
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent" />
       <div className="container-boxed">
         <div className="mb-8 sm:mb-10">
@@ -280,7 +281,7 @@ function MediaSection({
           </motion.div>
         </div>
       )}
-    </section>
+    </SectionReveal>
   );
 }
 
