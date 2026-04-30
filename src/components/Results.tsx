@@ -66,6 +66,7 @@ function formatAnimatedValue(current: number, target: number, raw: string) {
 export const Results = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
+  const [playId, setPlayId] = useState(0);
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -75,6 +76,7 @@ export const Results = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasEntered(true);
+          setPlayId((current) => current + 1);
           observer.disconnect();
         }
       },
@@ -111,7 +113,7 @@ export const Results = () => {
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-col items-center gap-2 group"
             >
-              <StatValue result={result.value} active={hasEntered} />
+              <StatValue key={`${index}-${playId}`} result={result.value} active={hasEntered} />
               <div className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-[0.2em] leading-tight max-w-[120px] mx-auto opacity-70 group-hover:opacity-100 transition-opacity">
                 {result.label}
               </div>

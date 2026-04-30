@@ -7,11 +7,9 @@ function easeOutCubic(t: number) {
 export function useCountUp(active: boolean, target: number, duration = 1400) {
   const [value, setValue] = useState(0);
   const frameRef = useRef<number | null>(null);
-  const startedRef = useRef(false);
 
   useEffect(() => {
-    if (!active || startedRef.current) return;
-    startedRef.current = true;
+    if (!active) return;
 
     const start = performance.now();
 
