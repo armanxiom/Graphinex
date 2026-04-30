@@ -328,9 +328,9 @@ export const siteConfig = {
 
   // 🎯 RESULTS
   results: [
-    { label: "Views Generated", value: "2.1M+", suffix: "" },
+    { label: "Views Generated", value: "10M+", suffix: "" },
     { label: "Engagement Growth", value: "3X", suffix: "" },
-    { label: "Projects Delivered", value: "250+", suffix: "" },
+    { label: "Projects Delivered", value: "100+", suffix: "" },
     { label: "Active Clients", value: "45+", suffix: "" }
   ],
 
