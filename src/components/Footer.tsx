@@ -70,7 +70,7 @@ export const Footer = () => {
                 Registered Business
               </span>
               <span>
-                GRAPHITO ENTERPRISES
+                Graphinex Enterprises
               </span>
               <a
                 href={registrationLinks[0]?.pdfUrl || "#"}

@@ -16,41 +16,70 @@ export const Hero = () => {
         {/* Left Text */}
         <div className="z-10" id="hero-text">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: {
+                transition: {
+                  staggerChildren: 0.08,
+                  delayChildren: 0.05,
+                },
+              },
+            }}
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-white border border-black/5 text-brand-orange text-[10px] font-bold tracking-[0.2em] uppercase mb-8 shadow-sm">
+            <motion.span
+              initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-block px-4 py-1.5 rounded-full bg-white border border-black/5 text-brand-orange text-[10px] font-bold tracking-[0.2em] uppercase mb-8 shadow-sm"
+            >
               Creative Agency Based in India
-            </span>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.1] mb-8 text-brand-dark uppercase tracking-tight">
+            </motion.span>
+            <motion.h1 className="text-4xl md:text-6xl font-bold leading-[1.1] mb-8 text-brand-dark uppercase tracking-tight">
               {words.map((word, i) => (
-                <span key={i} className={siteConfig.hero.headingHighlights.includes(word.replace(/[,.!]/, '')) ? "text-brand-orange" : ""}>
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.6, delay: 0.15 + (i * 0.08), ease: [0.16, 1, 0.3, 1] }}
+                  className={siteConfig.hero.headingHighlights.includes(word.replace(/[,.!]/, '')) ? "text-brand-orange" : ""}
+                >
                   {word}{' '}
-                </span>
+                </motion.span>
               ))}
-            </h1>
-            <p className="text-base md:text-lg text-muted max-w-sm mb-10 leading-relaxed font-normal">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.55, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="text-base md:text-lg text-muted max-w-sm mb-10 leading-relaxed font-normal"
+            >
               {siteConfig.hero.subheading}
-            </p>
-            
-            <div className="flex flex-wrap gap-8">
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.55, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-wrap gap-8"
+            >
                {siteConfig.results.slice(0, 2).map((res, i) => (
                   <div key={i} className="relative">
                     <div className="text-3xl md:text-4xl font-bold text-brand-dark tracking-tight leading-none mb-2">{res.value}</div>
                     <div className="text-[10px] text-muted uppercase font-semibold tracking-widest leading-none">{res.label}</div>
                   </div>
                ))}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
 
         {/* Right Media */}
         <div className="relative mt-12 lg:mt-0" id="hero-media">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 0.94, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.0, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className="relative aspect-[10/12] bg-white rounded-[2rem] sm:rounded-3xl overflow-hidden border-[4px] sm:border-8 border-white shadow-2xl z-10" 
             id="hero-video-container"
           >

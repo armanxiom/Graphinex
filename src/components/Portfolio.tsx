@@ -38,9 +38,9 @@ export const Portfolio = () => {
           {featuredWorks.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24, scale: 0.98, filter: 'blur(8px)' }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1, ease: "easeInOut" }}
+              transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
               onClick={() => item.type === 'video' && setSelectedVideo(item)}
               className="group relative aspect-[4/5] bg-brand-light rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"

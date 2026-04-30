@@ -21,10 +21,10 @@ export const Process = () => {
           {siteConfig.process.map((step, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24, scale: 0.98, filter: 'blur(6px)' }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1, ease: "easeInOut" }}
+              transition={{ duration: 0.65, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
               className="group p-8 bg-brand-light rounded-2xl border border-black/5 hover:bg-white hover:shadow-xl transition-all duration-300 relative overflow-hidden"
             >
               <div className="relative z-10">

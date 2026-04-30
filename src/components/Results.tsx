@@ -17,9 +17,9 @@ export const Results = () => {
           {siteConfig.results.map((result, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 20, scale: 0.98, filter: 'blur(6px)' }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1, ease: "easeInOut" }}
+              transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
               className="flex flex-col items-center gap-2 group"
             >
