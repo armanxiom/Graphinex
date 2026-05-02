@@ -26,7 +26,22 @@ function MediaSection({
   items: any[];
 }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
-  const [selectedMedia, setSelectedMedia] = useState<any>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const selectedMedia = selectedIndex === null ? null : items[selectedIndex];
+
+  const goToPrevious = () => {
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current - 1 + items.length) % items.length;
+    });
+  };
+
+  const goToNext = () => {
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current + 1) % items.length;
+    });
+  };
 
   return (
     <section className="theme-panel py-12 sm:py-20" id={id}>
@@ -50,7 +65,7 @@ function MediaSection({
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
-                onClick={() => setSelectedMedia(item)}
+                onClick={() => setSelectedIndex(idx)}
                 className="premium-card group relative w-full max-w-[360px] cursor-pointer overflow-hidden aspect-[3/4] sm:max-w-[420px] md:max-w-[480px]"
               >
                 {item.type === 'video' ? (
@@ -95,7 +110,7 @@ function MediaSection({
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
-                onClick={() => setSelectedMedia(item)}
+                onClick={() => setSelectedIndex(idx)}
                 className="premium-card group relative aspect-[3/4] cursor-pointer overflow-hidden sm:aspect-square"
               >
                 {item.type === 'video' ? (
@@ -134,7 +149,14 @@ function MediaSection({
         )}
       </div>
 
-      <MediaLightbox media={selectedMedia} onClose={() => setSelectedMedia(null)} />
+      <MediaLightbox
+        media={selectedMedia}
+        onClose={() => setSelectedIndex(null)}
+        currentIndex={selectedIndex ?? undefined}
+        totalCount={items.length}
+        onPrevious={items.length > 1 ? goToPrevious : undefined}
+        onNext={items.length > 1 ? goToNext : undefined}
+      />
     </section>
   );
 }

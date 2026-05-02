@@ -5,14 +5,28 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
 
 export const Portfolio = () => {
-  const containerRef = useRef(null);
-  const [selectedMedia, setSelectedMedia] = useState<any>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const featuredWorks = siteConfig.featuredWorks.slice(0, 4);
+  const selectedMedia = selectedIndex === null ? null : featuredWorks[selectedIndex];
+
+  const goToPrevious = () => {
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current - 1 + featuredWorks.length) % featuredWorks.length;
+    });
+  };
+
+  const goToNext = () => {
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current + 1) % featuredWorks.length;
+    });
+  };
 
   return (
     <section className="theme-panel relative overflow-hidden py-20 md:py-28" id="work">
@@ -42,7 +56,7 @@ export const Portfolio = () => {
       </div>
 
       <div className="container-boxed">
-        <div ref={containerRef} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
           {featuredWorks.map((item, index) => (
             <motion.div
               key={index}
@@ -50,7 +64,7 @@ export const Portfolio = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
-              onClick={() => setSelectedMedia(item)}
+              onClick={() => setSelectedIndex(index)}
               className="premium-card group relative aspect-[4/5] cursor-pointer overflow-hidden transition-all duration-300"
             >
               {/* Media */}
@@ -100,7 +114,14 @@ export const Portfolio = () => {
         </div>
       </div>
 
-      <MediaLightbox media={selectedMedia} onClose={() => setSelectedMedia(null)} />
+      <MediaLightbox
+        media={selectedMedia}
+        onClose={() => setSelectedIndex(null)}
+        currentIndex={selectedIndex ?? undefined}
+        totalCount={featuredWorks.length}
+        onPrevious={featuredWorks.length > 1 ? goToPrevious : undefined}
+        onNext={featuredWorks.length > 1 ? goToNext : undefined}
+      />
     </section>
   );
 };

@@ -38,7 +38,7 @@ function PortfolioMediaSection({
   items: MediaItem[];
   active: boolean;
   registerRef: (node: HTMLElement | null) => void;
-  onSelect: (item: MediaItem) => void;
+  onSelect: (index: number) => void;
 }) {
   return (
     <section
@@ -67,7 +67,7 @@ function PortfolioMediaSection({
               viewport={{ once: true, margin: '-80px' }}
               whileHover={{ y: -4 }}
               whileTap={{ scale: 0.99 }}
-              onClick={() => onSelect(item)}
+              onClick={() => onSelect(idx)}
               className={`premium-card motion-optimised group relative overflow-hidden text-left ${
                 id === 'video-editing' ? 'aspect-[4/5]' : 'aspect-square'
               }`}
@@ -111,10 +111,13 @@ function PortfolioMediaSection({
 }
 
 export default function PortfolioPage() {
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [selectedGallery, setSelectedGallery] = useState<MediaItem[] | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
   const sectionRefs = useRef<Partial<Record<SectionKey, HTMLElement | null>>>({});
   const location = useLocation();
+  const selectedMedia =
+    selectedGallery && selectedIndex !== null ? selectedGallery[selectedIndex] || null : null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -152,6 +155,38 @@ export default function PortfolioPage() {
   const works = siteConfig.featuredWorks;
   const logos = siteConfig.logos;
   const collections = siteConfig.portfolioCollections;
+
+  const openGallery = (gallery: MediaItem[], index: number) => {
+    setSelectedGallery(gallery);
+    setSelectedIndex(index);
+  };
+
+  const closeGallery = () => {
+    setSelectedGallery(null);
+    setSelectedIndex(null);
+  };
+
+  const goToPrevious = () => {
+    if (!selectedGallery || selectedIndex === null || selectedGallery.length <= 1) {
+      return;
+    }
+
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current - 1 + selectedGallery.length) % selectedGallery.length;
+    });
+  };
+
+  const goToNext = () => {
+    if (!selectedGallery || selectedIndex === null || selectedGallery.length <= 1) {
+      return;
+    }
+
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current + 1) % selectedGallery.length;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-brand-light">
@@ -227,12 +262,12 @@ export default function PortfolioPage() {
                 initial={{ opacity: 0, y: 22, scale: 0.99 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => setSelectedMedia(item)}
-                className="premium-card motion-optimised group relative aspect-[4/5] overflow-hidden"
-              >
+              viewport={{ once: true }}
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={() => openGallery(works, idx)}
+              className="premium-card motion-optimised group relative aspect-[4/5] overflow-hidden"
+            >
                 {item.type === 'video' ? (
                   idx === 0 ? (
                     <video
@@ -284,7 +319,7 @@ export default function PortfolioPage() {
         title={categoryLabels['video-editing']}
         items={collections['video-editing']}
         active={activeSection === 'video-editing'}
-        onSelect={(item) => setSelectedMedia(item)}
+        onSelect={(index) => openGallery(collections['video-editing'], index)}
         registerRef={(node) => {
           sectionRefs.current['video-editing'] = node;
         }}
@@ -295,7 +330,7 @@ export default function PortfolioPage() {
         title={categoryLabels['graphic-design']}
         items={collections['graphic-design']}
         active={activeSection === 'graphic-design'}
-        onSelect={(item) => setSelectedMedia(item)}
+        onSelect={(index) => openGallery(collections['graphic-design'], index)}
         registerRef={(node) => {
           sectionRefs.current['graphic-design'] = node;
         }}
@@ -306,7 +341,7 @@ export default function PortfolioPage() {
         title={categoryLabels.branding}
         items={collections.branding}
         active={activeSection === 'branding'}
-        onSelect={(item) => setSelectedMedia(item)}
+        onSelect={(index) => openGallery(collections.branding, index)}
         registerRef={(node) => {
           sectionRefs.current.branding = node;
         }}
@@ -332,7 +367,7 @@ export default function PortfolioPage() {
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
                 whileTap={{ scale: 0.99 }}
-                onClick={() => setSelectedMedia(item)}
+                onClick={() => openGallery(logos, idx)}
                 className="premium-card motion-optimised group relative aspect-square overflow-hidden bg-white p-6"
               >
                 <img
@@ -351,7 +386,14 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      <MediaLightbox media={selectedMedia} onClose={() => setSelectedMedia(null)} />
+      <MediaLightbox
+        media={selectedMedia}
+        onClose={closeGallery}
+        currentIndex={selectedIndex ?? undefined}
+        totalCount={selectedGallery?.length}
+        onPrevious={selectedGallery && selectedGallery.length > 1 ? goToPrevious : undefined}
+        onNext={selectedGallery && selectedGallery.length > 1 ? goToNext : undefined}
+      />
 
       <Footer />
     </div>
