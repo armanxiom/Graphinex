@@ -4,13 +4,14 @@
  */
 
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import { ArrowRight, Camera, PlayCircle, Video } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowRight, PlayCircle } from 'lucide-react';
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 import { useCountUp } from '../hooks/useCountUp';
 
-const heroBackgroundVideo = new URL('../../Hero background video/Video.mp4', import.meta.url).href;
+const heroHeadingWords = siteConfig.hero.heading.split(/\s+/);
+const heroHighlightWords = new Set(siteConfig.hero.headingHighlights.map((word) => word.toLowerCase()));
 
 function parseStatValue(value: string) {
   const trimmed = value.trim();
@@ -81,38 +82,69 @@ function HeroStatValue({
   );
 }
 
+function HeroMarquee({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <div className="hero-marquee" aria-hidden="true">
+      <motion.div
+        className="hero-marquee__track motion-optimised"
+        animate={reduceMotion ? { x: '0%' } : { x: ['0%', '-50%'] }}
+        transition={
+          reduceMotion
+            ? undefined
+            : {
+                duration: 26,
+                ease: 'linear',
+                repeat: Infinity
+              }
+        }
+      >
+        {[0, 1].map((copyIndex) => (
+          <div key={copyIndex} className="hero-marquee__copy" aria-hidden={copyIndex === 1}>
+            <span className="hero-marquee__logo">
+              <img
+                src={siteConfig.brand.logo}
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                decoding="async"
+              />
+            </span>
+
+            {heroHeadingWords.map((word, index) => {
+              const isHighlighted = heroHighlightWords.has(word.toLowerCase());
+
+              return (
+                <span
+                  key={`${copyIndex}-${word}-${index}`}
+                  className={`hero-marquee__word ${isHighlighted ? 'hero-marquee__word--accent text-accent-gradient' : ''}`}
+                >
+                  {word}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
 export const Hero = () => {
   const heroRef = useRef<HTMLElement | null>(null);
-  const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
   const statsRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
+  const prefersReducedMotion = Boolean(reduceMotion);
   const [statsActive, setStatsActive] = useState(false);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start']
   });
 
-  const textY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -40]);
-  const mediaY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 28]);
-  const mediaScale = useTransform(scrollYProgress, [0, 1], [1, reduceMotion ? 1 : 1.04]);
-
-  const headingWords = useMemo(() => siteConfig.hero.heading.split(/\s+/), []);
-  const highlightWords = useMemo(
-    () => new Set(siteConfig.hero.headingHighlights.map((word) => word.toLowerCase())),
-    []
-  );
-
-  useEffect(() => {
-    const video = backgroundVideoRef.current;
-
-    if (!video) {
-      return;
-    }
-
-    video.muted = true;
-    video.defaultMuted = true;
-    video.volume = 0;
-  }, []);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : -22]);
+  const orbX = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 38]);
+  const orbY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : -24]);
+  const orbXReverse = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : -30]);
+  const orbYReverse = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 18]);
 
   useEffect(() => {
     const node = statsRef.current;
@@ -139,76 +171,74 @@ export const Hero = () => {
     return () => observer.disconnect();
   }, [statsActive]);
 
+  const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    const el = event.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    el.style.setProperty('--hero-glow-x', `${Math.min(100, Math.max(0, x))}%`);
+    el.style.setProperty('--hero-glow-y', `${Math.min(100, Math.max(0, y))}%`);
+    el.style.setProperty('--hero-glow-opacity', '1');
+  };
+
+  const handlePointerLeave = (event: ReactPointerEvent<HTMLElement>) => {
+    event.currentTarget.style.setProperty('--hero-glow-x', '18%');
+    event.currentTarget.style.setProperty('--hero-glow-y', '24%');
+    event.currentTarget.style.setProperty('--hero-glow-opacity', '0.82');
+  };
+
   return (
     <motion.section
       ref={heroRef}
       initial={{ opacity: 0, scale: 1.01 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
-      className="relative flex min-h-screen items-center overflow-hidden pt-[11rem] pb-20 md:pt-[13rem]"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className="hero-stage relative flex min-h-screen items-center overflow-hidden pt-[10.5rem] pb-20 md:pt-[12rem]"
       id="hero"
     >
-      <div className="absolute inset-0 -z-30 overflow-hidden">
-        <video
-          ref={backgroundVideoRef}
-          src={heroBackgroundVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          controls={false}
-          className="h-full w-full object-cover object-center"
-          aria-hidden="true"
-          poster={siteConfig.hero.placeholder}
-        />
+      <div className="hero-stage__bg" />
+      <motion.div style={{ x: orbX, y: orbY }} className="hero-stage__orb hero-stage__orb--1" />
+      <motion.div style={{ x: orbXReverse, y: orbYReverse }} className="hero-stage__orb hero-stage__orb--2" />
+      <div className="hero-stage__ghost hero-stage__ghost--one" aria-hidden="true">
+        GRAPHINEX
       </div>
+      <div className="hero-stage__ghost hero-stage__ghost--two" aria-hidden="true">
+        SCALE
+      </div>
+      <div className="hero-stage__cursor-glow" aria-hidden="true" />
+      <div className="hero-stage__grain hero-grain" aria-hidden="true" />
+      <div className="hero-stage__grid" aria-hidden="true" />
 
-      <div className="absolute inset-0 -z-20 bg-[linear-gradient(120deg,rgba(8,8,8,0.88),rgba(8,8,8,0.64)_42%,rgba(8,8,8,0.58)_64%,rgba(8,8,8,0.82))]" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(255,200,160,0.12),transparent_22%)]" />
-
-      <div className="container-boxed relative z-10 grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-        <motion.div style={{ y: textY }} className="z-10" id="hero-text">
+      <div className="container-boxed relative z-10 w-full">
+        <motion.div style={{ y: contentY }} className="hero-stage__content lg:w-[60%]">
           <motion.span
             initial={{ opacity: 0, y: 14, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-pill-black mb-7 inline-flex px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.28em] text-white"
+            className="hero-stage__badge glass-pill-black mb-6 inline-flex px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.28em] text-white"
           >
             <span className="relative z-10">Creative Agency Based in India</span>
           </motion.span>
 
-          <motion.h1
-            className="ios-bold mb-7 max-w-4xl text-[clamp(2.9rem,7.2vw,6.5rem)] uppercase leading-[0.9] text-white"
-          >
-            {headingWords.map((word, index) => {
-              const cleanWord = word.toLowerCase();
-              const isHighlighted = highlightWords.has(cleanWord);
+          <h1 className="sr-only">{siteConfig.hero.heading}</h1>
 
-              return (
-                <span key={`${word}-${index}`} className="inline-block overflow-hidden align-bottom">
-                  <motion.span
-                    initial={reduceMotion ? false : { opacity: 0, y: '110%' }}
-                    animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: '0%' }}
-                    transition={{
-                      duration: 0.72,
-                      delay: 0.08 + index * 0.08,
-                      ease: [0.16, 1, 0.3, 1]
-                    }}
-                    className={`${isHighlighted ? 'text-accent-gradient' : ''} inline-block`}
-                  >
-                    {word}&nbsp;
-                  </motion.span>
-                </span>
-              );
-            })}
-          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20, filter: 'blur(12px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.72, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-1"
+          >
+            <HeroMarquee reduceMotion={prefersReducedMotion} />
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.62, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-8 max-w-xl text-base leading-8 text-white/80 md:text-lg"
+            transition={{ duration: 0.62, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-stage__lede mt-6 max-w-xl text-base leading-8 text-white/78 md:text-lg"
           >
             {siteConfig.hero.subheading}
           </motion.p>
@@ -216,21 +246,20 @@ export const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.56, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-10 flex flex-wrap gap-3"
+            transition={{ duration: 0.56, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-stage__actions mb-10 mt-8 flex flex-wrap gap-3"
           >
             <a
               href={siteConfig.contact.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="premium-button rounded-full bg-brand-orange px-6 text-white"
+              className="liquid-fill-button rounded-full px-6 py-3.5"
             >
-              Book a Call
-              <ArrowRight size={14} />
+              <span className="liquid-fill-button__label">Book a Call</span>
             </a>
             <Link
               to="/portfolio"
-              className="premium-button rounded-full border border-white/14 bg-white/10 px-6 text-white backdrop-blur-md"
+              className="premium-button rounded-full border border-white/14 bg-white/8 px-6 text-white backdrop-blur-md"
             >
               View Work
               <PlayCircle size={14} />
@@ -241,67 +270,23 @@ export const Hero = () => {
             ref={statsRef}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.56, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4"
+            transition={{ duration: 0.56, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-stage__stats grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4"
           >
-            {siteConfig.results.map((res, i) => (
+            {siteConfig.results.map((res, index) => (
               <motion.div
                 key={res.label}
                 initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 0.5, delay: 0.58 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-[1.25rem] border border-white/12 bg-white/8 px-4 py-4 backdrop-blur-md"
+                transition={{ duration: 0.5, delay: 0.5 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                className="hero-stage__stat rounded-[1.25rem] border border-white/10 bg-white/7 px-4 py-4 backdrop-blur-md"
               >
-                <HeroStatValue value={res.value} active={statsActive} reduceMotion={Boolean(reduceMotion)} />
+                <HeroStatValue value={res.value} active={statsActive} reduceMotion={prefersReducedMotion} />
                 <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/62">
                   {res.label}
                 </div>
               </motion.div>
             ))}
-          </motion.div>
-        </motion.div>
-
-        <motion.div style={{ y: mediaY, scale: mediaScale }} className="relative mt-10 lg:mt-0" id="hero-media">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.95, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="motion-optimised relative z-10 aspect-[10/12] overflow-hidden rounded-[2rem] border border-white/12 bg-white/8 shadow-[0_30px_90px_rgba(0,0,0,0.32)] backdrop-blur-sm"
-            id="hero-video-container"
-          >
-            <img
-              src="/hero-image.png"
-              alt="Graphinex team workspace"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              loading="eager"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_42%,rgba(0,0,0,0.42))]" />
-            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-              <div className="max-w-[18rem] rounded-[1.3rem] border border-white/12 bg-black/34 p-4 backdrop-blur-lg">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.35em] text-brand-orange">
-                  Graphinex Studio
-                </p>
-                <p className="text-sm leading-7 text-white/78">
-                  Clean production, sharper hierarchy, and a cinematic surface that keeps the brand feeling premium.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={reduceMotion ? {} : { y: [0, -16, 0] }}
-            transition={reduceMotion ? {} : { duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-            className="motion-optimised absolute -top-6 right-4 hidden rounded-[1.4rem] border border-white/16 bg-black/50 p-4 text-brand-orange shadow-[0_18px_38px_rgba(0,0,0,0.2)] backdrop-blur-lg sm:block"
-          >
-            <Camera size={28} />
-          </motion.div>
-          <motion.div
-            animate={reduceMotion ? {} : { y: [0, 16, 0] }}
-            transition={reduceMotion ? {} : { duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-            className="motion-optimised absolute -bottom-6 left-4 hidden rounded-[1.4rem] border border-white/16 bg-black/50 p-4 text-brand-orange shadow-[0_18px_38px_rgba(0,0,0,0.2)] backdrop-blur-lg sm:block"
-          >
-            <Video size={28} />
           </motion.div>
         </motion.div>
       </div>

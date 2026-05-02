@@ -7,7 +7,7 @@ export const siteConfig = {
   brand: {
     name: "GRAPHINEX",
     tagline: "Design. Create. Grow.",
-    logo: "/logo/logo.png",
+    logo: "/Graphinex%20logo/logo.png",
     location: "Lucknow, India",
     reach: "Serving across India and UAE"
   },
@@ -20,9 +20,9 @@ export const siteConfig = {
   ],
 
   hero: {
-    heading: "We Turn Content Into Clients",
-    headingHighlights: ["Content", "Clients"],
-    subheading: "High-performing videos, thumbnails, and branding that actually convert, not just look good.",
+    heading: "BUILT FOR GROWTH",
+    headingHighlights: ["GROWTH"],
+    subheading: "Premium branding, content, and motion systems built to attract attention and convert it into revenue.",
     video: "/Hero background video/Video.mp4",
     placeholder: "/hero.jpeg"
   },

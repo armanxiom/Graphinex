@@ -59,8 +59,8 @@ export const Footer = () => {
                   viewport={{ once: true }}
                   className="social-flip-card group relative block aspect-[4/5] rounded-[1.4rem]"
                 >
-                  <span className="social-flip-card__inner motion-optimised">
-                    <span className="social-flip-card__face">
+                  <div className="social-flip-card__inner motion-optimised">
+                    <div className="social-flip-card__face">
                       <div className="flex items-start justify-between gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-brand-orange">
                           {Icon ? <Icon size={16} /> : null}
@@ -75,9 +75,9 @@ export const Footer = () => {
                           Stay connected with our latest work and updates.
                         </p>
                       </div>
-                    </span>
+                    </div>
 
-                    <span className="social-flip-card__face social-flip-card__face--back">
+                    <div className="social-flip-card__face social-flip-card__face--back" aria-hidden="true">
                       <div className="flex items-start justify-between gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-brand-orange">
                           {Icon ? <Icon size={16} /> : null}
@@ -92,8 +92,8 @@ export const Footer = () => {
                           Stay connected with our latest work and updates.
                         </p>
                       </div>
-                    </span>
-                  </span>
+                    </div>
+                  </div>
                 </motion.a>
               );
             })}
