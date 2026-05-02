@@ -107,10 +107,10 @@ export const siteData = {
     }
   ],
   results: [
-    { label: "Views Generated", value: 10000000, suffix: "+" },
+    { label: "Views Generated", value: 50000000, suffix: "+" },
     { label: "Engagement Growth", value: "3X", suffix: "" },
-    { label: "Projects Delivered", value: 100, suffix: "+" },
-    { label: "Active Clients", value: 45, suffix: "" },
+    { label: "Projects Delivered", value: 999, suffix: "+" },
+    { label: "Active Clients", value: 450, suffix: "+" },
   ],
   process: [
     { step: "01", name: "Inquiry", description: "Analyzing your goals and market landscape." },

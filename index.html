@@ -28,6 +28,25 @@
       content="Graphinex Creative is a results-driven creative agency specializing in video editing, graphic design, and branding. We turn your content into clients."
     />
     <meta name="theme-color" content="#0f0f0f" />
+    <script>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem('graphinex-theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : (prefersDark ? 'dark' : 'light');
+
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', theme === 'dark' ? '#0c0c0c' : '#faf6f0');
+          }
+        } catch (error) {
+          // Ignore theme bootstrap failures and let React initialize it.
+        }
+      })();
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

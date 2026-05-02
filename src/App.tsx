@@ -15,6 +15,7 @@ import { Services } from './components/Services';
 import { Portfolio } from './components/Portfolio';
 import { PortfolioCollections } from './components/PortfolioCollections';
 import { Results } from './components/Results';
+import { HappyClients } from './components/HappyClients';
 import { Process } from './components/Process';
 import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
@@ -67,6 +68,7 @@ function HomePage() {
         </motion.a>
       </div>
       <Results />
+      <HappyClients />
       <Process />
       <SocialProof />
     </div>
@@ -77,21 +79,30 @@ export default function App() {
   return (
     <Router>
       <ScrollToHash />
-      <main className="relative selection:bg-brand-orange selection:text-white" id="main-content">
-        <PageTransition>
-          <Routes>
-            <Route path="/" element={
-              <>
-                <Navbar />
-                <HomePage />
-                <Footer />
-              </>
-            } />
-            <Route path="/portfolio" element={<PortfolioPage />} />
-          </Routes>
-        </PageTransition>
+      <main className="relative bg-[color:var(--page-bg)] text-[color:var(--page-text)] selection:bg-brand-orange selection:text-white transition-colors duration-300" id="main-content">
+        <div className="ambient-stage" aria-hidden="true">
+          <div className="ambient-grid" />
+          <div className="ambient-orb ambient-orb--1" />
+          <div className="ambient-orb ambient-orb--2" />
+          <div className="ambient-orb ambient-orb--3" />
+        </div>
 
-        <WhatsAppCTA />
+        <div className="relative z-10">
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <Navbar />
+                  <HomePage />
+                  <Footer />
+                </>
+              } />
+              <Route path="/portfolio" element={<PortfolioPage />} />
+            </Routes>
+          </PageTransition>
+
+          <WhatsAppCTA />
+        </div>
       </main>
     </Router>
   );

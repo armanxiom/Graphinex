@@ -4,16 +4,14 @@
  */
 
 export const siteConfig = {
-  // 🎯 BRANDING & IDENTITY
   brand: {
     name: "GRAPHINEX",
     tagline: "Design. Create. Grow.",
     logo: "/logo/logo.png",
     location: "Lucknow, India",
-    reach: "Serving across India & UAE"
+    reach: "Serving across India and UAE"
   },
 
-  // 🎯 NAVIGATION
   navigation: [
     { name: "Services", href: "/#services" },
     { name: "Portfolio", href: "/portfolio" },
@@ -21,20 +19,18 @@ export const siteConfig = {
     { name: "Contact", href: "/#contact" }
   ],
 
-  // 🎯 HERO SECTION
   hero: {
     heading: "We Turn Content Into Clients",
     headingHighlights: ["Content", "Clients"],
-    subheading: "High-performing videos, thumbnails & branding that actually convert — not just look good.",
-    video: "/Videos/showreel.mp4", // Note: Hero video needs a direct file path, not a YouTube link.
-    placeholder: "https://i.ibb.co/Xrwgy0Bw/Whats-App-Image-2026-04-28-at-11-07-52-PM.jpg"
+    subheading: "High-performing videos, thumbnails, and branding that actually convert, not just look good.",
+    video: "/Hero background video/Video.mp4",
+    placeholder: "/hero.jpeg"
   },
 
-  // 🎯 SHOWREEL
   showreel: {
     title: "Our Showreel",
-    youtubeId: "KdSOa66eXrA",
-    caption: "Watch how we turn content into clients"
+    youtubeId: "41bEV6Coy3U",
+    caption: "Watch how Graphinex turns raw content into premium visual systems."
   },
 
   trustCertificates: [
@@ -52,29 +48,33 @@ export const siteConfig = {
     }
   ],
 
-  // 🎯 SERVICE OVERVIEWS (For Home Page Icons/Descriptions)
   serviceOverviews: [
-    { 
+    {
       id: "videoEditing",
-      title: "Video Editing", 
-      icon: "🎬",
+      title: "Video Editing",
+      icon: "VE",
       description: "High-impact storytelling through cinematic video and professional post-production.",
+      previewImage: "/assets/services-hover/video-editing.png",
+      portfolioCategory: "video-editing"
     },
-    { 
+    {
       id: "graphicDesign",
-      title: "Graphic Design", 
-      icon: "🎨",
+      title: "Graphic Design",
+      icon: "GD",
       description: "Crafting iconic visual identities that resonate with your audience and define your market presence.",
+      previewImage: "/assets/services-hover/graphic-design.png",
+      portfolioCategory: "graphic-design"
     },
-    { 
+    {
       id: "branding",
-      title: "Branding", 
-      icon: "🚀",
+      title: "Branding",
+      icon: "BR",
       description: "Bespoke digital content strategies built with engagement and aesthetics in mind.",
+      previewImage: "/assets/services-hover/branding.png",
+      portfolioCategory: "branding"
     }
   ],
 
-  // 🎯 FEATURED WORKS (Home Page Grid)
   featuredWorks: [
     {
       type: "video",
@@ -219,7 +219,7 @@ export const siteConfig = {
   portfolioPage: {
     hero: {
       title: "Our Work Speaks",
-      subtitle: "Real Results. Real Creators. Real Growth."
+      subtitle: "Real results, sharper visuals, and proof-led creative execution across every category."
     }
   },
 
@@ -230,6 +230,30 @@ export const siteConfig = {
         title: "Video Edit 01",
         src: "/assets/video-editing/video-1.mp4",
         poster: "/assets/video-editing/video-1.png"
+      },
+      {
+        type: "video",
+        title: "Video Edit 02",
+        src: "/assets/video-editing/v1.mp4",
+        poster: "/assets/video-editing/v1.png"
+      },
+      {
+        type: "video",
+        title: "Video Edit 03",
+        src: "/assets/video-editing/v2.mp4",
+        poster: "/assets/video-editing/v2.png"
+      },
+      {
+        type: "video",
+        title: "Video Edit 04",
+        src: "/assets/video-editing/v3.mp4",
+        poster: "/assets/video-editing/v3.png"
+      },
+      {
+        type: "video",
+        title: "Video Edit 05",
+        src: "/assets/video-editing/v4.mp4",
+        poster: "/assets/video-editing/v4.png"
       }
     ],
     "graphic-design": [
@@ -278,9 +302,6 @@ export const siteConfig = {
     ]
   },
 
-  // 🎯 LOGOS SECTION
-  // ZAROORI: Neeche diye gaye 'src' paths ko apne asli logo file naamo se badal dein jo 'public/Logos/' folder mein hain.
-  // Jaise, agar aapke logo ka naam 'brand-logo.png' hai, to src: "/Logos/brand-logo.png" likhein.
   logos: [
     {
       type: "image",
@@ -326,32 +347,99 @@ export const siteConfig = {
     }
   ],
 
-  // 🎯 RESULTS
   results: [
-    { label: "Views Generated", value: "10M+", suffix: "" },
+    { label: "Views Generated", value: "50M+", suffix: "" },
     { label: "Engagement Growth", value: "3X", suffix: "" },
-    { label: "Projects Delivered", value: "100+", suffix: "" },
-    { label: "Active Clients", value: "45+", suffix: "" }
+    { label: "Projects Delivered", value: "999+", suffix: "" },
+    { label: "Active Clients", value: "450+", suffix: "" }
   ],
 
-  // 🎯 PROCESS
+  happyClients: [
+    {
+      name: "Elvish Yadav",
+      role: "Creator",
+      quote: "Cinemafy is innovative, reliable, and always exceeds expectations! A fantastic team to work with!",
+      image: "/assets/clients/elvish.png",
+      instagram: "https://www.instagram.com/elvish_yadav/",
+      youtube: "https://www.youtube.com/@TheSocialFactory"
+    },
+    {
+      name: "Amir Trt",
+      role: "Creator",
+      quote: "Cinemafy excels in video production and design, creating content that truly connects.",
+      image: "/assets/clients/amir.png",
+      instagram: "https://www.instagram.com/aamir.trt?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+    },
+    {
+      name: "Dharmendra Bilotia",
+      role: "Creator",
+      quote: "Cinemafy is creative, professional, and delivers amazing results! Highly recommended!",
+      image: "/assets/clients/dharmendra.png",
+      instagram: "https://www.instagram.com/dharmendra_bilotia_/"
+    },
+    {
+      name: "Alisha Rajput",
+      role: "Creator",
+      quote: "Top quality, smooth execution, and impressive results!",
+      image: "/assets/clients/alisha.png",
+      instagram: "https://www.instagram.com/alisharajput_22/"
+    }
+  ],
+
   process: [
-    { step: "01", name: "Inquiry", description: "Analyzing your goals and market landscape." },
-    { step: "02", name: "Concept", description: "Developing unique visual and strategic directions." },
-    { step: "03", name: "Creation", description: "Crafting the high-fidelity output with precision." },
-    { step: "04", name: "Launch", description: "Deploying and optimizing for impact." }
+    {
+      step: "01",
+      name: "Inquiry",
+      description: "We align on goals, audience, and the exact outcome the project needs to create.",
+      previewImage: "/assets/videos/work-1.png"
+    },
+    {
+      step: "02",
+      name: "Concept",
+      description: "We shape the direction, narrative, and visual system before any execution begins.",
+      previewImage: "/assets/video-editing/v2.png"
+    },
+    {
+      step: "03",
+      name: "Creation",
+      description: "We build, refine, and polish the work into a premium final asset with control.",
+      previewImage: "/assets/graphic-design/g3.jpeg"
+    },
+    {
+      step: "04",
+      name: "Launch",
+      description: "We deliver the final output ready to ship, perform, and convert in market.",
+      previewImage: "/assets/branding/b2.jpeg"
+    }
   ],
 
-  // 🎯 CONTACT
   contact: {
     phone: "+91 77050 90700",
     email: "graphinex@gmail.com",
     whatsapp: "https://wa.me/917705090700?text=Hi%20Graphinex,%20I%20came%20across%20your%20work%20and%20I%27m%20interested%20in%20your%20services.%20I%27d%20like%20to%20discuss%20a%20project.%20Please%20share%20your%20pricing%20and%20best%20work."
   },
 
-  // 🎯 SOCIAL PROOF
+  socials: [
+    {
+      name: "Instagram",
+      href: "https://www.instagram.com/graphinex.in?igsh=Z3cxYjZ0MDd3NmFq"
+    },
+    {
+      name: "YouTube",
+      href: "https://www.youtube.com/@graphinexagency"
+    },
+    {
+      name: "LinkedIn",
+      href: "https://www.linkedin.com/in/graphinex-undefined-45a269407?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+    },
+    {
+      name: "Twitter / X",
+      href: "https://x.com/Graphinex_in"
+    }
+  ],
+
   reviews: [
-    { name: "Aman Verma", type: "YouTuber", text: "Engagement literally 3x ho gaya 🔥", time: "2 min ago" },
+    { name: "Aman Verma", type: "YouTuber", text: "Engagement literally 3x ho gaya.", time: "2 min ago" },
     { name: "Ravi Singh", type: "Real Estate", text: "Leads double ho gaye within 10 days.", time: "5 min ago" },
     { name: "Muskan B.", type: "Brand Owner", text: "Design quality next level hai.", time: "8 min ago" },
     { name: "Imran K.", type: "Coach", text: "Reels viral hone lage consistently.", time: "10 min ago" },
@@ -392,6 +480,7 @@ export const siteConfig = {
     { name: "Rohit A.", type: "Productivity Guru", text: "Fast-paced editing keeps viewer hooked.", time: "20 hours ago" },
     { name: "Tushar D.", type: "Software Engineer", text: "Clean animations for my tech demos.", time: "21 hours ago" }
   ],
+
   activity: [
     "Ravi (Mumbai) just started a project",
     "Client from Dubai booked branding agency",
