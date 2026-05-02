@@ -5,25 +5,38 @@
 
 import { motion } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
-import { useInView } from 'motion/react';
 import { useRef, useState } from 'react';
-import { Play, X } from 'lucide-react';
+import { Play } from 'lucide-react';
+import { MediaLightbox } from './MediaLightbox';
 
 export const Portfolio = () => {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-50px" });
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
+  const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const featuredWorks = siteConfig.featuredWorks.slice(0, 4);
 
   return (
-    <section className="bg-white" id="work">
+    <section className="theme-panel relative overflow-hidden py-20 md:py-28" id="work">
       <div className="container-boxed mb-12 md:mb-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="max-w-xl">
-            <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.2em] mb-6 block">Our Portfolio</span>
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.1] mb-0 ios-bold">
+            <motion.span
+              initial={{ opacity: 0, y: 12, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.24em] mb-6 block"
+            >
+              Our Portfolio
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.05] mb-0 ios-bold"
+            >
               Featured Works
-            </h2>
+            </motion.h2>
           </div>
         </div>
       </div>
@@ -37,7 +50,7 @@ export const Portfolio = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
-              onClick={() => item.type === 'video' && setSelectedVideo(item)}
+              onClick={() => setSelectedMedia(item)}
               className="premium-card group relative aspect-[4/5] cursor-pointer overflow-hidden transition-all duration-300"
             >
               {/* Media */}
@@ -54,72 +67,40 @@ export const Portfolio = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <img 
-                    src={item.poster}
-                    alt={item.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                      <img
+                        src={item.poster}
+                        alt={item.title}
+                        loading="eager"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
                 )
               ) : (
                 <img 
                   src={item.src} 
                   alt={item.title}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               )}
               
               {/* Overlay */}
-              <div 
-                className="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-              />
+              <div className="absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               {item.type === 'video' && (
-                <div className="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/20 text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
-                    <Play size={14} className="fill-current" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-md">
+                    <Play size={16} className="fill-current" />
+                  </div>
                 </div>
               )}
             </motion.div>
           ))}
         </div>
-        
       </div>
 
-      {/* Video Modal */}
-      {selectedVideo && (
-        <div 
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedVideo(null)}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="relative w-full max-w-4xl overflow-hidden rounded-xl bg-black"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-all duration-300"
-            >
-              <X size={20} />
-            </button>
-
-            {/* Video */}
-            <video 
-              src={selectedVideo.src}
-              poster={selectedVideo.poster}
-              controls
-              autoPlay
-              className="w-full h-auto max-h-[80vh] object-contain"
-            />
-          </motion.div>
-        </div>
-      )}
+      <MediaLightbox media={selectedMedia} onClose={() => setSelectedMedia(null)} />
     </section>
   );
 };

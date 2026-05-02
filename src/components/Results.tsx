@@ -25,7 +25,6 @@ function parseStatValue(value: string) {
 
   const numeric = Number(match[1]);
   const unit = (match[2] || '').toUpperCase();
-  const hasPlus = Boolean(match[3]);
 
   const target =
     unit === 'M' ? numeric * 1_000_000 :
@@ -35,8 +34,7 @@ function parseStatValue(value: string) {
   return {
     kind: 'count' as const,
     target,
-    raw: trimmed,
-    hasPlus
+    raw: trimmed
   };
 }
 
@@ -45,22 +43,21 @@ function formatAnimatedValue(current: number, target: number, raw: string) {
 
   if (target >= 1_000_000) {
     if (current >= target) return raw;
-
     const millions = current / 1_000_000;
     const value = millions >= 10 ? Math.floor(millions) : Math.floor(millions * 10) / 10;
-    return `${value.toFixed(millions >= 10 ? 0 : 1)}M${hasPlus ? '+' : ''}`;
+    const normalized = current > 0 && value === 0 ? 0.1 : value;
+    return `${normalized.toFixed(millions >= 10 ? 0 : 1)}M${hasPlus ? '+' : ''}`;
   }
 
   if (target >= 1_000) {
     if (current >= target) return raw;
-
     const thousands = current / 1_000;
     const value = thousands >= 10 ? Math.floor(thousands) : Math.floor(thousands * 10) / 10;
-    return `${value.toFixed(thousands >= 10 ? 0 : 1)}K${hasPlus ? '+' : ''}`;
+    const normalized = current > 0 && value === 0 ? 0.1 : value;
+    return `${normalized.toFixed(thousands >= 10 ? 0 : 1)}K${hasPlus ? '+' : ''}`;
   }
 
-  const safeValue = Math.min(target, Math.floor(current));
-  return `${safeValue}${hasPlus ? '+' : ''}`;
+  return `${Math.min(target, Math.floor(current))}${hasPlus ? '+' : ''}`;
 }
 
 export const Results = () => {
@@ -81,7 +78,7 @@ export const Results = () => {
         }
       },
       {
-        threshold: 0.35,
+        threshold: 0.25,
         rootMargin: '0px 0px -10% 0px'
       }
     );
@@ -92,36 +89,56 @@ export const Results = () => {
   }, [hasEntered]);
 
   return (
-    <motion.section
+    <section
       ref={sectionRef}
-      initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-      animate={hasEntered ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 20, filter: 'blur(10px)' }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-brand-dark overflow-hidden relative"
+      className="theme-panel relative overflow-hidden"
       id="about"
     >
-      {/* Decorative Blur */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-orange/5 rounded-full blur-[120px] pointer-events-none" />
-      
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.14),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(255,214,183,0.08),transparent_18%)]" />
+
       <div className="container-boxed relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6 text-center">
+        <div className="mb-14 max-w-3xl">
+          <motion.span
+            initial={{ opacity: 0, y: 12, filter: 'blur(8px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: true }}
+            className="section-kicker"
+          >
+            Our Impact
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: true }}
+            className="ios-bold text-[clamp(2.3rem,4.8vw,4.8rem)] uppercase leading-[1.02] text-white"
+          >
+            <span className="block">Numbers that make</span>
+            <span className="block">
+              the <span className="text-accent-gradient--soft">work feel real.</span>
+            </span>
+          </motion.h2>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
           {siteConfig.results.map((result, index) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 14, scale: 0.99 }}
-              animate={hasEntered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.99 }}
-              transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="group flex flex-col items-center gap-2 motion-optimised"
+              key={result.label}
+              initial={{ opacity: 0, y: 16, scale: 0.99 }}
+              animate={hasEntered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.99 }}
+              transition={{ duration: 0.62, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              className="group rounded-[1.5rem] border border-white/8 bg-white/[0.03] px-5 py-6 backdrop-blur-sm"
             >
               <StatValue key={`${index}-${playId}`} result={result.value} active={hasEntered} />
-              <div className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-[0.2em] leading-tight max-w-[120px] mx-auto opacity-70 group-hover:opacity-100 transition-opacity">
+              <div className="mt-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/56 transition-colors duration-300 group-hover:text-white/86 md:text-xs">
                 {result.label}
               </div>
             </motion.div>
           ))}
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
@@ -141,7 +158,7 @@ function StatValue({
         initial={{ opacity: 0, y: 8 }}
         animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="text-3xl md:text-5xl font-bold text-brand-orange leading-none"
+        className="text-3xl font-bold leading-none text-brand-orange md:text-5xl"
       >
         {parsed.label}
       </motion.div>
@@ -149,9 +166,8 @@ function StatValue({
   }
 
   return (
-    <div className="text-3xl md:text-5xl font-bold text-brand-orange leading-none tabular-nums">
+    <div className="tabular-nums text-3xl font-bold leading-none text-brand-orange md:text-5xl">
       {formatAnimatedValue(current, parsed.target, parsed.raw)}
     </div>
   );
 }
-
