@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { useState, useEffect, type PointerEvent as ReactPointerEvent } from 'react';
-import { Menu, Moon, SunMedium, X } from 'lucide-react';
+import { ChevronRight, Menu, Moon, SunMedium, X } from 'lucide-react';
 
 const activityItems = [
   "Client from Dubai booked Branding Package",
@@ -17,6 +17,13 @@ const activityItems = [
   "Client from Lucknow booked full package",
   "Thumbnail CTR boosted to 12%+",
 ];
+
+const mobileNavMeta: Record<string, string> = {
+  Services: 'Jump to services',
+  Portfolio: 'Open case studies',
+  About: 'Meet the studio',
+  Contact: 'Start a conversation'
+};
 
 function HoverNavItem({
   to,
@@ -118,6 +125,40 @@ export const Navbar = () => {
     metaThemeColor?.setAttribute('content', themeColor);
   }, [theme]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 768px)');
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsOpen(false);
+      }
+    };
+
+    if (mediaQuery.matches) {
+      setIsOpen(false);
+    }
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const closeMenu = () => setIsOpen(false);
+
   const handleLiquidPointer = (event: ReactPointerEvent<HTMLAnchorElement>) => {
     const el = event.currentTarget;
     const rect = el.getBoundingClientRect();
@@ -134,9 +175,9 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-[90]">
+    <header className="fixed inset-x-0 top-0 z-[150] isolate backdrop-blur-2xl">
       {/* 2. TOP ACTIVITY BAR (SCROLLING) */}
-      <div className="flex h-8 w-full items-center overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] text-[10px] uppercase tracking-widest text-[color:var(--page-text)]">
+      <div className="hidden h-8 w-full items-center overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] text-[10px] uppercase tracking-widest text-[color:var(--page-text)] md:flex">
         <div className="whitespace-nowrap flex animate-scroll gap-10">
           {[...activityItems, ...activityItems].map((item, i) => (
             <span key={i} className="flex items-center gap-3 opacity-70">
@@ -151,7 +192,7 @@ export const Navbar = () => {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)]"
+        className="relative overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] backdrop-blur-2xl"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.35),transparent_28%),radial-gradient(circle_at_right,rgba(255,106,0,0.18),transparent_22%)]" />
         <div className="relative mx-auto flex w-[min(94vw,1120px)] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-4">
@@ -248,7 +289,14 @@ export const Navbar = () => {
 
           <div className="flex items-center gap-2">
             <ThemeToggle compact theme={theme} onToggle={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))} />
-            <button onClick={() => setIsOpen(!isOpen)} className="text-brand-dark z-[60] flex items-center justify-center p-2" aria-label="Toggle menu">
+            <button
+              type="button"
+              onClick={() => setIsOpen((current) => !current)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--nav-border)] bg-[color:var(--nav-chip-surface)] text-brand-dark shadow-[0_12px_26px_rgba(17,17,17,0.08)] backdrop-blur-xl transition-transform duration-300 active:scale-[0.97]"
+              aria-label="Toggle menu"
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu-panel"
+            >
               {isOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
@@ -259,58 +307,104 @@ export const Navbar = () => {
           {isOpen && (
             <>
               {/* FULL SCREEN DARK OVERLAY */}
-              <motion.div
+              <motion.button
+                type="button"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black z-[90]"
+                onClick={closeMenu}
+                aria-label="Close menu"
+                className="mobile-menu-overlay fixed inset-0 z-[160] md:hidden"
               />
 
-              {/* SIDE MENU DRAWER */}
+              {/* MOBILE SHEET */}
               <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="fixed top-0 right-0 z-[100] flex h-full w-[70%] max-w-[280px] flex-col rounded-l-2xl bg-[color:var(--page-surface)] shadow-2xl"
+                id="mobile-menu-panel"
+                initial={{ opacity: 0, y: 28, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 28, scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+                className="mobile-menu-shell fixed inset-2 z-[170] md:hidden"
               >
-                {/* HEADER */}
-                <div className="flex items-center justify-between border-b border-[color:var(--nav-border)] px-6 py-5">
-                  <span className="text-lg font-bold tracking-tight uppercase text-brand-dark">Menu</span>
-                  <button 
-                    onClick={() => setIsOpen(false)}
-                    className="p-2 -mr-2 text-brand-dark"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-
-                {/* LINKS */}
-                <div className="flex flex-col gap-6 px-6 py-8">
-                  {siteConfig.navigation.map((item) => (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className="text-[1.1rem] font-semibold text-brand-dark transition-colors hover:text-brand-orange"
+                <div className="mobile-menu-header">
+                  <div className="mobile-menu-grabber" />
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="mobile-menu-title">Menu</p>
+                      <p className="mt-1 text-[0.78rem] text-[color:var(--page-muted)]">
+                        Browse the studio
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={closeMenu}
+                      className="mobile-menu-close"
+                      aria-label="Close menu"
                     >
-                      {item.name}
-                    </Link>
-                  ))}
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div className="mobile-menu-brand mt-4">
+                    <img
+                      src={siteConfig.brand.logo}
+                      alt={siteConfig.brand.name}
+                      className="h-10 w-10 shrink-0 rounded-full object-contain"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <div className="min-w-0">
+                      <p className="mobile-menu-brand__name">{siteConfig.brand.name}</p>
+                      <p className="mobile-menu-brand__meta">{siteConfig.brand.tagline}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:var(--page-muted)]">
+                    <span>{siteConfig.brand.location}</span>
+                    <span className="h-1 w-1 rounded-full bg-brand-orange" aria-hidden="true" />
+                    <span>{siteConfig.brand.reach}</span>
+                  </div>
                 </div>
 
-                {/* CTA */}
-                <div className="mt-auto px-6 pb-8">
-            <a
-              href={siteConfig.contact.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setIsOpen(false)}
-              className="block rounded-full bg-brand-orange py-3.5 text-center font-bold text-white shadow-lg shadow-brand-orange/20 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] active:scale-[0.98]"
-            >
-              Get in touch
-            </a>
+                <div className="mobile-menu-scroll flex-1 overflow-y-auto">
+                  <div className="px-4 pb-4">
+                    <p className="mobile-menu-section">Quick links</p>
+                    <nav className="mobile-menu-nav mt-3" aria-label="Mobile navigation">
+                      {siteConfig.navigation.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={closeMenu}
+                          className="mobile-menu-link"
+                        >
+                          <span className="min-w-0">
+                            <span className="mobile-menu-link__label">{item.name}</span>
+                            <span className="mobile-menu-link__meta">
+                              {mobileNavMeta[item.name] ?? 'Open section'}
+                            </span>
+                          </span>
+                          <span className="mobile-menu-link__icon" aria-hidden="true">
+                            <ChevronRight size={16} />
+                          </span>
+                        </Link>
+                      ))}
+                    </nav>
+                  </div>
+                </div>
+
+                <div className="mobile-menu-footer">
+                  <a
+                    href={siteConfig.contact.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeMenu}
+                    className="mobile-menu-cta"
+                  >
+                    Get in touch
+                  </a>
+                  <p className="mobile-menu-note">
+                    Prefer WhatsApp? We usually reply quickly during business hours.
+                  </p>
                 </div>
               </motion.div>
             </>

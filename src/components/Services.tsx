@@ -167,7 +167,7 @@ function ServiceRow({
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,rgba(255,106,0,0.14),transparent_26%)]" />
         </div>
 
-        <div className="relative flex min-h-[122px] cursor-pointer flex-col gap-5 px-5 py-6 outline-none transition-all duration-500 sm:px-8 md:py-7 lg:min-h-[152px] lg:px-16 xl:px-20">
+        <div className="relative flex min-h-[108px] cursor-pointer flex-col gap-4 px-4 py-5 outline-none transition-all duration-500 sm:min-h-[122px] sm:px-8 sm:py-6 md:py-7 lg:min-h-[152px] lg:px-16 xl:px-20">
           <div className="flex min-w-0 flex-1 flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-6">
               <span className="mt-2 min-w-[2.85rem] text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38 sm:min-w-[3.25rem]">
@@ -176,7 +176,7 @@ function ServiceRow({
 
               <div className="min-w-0 max-w-3xl">
                 <h3
-                  className={`text-[clamp(2.05rem,4.4vw,4.9rem)] font-semibold uppercase leading-[0.92] transition-colors duration-300 ${
+                  className={`text-[clamp(1.55rem,7.5vw,2.5rem)] font-semibold uppercase leading-[0.92] transition-colors duration-300 sm:text-[clamp(2.05rem,4.4vw,4.9rem)] ${
                     active ? 'text-brand-orange' : 'text-white'
                   }`}
                 >

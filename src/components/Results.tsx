@@ -112,7 +112,7 @@ export const Results = () => {
             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
-            className="ios-bold text-[clamp(2.3rem,4.8vw,4.8rem)] uppercase leading-[1.02] text-white"
+            className="ios-bold text-[clamp(2.1rem,8.5vw,4.8rem)] uppercase leading-[1.02] text-white"
           >
             <span className="block">Numbers that make</span>
             <span className="block">
@@ -121,17 +121,17 @@ export const Results = () => {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-6">
           {siteConfig.results.map((result, index) => (
             <motion.div
               key={result.label}
               initial={{ opacity: 0, y: 16, scale: 0.99 }}
               animate={hasEntered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.99 }}
               transition={{ duration: 0.62, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="group rounded-[1.5rem] border border-white/8 bg-white/[0.03] px-5 py-6 backdrop-blur-sm"
+              className="group rounded-[1.25rem] border border-white/8 bg-white/[0.03] px-4 py-5 backdrop-blur-sm md:rounded-[1.5rem] md:px-5 md:py-6"
             >
               <StatValue key={`${index}-${playId}`} result={result.value} active={hasEntered} />
-              <div className="mt-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/56 transition-colors duration-300 group-hover:text-white/86 md:text-xs">
+              <div className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/56 transition-colors duration-300 group-hover:text-white/86 sm:mt-3 sm:text-[10px] sm:tracking-[0.24em] md:text-xs">
                 {result.label}
               </div>
             </motion.div>
@@ -166,7 +166,7 @@ function StatValue({
   }
 
   return (
-    <div className="tabular-nums text-3xl font-bold leading-none text-brand-orange md:text-5xl">
+    <div className="result-stat-value tabular-nums text-[clamp(1.55rem,5.8vw,2.6rem)] font-bold leading-none text-brand-orange md:text-5xl">
       {formatAnimatedValue(current, parsed.target, parsed.raw)}
     </div>
   );

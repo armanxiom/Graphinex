@@ -21,7 +21,7 @@ export const SocialProof = () => {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed bottom-24 left-4 z-40">
+    <div className="pointer-events-none fixed bottom-24 left-4 z-40 hidden md:block">
       <AnimatePresence mode="wait">
         {currentReview ? (
           <motion.div

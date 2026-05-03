@@ -57,16 +57,16 @@ function MediaSection({
         </div>
 
         {isSingleVideoFocus ? (
-          <div className="flex justify-center">
-            {items.map((item: any, idx: number) => (
-              <motion.div
-                key={`${id}-${idx}`}
+            <div className="flex justify-center">
+              {items.map((item: any, idx: number) => (
+                <motion.div
+                  key={`${id}-${idx}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedIndex(idx)}
-                className="premium-card group relative w-full max-w-[360px] cursor-pointer overflow-hidden aspect-[3/4] sm:max-w-[420px] md:max-w-[480px]"
+                className="premium-card group relative w-full max-w-[min(88vw,360px)] cursor-pointer overflow-hidden aspect-[4/5] sm:max-w-[420px] md:max-w-[480px]"
               >
                 {item.type === 'video' ? (
                   <video
@@ -102,7 +102,7 @@ function MediaSection({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-4">
             {items.map((item: any, idx: number) => (
               <motion.div
                 key={`${id}-${idx}`}
@@ -111,7 +111,7 @@ function MediaSection({
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedIndex(idx)}
-                className="premium-card group relative aspect-[3/4] cursor-pointer overflow-hidden sm:aspect-square"
+                className="premium-card group relative aspect-square cursor-pointer overflow-hidden sm:aspect-square"
               >
                 {item.type === 'video' ? (
                   <video

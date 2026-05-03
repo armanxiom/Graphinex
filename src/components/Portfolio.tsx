@@ -56,7 +56,7 @@ export const Portfolio = () => {
       </div>
 
       <div className="container-boxed">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-5">
           {featuredWorks.map((item, index) => (
             <motion.div
               key={index}
@@ -65,7 +65,7 @@ export const Portfolio = () => {
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
               onClick={() => setSelectedIndex(index)}
-              className="premium-card group relative aspect-[4/5] cursor-pointer overflow-hidden transition-all duration-300"
+              className="premium-card group relative aspect-square cursor-pointer overflow-hidden transition-all duration-300 sm:aspect-[4/5]"
             >
               {/* Media */}
               {item.type === "video" ? (

@@ -21,6 +21,7 @@ import { SocialProof } from './components/SocialProof';
 import { Footer } from './components/Footer';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
 import { Showreel } from './components/Showreel';
+import { BehindTheScene } from './components/BehindTheScene';
 import { PageTransition } from './components/PageTransition';
 import PortfolioPage from './pages/Portfolio';
 import { siteConfig } from './data/siteConfig';
@@ -71,6 +72,7 @@ function HomePage() {
       <HappyClients />
       <Process />
       <SocialProof />
+      <BehindTheScene />
     </div>
   );
 }

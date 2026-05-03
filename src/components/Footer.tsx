@@ -43,7 +43,7 @@ export const Footer = () => {
             Transforming your content into a client-acquisition machine with sharper branding, cleaner edits, and premium visual systems built to convert.
           </p>
 
-          <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="mt-2 grid grid-cols-2 gap-3">
             {siteConfig.socials.map((item) => {
               const Icon = socialIcons[item.name as keyof typeof socialIcons];
 
@@ -57,7 +57,7 @@ export const Footer = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
                   viewport={{ once: true }}
-                  className="social-flip-card group relative block aspect-[4/5] rounded-[1.4rem]"
+                  className="social-flip-card group relative block aspect-square rounded-[1.15rem] sm:aspect-[4/5]"
                 >
                   <div className="social-flip-card__inner motion-optimised">
                     <div className="social-flip-card__face">
@@ -65,13 +65,13 @@ export const Footer = () => {
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-brand-orange">
                           {Icon ? <Icon size={16} /> : null}
                         </span>
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/38">
+                        <span className="hidden text-[10px] font-semibold uppercase tracking-[0.22em] text-white/38 sm:block">
                           {item.name}
                         </span>
                       </div>
                       <div className="flex min-h-0 flex-1 flex-col justify-end">
                         <div className="social-flip-card__title text-white">{item.name}</div>
-                        <p className="social-flip-card__copy mt-2 text-[0.88rem] leading-6 text-white/64 sm:text-[0.95rem]">
+                        <p className="social-flip-card__copy mt-2 text-[0.8rem] leading-5 text-white/64 sm:text-[0.95rem] sm:leading-6">
                           Stay connected with our latest work and updates.
                         </p>
                       </div>
@@ -82,13 +82,13 @@ export const Footer = () => {
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-brand-orange">
                           {Icon ? <Icon size={16} /> : null}
                         </span>
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/38">
+                        <span className="hidden text-[10px] font-semibold uppercase tracking-[0.22em] text-white/38 sm:block">
                           {item.name}
                         </span>
                       </div>
                       <div className="flex min-h-0 flex-1 flex-col justify-end">
                         <div className="social-flip-card__title text-white">{item.name}</div>
-                        <p className="social-flip-card__copy mt-2 text-[0.88rem] leading-6 text-white/64 sm:text-[0.95rem]">
+                        <p className="social-flip-card__copy mt-2 text-[0.8rem] leading-5 text-white/64 sm:text-[0.95rem] sm:leading-6">
                           Stay connected with our latest work and updates.
                         </p>
                       </div>
@@ -105,7 +105,7 @@ export const Footer = () => {
           whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ duration: 0.58, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 gap-8"
+          className="grid grid-cols-1 gap-8 sm:grid-cols-2"
           id="footer-nav"
         >
           <div className="flex flex-col gap-3">

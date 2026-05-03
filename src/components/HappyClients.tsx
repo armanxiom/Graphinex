@@ -127,7 +127,7 @@ export const HappyClients = () => {
                 </div>
 
                 <div className="happy-client-card__content">
-                  <p className="happy-client-card__quote">“{client.quote}”</p>
+                  <p className="happy-client-card__quote">"{client.quote}"</p>
 
                   <div className="happy-client-card__identity">
                     <h3 className="happy-client-card__name">{client.name}</h3>
