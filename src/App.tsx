@@ -15,6 +15,7 @@ import { Services } from './components/Services';
 import { Portfolio } from './components/Portfolio';
 import { PortfolioCollections } from './components/PortfolioCollections';
 import { Results } from './components/Results';
+import { Testimonials } from './components/Testimonials';
 import { HappyClients } from './components/HappyClients';
 import { Process } from './components/Process';
 import { SocialProof } from './components/SocialProof';
@@ -48,7 +49,7 @@ function ScrollToHash() {
 }
 
 function HomePage() {
-  const collections = (siteConfig as any).portfolioCollections || {};
+  const collections = siteConfig.homePortfolioCollections || {};
 
   return (
     <div className="space-y-0">
@@ -69,6 +70,7 @@ function HomePage() {
         </motion.a>
       </div>
       <Results />
+      <Testimonials />
       <HappyClients />
       <Process />
       <SocialProof />

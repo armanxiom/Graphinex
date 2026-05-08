@@ -11,7 +11,8 @@ import { siteConfig } from '../data/siteConfig';
 import { useCountUp } from '../hooks/useCountUp';
 import { HeroFlipCard } from './HeroFlipCard';
 
-const heroBackgroundVideo = new URL('../../Hero background video/Video.mp4', import.meta.url).href;
+const heroBackgroundImage = new URL('../../hero background image/hero background image.jpeg', import.meta.url).href;
+const heroCardImage = new URL('../../hero card image/hero card image.png', import.meta.url).href;
 
 function parseStatValue(value: string) {
   const trimmed = value.trim();
@@ -84,7 +85,6 @@ function HeroStatValue({
 
 export const Hero = () => {
   const heroRef = useRef<HTMLElement | null>(null);
-  const backgroundVideoRef = useRef<HTMLVideoElement | null>(null);
   const statsRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
   const [statsActive, setStatsActive] = useState(false);
@@ -94,18 +94,6 @@ export const Hero = () => {
     () => new Set(siteConfig.hero.headingHighlights.map((word) => word.toLowerCase())),
     []
   );
-
-  useEffect(() => {
-    const video = backgroundVideoRef.current;
-
-    if (!video) {
-      return;
-    }
-
-    video.muted = true;
-    video.defaultMuted = true;
-    video.volume = 0;
-  }, []);
 
   useEffect(() => {
     const node = statsRef.current;
@@ -139,18 +127,14 @@ export const Hero = () => {
       id="hero"
     >
       <div className="absolute inset-0 -z-30 overflow-hidden">
-        <video
-          ref={backgroundVideoRef}
-          src={heroBackgroundVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          controls={false}
-          className="h-full w-full object-cover object-center"
+        <img
+          src={heroBackgroundImage}
+          alt=""
           aria-hidden="true"
-          poster={siteConfig.hero.placeholder}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="h-full w-full object-cover object-center"
         />
       </div>
 
@@ -250,7 +234,7 @@ export const Hero = () => {
         </div>
 
         <div className="relative mt-10 lg:mt-0" id="hero-media">
-          <HeroFlipCard imageSrc="/hero-image.png" alt="Graphinex Studio workspace" triggerRef={heroRef} />
+          <HeroFlipCard imageSrc={heroCardImage} alt="Graphinex Studio workspace" triggerRef={heroRef} />
         </div>
       </div>
     </section>

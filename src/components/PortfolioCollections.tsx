@@ -16,14 +16,34 @@ const categoryLabels: Record<SectionKey, string> = {
   branding: 'Branding'
 };
 
-function MediaSection({
+function getVideoAspectClass(item: { type?: string; ratio?: string }) {
+  if (item.type !== 'video') {
+    return 'aspect-square';
+  }
+
+  if (item.ratio === 'landscape') {
+    return 'aspect-[16/9]';
+  }
+
+  if (item.ratio === 'square') {
+    return 'aspect-square';
+  }
+
+  return 'aspect-[9/16]';
+}
+
+export function MediaSection({
   id,
   title,
-  items
+  items,
+  active = false,
+  registerRef
 }: {
   id: SectionKey;
   title: string;
   items: any[];
+  active?: boolean;
+  registerRef?: (node: HTMLElement | null) => void;
 }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -44,7 +64,13 @@ function MediaSection({
   };
 
   return (
-    <section className="theme-panel py-12 sm:py-20" id={id}>
+    <section
+      ref={registerRef}
+      className={`theme-panel py-12 sm:py-20 ${
+        active ? 'rounded-[2rem] bg-brand-orange/5 shadow-[0_0_0_1px_rgba(255,106,0,0.12)]' : ''
+      }`}
+      id={id}
+    >
       <div className="container-boxed">
         <div className="mb-8 sm:mb-10">
           <span className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.35em] mb-4 block">
@@ -57,17 +83,17 @@ function MediaSection({
         </div>
 
         {isSingleVideoFocus ? (
-            <div className="flex justify-center">
+          <div className="flex justify-center">
               {items.map((item: any, idx: number) => (
                 <motion.div
                   key={`${id}-${idx}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
-                viewport={{ once: true, margin: '-80px' }}
-                onClick={() => setSelectedIndex(idx)}
-                className="premium-card group relative w-full max-w-[min(88vw,360px)] cursor-pointer overflow-hidden aspect-[4/5] sm:max-w-[420px] md:max-w-[480px]"
-              >
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  onClick={() => setSelectedIndex(idx)}
+                  className={`premium-card group relative w-full max-w-[min(88vw,360px)] cursor-pointer overflow-hidden sm:max-w-[420px] md:max-w-[480px] ${getVideoAspectClass(item)}`}
+                >
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
@@ -84,7 +110,7 @@ function MediaSection({
                     src={item.src}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                   />
                 )}
@@ -98,8 +124,8 @@ function MediaSection({
                     </div>
                   </div>
                 )}
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-4">
@@ -111,7 +137,7 @@ function MediaSection({
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedIndex(idx)}
-                className="premium-card group relative aspect-square cursor-pointer overflow-hidden sm:aspect-square"
+                className={`premium-card group relative cursor-pointer overflow-hidden ${getVideoAspectClass(item)}`}
               >
                 {item.type === 'video' ? (
                   <video
@@ -129,7 +155,7 @@ function MediaSection({
                     src={item.src}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                   />
                 )}

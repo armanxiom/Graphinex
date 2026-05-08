@@ -9,9 +9,19 @@ import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
 
+type FeaturedWorkItem = {
+  type: string;
+  title: string;
+  category: string;
+  src: string;
+  poster?: string;
+  link: string;
+  ratio?: 'landscape' | 'square';
+};
+
 export const Portfolio = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const featuredWorks = siteConfig.featuredWorks.slice(0, 4);
+  const featuredWorks = (siteConfig.homeFeaturedWorks || siteConfig.featuredWorks.slice(0, 4)) as FeaturedWorkItem[];
   const selectedMedia = selectedIndex === null ? null : featuredWorks[selectedIndex];
 
   const goToPrevious = () => {
@@ -65,14 +75,22 @@ export const Portfolio = () => {
               transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true }}
               onClick={() => setSelectedIndex(index)}
-              className="premium-card group relative aspect-square cursor-pointer overflow-hidden transition-all duration-300 sm:aspect-[4/5]"
+              className={`premium-card group relative cursor-pointer overflow-hidden transition-all duration-300 ${
+                item.type === 'video'
+                  ? item.ratio === 'landscape'
+                    ? 'aspect-[16/9]'
+                    : item.ratio === 'square'
+                      ? 'aspect-square'
+                      : 'aspect-[9/16]'
+                  : 'aspect-square'
+              }`}
             >
               {/* Media */}
-              {item.type === "video" ? (
-                index === 0 ? (
-                  <video 
-                    src={item.src} 
-                    poster={item.poster}
+                {item.type === "video" ? (
+                  index === 0 ? (
+                    <video 
+                      src={item.src} 
+                      poster={item.poster}
                     autoPlay 
                     muted 
                     loop 

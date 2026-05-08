@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { siteConfig } from '../data/siteConfig';
 import { useState, useEffect, type PointerEvent as ReactPointerEvent } from 'react';
@@ -93,6 +93,7 @@ function ThemeToggle({
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
   const [theme, setTheme] = useState<ThemeMode>(() => {
     if (typeof window === 'undefined') {
       return 'light';
@@ -108,9 +109,39 @@ export const Navbar = () => {
   });
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "auto";
+    if (!isOpen) {
+      return;
+    }
+
+    const { body, documentElement } = document;
+    const scrollY = window.scrollY;
+    const previousBodyStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow
+    };
+    const previousHtmlOverflow = documentElement.style.overflow;
+
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    documentElement.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = "auto";
+      body.style.position = previousBodyStyles.position;
+      body.style.top = previousBodyStyles.top;
+      body.style.left = previousBodyStyles.left;
+      body.style.right = previousBodyStyles.right;
+      body.style.width = previousBodyStyles.width;
+      body.style.overflow = previousBodyStyles.overflow;
+      documentElement.style.overflow = previousHtmlOverflow;
+      window.scrollTo({ top: scrollY, behavior: 'auto' });
     };
   }, [isOpen]);
 
@@ -157,6 +188,10 @@ export const Navbar = () => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname, location.hash]);
+
   const closeMenu = () => setIsOpen(false);
 
   const handleLiquidPointer = (event: ReactPointerEvent<HTMLAnchorElement>) => {
@@ -192,16 +227,16 @@ export const Navbar = () => {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] backdrop-blur-2xl"
+        className="mobile-offer-banner relative overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] backdrop-blur-2xl"
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.35),transparent_28%),radial-gradient(circle_at_right,rgba(255,106,0,0.18),transparent_22%)]" />
-        <div className="relative mx-auto flex w-[min(94vw,1120px)] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-4">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-9 items-center rounded-full bg-gradient-to-r from-[#ff8a2a] to-[#ff2d55] px-4 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_14px_28px_rgba(255,106,0,0.22)]">
+        <div className="relative mx-auto flex w-[min(94vw,1120px)] items-center gap-2 px-3 py-2.5 sm:gap-4 sm:px-4 sm:py-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <span className="inline-flex h-8 shrink-0 items-center rounded-full bg-gradient-to-r from-[#ff8a2a] to-[#ff2d55] px-3 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-[0_14px_28px_rgba(255,106,0,0.22)] sm:h-9 sm:px-4 sm:text-[11px]">
               50% OFF
             </span>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--page-text)] opacity-70 sm:text-[11px]">
-              Limited launch offer for selected projects
+            <p className="mobile-offer-banner__copy min-w-0 text-[9px] font-semibold uppercase tracking-[0.22em] text-[color:var(--page-text)] opacity-70 sm:text-[11px] sm:tracking-[0.28em]">
+              Launch offer for selected projects
             </p>
           </div>
 
@@ -220,7 +255,7 @@ export const Navbar = () => {
             onBlur={(event) => {
               event.currentTarget.style.setProperty('--fill-progress', '0');
             }}
-            className="liquid-fill-button shrink-0 self-start px-4 py-2.5 sm:self-auto"
+            className="liquid-fill-button liquid-fill-button--compact shrink-0 self-start sm:self-auto"
           >
             <span className="liquid-fill-button__label">Claim Offer</span>
           </a>
@@ -320,54 +355,59 @@ export const Navbar = () => {
               {/* MOBILE SHEET */}
               <motion.div
                 id="mobile-menu-panel"
-                initial={{ opacity: 0, y: 28, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 28, scale: 0.98 }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="mobile-menu-title"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
                 transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-                className="mobile-menu-shell fixed inset-2 z-[170] md:hidden"
+                className="mobile-menu-shell fixed inset-0 z-[170] md:hidden"
               >
-                <div className="mobile-menu-header">
-                  <div className="mobile-menu-grabber" />
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="mobile-menu-title">Menu</p>
-                      <p className="mt-1 text-[0.78rem] text-[color:var(--page-muted)]">
-                        Browse the studio
-                      </p>
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,106,0,0.2),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(255,210,171,0.18),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.12),transparent_28%)]" />
+
+                <div className="relative grid h-[100dvh] grid-rows-[auto_1fr_auto]">
+                  <div className="mobile-menu-header">
+                    <div className="mobile-menu-grabber" />
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="mobile-menu-title" id="mobile-menu-title">
+                          Menu
+                        </p>
+                        <h2 className="mobile-menu-heading mt-2">{siteConfig.brand.name}</h2>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={closeMenu}
+                        className="mobile-menu-close"
+                        aria-label="Close menu"
+                      >
+                        <X size={18} />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={closeMenu}
-                      className="mobile-menu-close"
-                      aria-label="Close menu"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
 
-                  <div className="mobile-menu-brand mt-4">
-                    <img
-                      src={siteConfig.brand.logo}
-                      alt={siteConfig.brand.name}
-                      className="h-10 w-10 shrink-0 rounded-full object-contain"
-                      loading="eager"
-                      decoding="async"
-                    />
-                    <div className="min-w-0">
-                      <p className="mobile-menu-brand__name">{siteConfig.brand.name}</p>
-                      <p className="mobile-menu-brand__meta">{siteConfig.brand.tagline}</p>
+                    <div className="mobile-menu-brand mt-4">
+                      <img
+                        src={siteConfig.brand.logo}
+                        alt={siteConfig.brand.name}
+                        className="h-11 w-11 shrink-0 rounded-full object-contain"
+                        loading="eager"
+                        decoding="async"
+                      />
+                      <div className="min-w-0">
+                        <p className="mobile-menu-brand__name">{siteConfig.brand.name}</p>
+                        <p className="mobile-menu-brand__meta">{siteConfig.brand.tagline}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:var(--page-muted)]">
+                      <span>{siteConfig.brand.location}</span>
+                      <span className="h-1 w-1 rounded-full bg-brand-orange" aria-hidden="true" />
+                      <span>{siteConfig.brand.reach}</span>
                     </div>
                   </div>
 
-                  <div className="mt-3 flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:var(--page-muted)]">
-                    <span>{siteConfig.brand.location}</span>
-                    <span className="h-1 w-1 rounded-full bg-brand-orange" aria-hidden="true" />
-                    <span>{siteConfig.brand.reach}</span>
-                  </div>
-                </div>
-
-                <div className="mobile-menu-scroll flex-1 overflow-y-auto">
-                  <div className="px-4 pb-4">
+                  <div className="px-4 py-4">
                     <p className="mobile-menu-section">Quick links</p>
                     <nav className="mobile-menu-nav mt-3" aria-label="Mobile navigation">
                       {siteConfig.navigation.map((item) => (
@@ -390,21 +430,21 @@ export const Navbar = () => {
                       ))}
                     </nav>
                   </div>
-                </div>
 
-                <div className="mobile-menu-footer">
-                  <a
-                    href={siteConfig.contact.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={closeMenu}
-                    className="mobile-menu-cta"
-                  >
-                    Get in touch
-                  </a>
-                  <p className="mobile-menu-note">
-                    Prefer WhatsApp? We usually reply quickly during business hours.
-                  </p>
+                  <div className="mobile-menu-footer">
+                    <a
+                      href={siteConfig.contact.whatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={closeMenu}
+                      className="mobile-menu-cta"
+                    >
+                      Get in touch
+                    </a>
+                    <p className="mobile-menu-note">
+                      Prefer WhatsApp? We usually reply quickly during business hours.
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </>

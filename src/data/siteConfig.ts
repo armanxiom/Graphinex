@@ -3,6 +3,41 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+const videoEditingMedia = [
+  {
+    type: "video",
+    title: "Edit Reel 01",
+    category: "Reel Edit",
+    src: new URL("../../Videos/Video 1.mp4", import.meta.url).href,
+    poster: new URL("../../Videos/Video cover 1.png", import.meta.url).href,
+    link: "#"
+  },
+  {
+    type: "video",
+    title: "Edit Reel 02",
+    category: "Reel Edit",
+    src: new URL("../../Videos/Video 2.mp4", import.meta.url).href,
+    poster: new URL("../../Videos/Video cover 2.png", import.meta.url).href,
+    link: "#"
+  },
+  {
+    type: "video",
+    title: "Edit Reel 03",
+    category: "Reel Edit",
+    src: new URL("../../Videos/Video 3.mp4", import.meta.url).href,
+    poster: new URL("../../Videos/Video cover 3.png", import.meta.url).href,
+    link: "#"
+  },
+  {
+    type: "video",
+    title: "Edit Reel 04",
+    category: "Reel Edit",
+    src: new URL("../../Videos/Video 4.mp4", import.meta.url).href,
+    poster: new URL("../../Videos/Video cover 4.png", import.meta.url).href,
+    link: "#"
+  }
+];
+
 export const siteConfig = {
   brand: {
     name: "GRAPHINEX",
@@ -75,143 +110,125 @@ export const siteConfig = {
     }
   ],
 
-  featuredWorks: [
+  homeFeaturedWorks: [
     {
       type: "video",
-      title: "Eclipse Mobile",
-      category: "Video Editing",
-      src: "/assets/videos/work-1.mp4",
-      poster: "/assets/videos/work-1.png",
+      title: "Short Hook 01",
+      category: "Featured Work",
+      src: "/Short videos/short 1.mp4",
+      poster: "/Short videos/cover 1.png",
       link: "#"
     },
     {
       type: "video",
-      title: "Vanguard Tech",
-      category: "Web Design",
-      src: "/assets/videos/work-2.mp4",
-      poster: "/assets/videos/work-2.png",
+      title: "Short Hook 02",
+      category: "Featured Work",
+      src: "/Short videos/short 2.mp4",
+      poster: "/Short videos/cover 2.png",
       link: "#"
     },
     {
       type: "video",
-      title: "Solaris Watch",
-      category: "Product Shot",
-      src: "/assets/videos/work-3.mp4",
-      poster: "/assets/videos/work-3.png",
+      title: "Short Hook 03",
+      category: "Featured Work",
+      src: "/Short videos/short 3.mp4",
+      poster: "/Short videos/cover 3.png",
       link: "#"
     },
     {
       type: "video",
-      title: "Arctic Brew",
-      category: "Packaging",
-      src: "/assets/videos/work-4.mp4",
-      poster: "/assets/videos/work-4.png",
-      link: "#"
-    },
-    {
-      type: "video",
-      title: "Nebula App",
-      category: "UI/UX",
-      src: "/assets/videos/work-5.mp4",
-      poster: "/assets/videos/work-5.png",
-      link: "#"
-    },
-    {
-      type: "video",
-      title: "Luxe Estate",
-      category: "Video",
-      src: "/assets/videos/work-6.mp4",
-      poster: "/assets/videos/work-6.png",
+      title: "Short Hook 04",
+      category: "Featured Work",
+      src: "/Short videos/short 4.mp4",
+      poster: "/Short videos/cover 4.png",
       link: "#"
     }
   ],
 
-  services: {
-    videoEditing: [
+  featuredWorks: [
+    {
+      type: "video",
+      title: "Showreel Frame 01",
+      category: "Portfolio",
+      src: "/assets/video-editing/video-1.mp4",
+      poster: "/assets/video-editing/video-1.png",
+      link: "#"
+    },
+    {
+      type: "video",
+      title: "Behind the Scene 04",
+      category: "Portfolio",
+      src: "/behind scene/behind scene 4.mp4",
+      link: "#"
+    },
+    {
+      type: "video",
+      title: "Behind the Scene 05",
+      category: "Portfolio",
+      src: "/behind scene/behind scene 5.mp4",
+      link: "#"
+    },
+    {
+      type: "video",
+      title: "Behind the Scene 06",
+      category: "Portfolio",
+      src: "/behind scene/behind scene 6.mp4",
+      link: "#"
+    }
+  ],
+
+  homePortfolioCollections: {
+    "video-editing": videoEditingMedia,
+    "graphic-design": [
       {
-        title: "Short Hook 01",
-        category: "Reel Edit",
-        src: "/assets/videos/work-1.mp4",
-        poster: "/assets/videos/work-1.png",
-        link: "#"
-      },
-      {
-        title: "Short Hook 02",
-        category: "Reel Edit",
-        src: "/assets/videos/work-2.mp4",
-        poster: "/assets/videos/work-2.png",
-        link: "#"
-      },
-      {
-        title: "Short Hook 03",
-        category: "Reel Edit",
-        src: "/assets/videos/work-3.mp4",
-        poster: "/assets/videos/work-3.png",
-        link: "#"
-      },
-      {
-        title: "Short Hook 04",
-        category: "Reel Edit",
-        src: "/assets/videos/work-4.mp4",
-        poster: "/assets/videos/work-4.png",
-        link: "#"
-      },
-      {
-        title: "Short Hook 05",
-        category: "Reel Edit",
-        src: "/assets/videos/work-5.mp4",
-        poster: "/assets/videos/work-5.png",
-        link: "#"
-      },
-      {
-        title: "Short Hook 06",
-        category: "Reel Edit",
-        src: "/assets/videos/work-6.mp4",
-        poster: "/assets/videos/work-6.png",
-        link: "#"
-      }
-    ],
-    graphicDesign: [
-      {
-        title: "Featured Work 01",
+        type: "image",
+        title: "Graphic Design 01",
         category: "Visual Design",
-        src: "/assets/videos/work-1.png",
-        link: "#"
+        src: "/assets/graphic-design/g1.jpeg"
       },
       {
-        title: "Featured Work 02",
+        type: "image",
+        title: "Graphic Design 02",
         category: "Visual Design",
-        src: "/assets/videos/work-2.png",
-        link: "#"
+        src: "/assets/graphic-design/g2.jpeg"
       },
       {
-        title: "Featured Work 03",
+        type: "image",
+        title: "Graphic Design 03",
         category: "Visual Design",
-        src: "/assets/videos/work-3.png",
-        link: "#"
+        src: "/assets/graphic-design/g3.jpeg"
+      },
+      {
+        type: "image",
+        title: "Graphic Design 04",
+        category: "Visual Design",
+        src: "/assets/graphic-design/g4.jpeg"
       }
     ],
     branding: [
       {
+        type: "image",
         title: "Brand Film 01",
         category: "Branding",
-        src: "/assets/videos/work-4.mp4",
-        poster: "/assets/videos/work-4.png",
-        link: "#"
+        src: "/assets/branding/b1.jpeg"
       },
       {
+        type: "image",
         title: "Brand Film 02",
         category: "Branding",
-        src: "/assets/videos/work-5.mp4",
-        poster: "/assets/videos/work-5.png",
-        link: "#"
+        src: "/assets/branding/b2.jpeg"
       },
       {
+        type: "image",
         title: "Brand Film 03",
         category: "Branding",
-        src: "/assets/videos/work-6.mp4",
-        poster: "/assets/videos/work-6.png",
-        link: "#"
+        src: "/assets/branding/b3.jpeg"
+      },
+      {
+        type: "image",
+        title: "Brand Film 04",
+        category: "Branding",
+        src: "/assets/branding/b4.jpeg"
       }
     ]
   },
@@ -224,38 +241,7 @@ export const siteConfig = {
   },
 
   portfolioCollections: {
-    "video-editing": [
-      {
-        type: "video",
-        title: "Video Edit 01",
-        src: "/assets/video-editing/video-1.mp4",
-        poster: "/assets/video-editing/video-1.png"
-      },
-      {
-        type: "video",
-        title: "Video Edit 02",
-        src: "/assets/video-editing/v1.mp4",
-        poster: "/assets/video-editing/v1.png"
-      },
-      {
-        type: "video",
-        title: "Video Edit 03",
-        src: "/assets/video-editing/v2.mp4",
-        poster: "/assets/video-editing/v2.png"
-      },
-      {
-        type: "video",
-        title: "Video Edit 04",
-        src: "/assets/video-editing/v3.mp4",
-        poster: "/assets/video-editing/v3.png"
-      },
-      {
-        type: "video",
-        title: "Video Edit 05",
-        src: "/assets/video-editing/v4.mp4",
-        poster: "/assets/video-editing/v4.png"
-      }
-    ],
+    "video-editing": videoEditingMedia,
     "graphic-design": [
       {
         type: "image",
@@ -331,22 +317,7 @@ export const siteConfig = {
       src: "/assets/logos/logo-4.jpeg",
       link: "#"
     },
-    {
-      type: "image",
-      title: "Client Logo 5",
-      category: "Logos",
-      src: "/assets/logos/logo-5.jpeg",
-      link: "#"
-    },
-    {
-      type: "image",
-      title: "Client Logo 6",
-      category: "Logos",
-      src: "/assets/logos/logo-6.jpeg",
-      link: "#"
-    }
   ],
-
   results: [
     { label: "Views Generated", value: "50M+", suffix: "" },
     { label: "Engagement Growth", value: "3X", suffix: "" },
@@ -386,18 +357,111 @@ export const siteConfig = {
     }
   ],
 
+  testimonials: [
+    {
+      name: "Kabir Ahuja",
+      role: "Founder • Elevan Media",
+      rating: 5,
+      review: "Graphinex honestly understood the exact vibe I wanted without me over-explaining everything. The edits felt premium from the very first draft 🔥"
+    },
+    {
+      name: "Luca Moretti",
+      role: "Creative Strategist • Milan",
+      rating: 5,
+      review: "The motion quality and visual pacing were seriously impressive. Everything felt clean, modern, and highly intentional."
+    },
+    {
+      name: "Zavian Reed",
+      role: "Personal Brand Creator",
+      rating: 5,
+      review: "I’ve worked with multiple editing teams before, but Graphinex delivered the smoothest workflow till now. Fast replies, great quality, no confusion."
+    },
+    {
+      name: "Harshil Vora",
+      role: "E-commerce Brand Owner",
+      rating: 5,
+      review: "Graphinex ne meri ads creatives ka overall feel hi upgrade kar diya. Videos ab zyada premium aur engaging lagti hain."
+    },
+    {
+      name: "Amélie Laurent",
+      role: "Fashion Content Consultant",
+      rating: 5,
+      review: "The visuals felt elegant and cinematic at the same time. You can clearly tell Graphinex focuses heavily on presentation quality."
+    },
+    {
+      name: "Abeer Malhotra",
+      role: "Fitness Creator",
+      rating: 5,
+      review: "Maine mainly reels editing ke liye contact kiya tha but overall branding output bhi kaafi strong nikla 💯"
+    },
+    {
+      name: "Nathan Elric",
+      role: "Startup Operator",
+      rating: 5,
+      review: "The attention to detail was the biggest difference for me. Nothing felt rushed and the final result looked very polished."
+    },
+    {
+      name: "Reyansh Kohli",
+      role: "Music Artist",
+      rating: 5,
+      review: "Graphinex ka editing style modern hai but overdone nahi lagta. Smooth transitions and proper pacing 👌"
+    },
+    {
+      name: "Elena Voss",
+      role: "Social Campaign Manager",
+      rating: 5,
+      review: "The website visuals and animations felt surprisingly premium on mobile too. Everything stayed smooth and responsive."
+    },
+    {
+      name: "Yuvraj Sethi",
+      role: "Luxury Brand Consultant",
+      rating: 5,
+      review: "Honestly expected good edits, but the overall creative direction from Graphinex was even better than expected."
+    },
+    {
+      name: "Carter Vale",
+      role: "Digital Creator",
+      rating: 5,
+      review: "Graphinex made the entire content look more high-end without making it feel too flashy. That balance is hard to find."
+    },
+    {
+      name: "Vihaan Arora",
+      role: "Agency Partner",
+      rating: 5,
+      review: "Communication clear thi, delivery smooth thi, aur revisions bhi properly handled hue. Overall experience kaafi professional tha."
+    },
+    {
+      name: "Sienna Blake",
+      role: "Lifestyle Brand Manager",
+      rating: 5,
+      review: "The visuals immediately felt premium and audience-ready. Really loved the clean cinematic approach."
+    },
+    {
+      name: "Aryaveer Khanna",
+      role: "Real Estate Creator",
+      rating: 5,
+      review: "Graphinex ne jo reels pacing aur hooks use kiye usse videos ka retention kaafi better hua."
+    },
+    {
+      name: "Kai Emerson",
+      role: "Creative Director",
+      rating: 5,
+      review: "Everything from the transitions to the motion flow felt intentional. The final presentation looked extremely refined."
+    }
+  ],
+
   process: [
     {
       step: "01",
       name: "Inquiry",
       description: "We align on goals, audience, and the exact outcome the project needs to create.",
-      previewImage: "/assets/videos/work-1.png"
+      previewImage: "/assets/videos/work-3.png"
     },
     {
       step: "02",
       name: "Concept",
       description: "We shape the direction, narrative, and visual system before any execution begins.",
-      previewImage: "/assets/video-editing/v2.png"
+      previewImage: "/assets/videos/work-4.png"
     },
     {
       step: "03",
