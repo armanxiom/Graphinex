@@ -329,7 +329,7 @@ export const siteConfig = {
     {
       name: "Elvish Yadav",
       role: "Creator",
-      quote: "Cinemafy is innovative, reliable, and always exceeds expectations! A fantastic team to work with!",
+      quote: "Graphinex is innovative, reliable, and always exceeds expectations! A fantastic team to work with!",
       image: "/assets/clients/elvish.png",
       instagram: "https://www.instagram.com/elvish_yadav/",
       youtube: "https://www.youtube.com/@TheSocialFactory"
@@ -337,14 +337,14 @@ export const siteConfig = {
     {
       name: "Amir Trt",
       role: "Creator",
-      quote: "Cinemafy excels in video production and design, creating content that truly connects.",
+      quote: "Graphinex excels in video production and design, creating content that truly connects.",
       image: "/assets/clients/amir.png",
       instagram: "https://www.instagram.com/aamir.trt?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
     },
     {
       name: "Dharmendra Bilotia",
       role: "Creator",
-      quote: "Cinemafy is creative, professional, and delivers amazing results! Highly recommended!",
+      quote: "Graphinex is creative, professional, and delivers amazing results! Highly recommended!",
       image: "/assets/clients/dharmendra.png",
       instagram: "https://www.instagram.com/dharmendra_bilotia_/"
     },
