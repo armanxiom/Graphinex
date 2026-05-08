@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
 import { useRevealOnView } from '../hooks/useRevealOnView';
+import { useIsMobileViewport } from '../hooks/useMediaQuery';
 
 type FeaturedWorkItem = {
   type: string;
@@ -21,8 +22,9 @@ type FeaturedWorkItem = {
 };
 
 export const Portfolio = () => {
+  const isMobileViewport = useIsMobileViewport();
   const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
-    rootMargin: '560px 0px',
+    rootMargin: isMobileViewport ? '900px 0px' : '560px 0px',
     threshold: 0.08
   });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -75,9 +77,13 @@ export const Portfolio = () => {
           {featuredWorks.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 18, scale: 0.99 }}
+              initial={isMobileViewport ? { opacity: 0, scale: 0.995 } : { opacity: 0, y: 18, scale: 0.99 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              transition={
+                isMobileViewport
+                  ? { duration: 0.38, delay: index * 0.03, ease: [0.22, 1, 0.36, 1] }
+                  : { duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }
+              }
               viewport={{ once: true }}
               onClick={() => setSelectedIndex(index)}
               className={`premium-card group relative cursor-pointer overflow-hidden transition-all duration-300 ${
@@ -95,7 +101,7 @@ export const Portfolio = () => {
                   index === 0 ? (
                     <video 
                       src={item.src} 
-                      poster={mediaReady ? item.poster : undefined}
+                      poster={item.poster}
                       autoPlay={mediaReady} 
                       muted 
                       loop={mediaReady}
@@ -104,11 +110,11 @@ export const Portfolio = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                      <img
+                    <img
                         src={item.poster}
                         alt={item.title}
-                        loading="lazy"
-                        fetchPriority="low"
+                        loading={isMobileViewport ? 'eager' : 'lazy'}
+                        fetchPriority={isMobileViewport ? 'high' : 'low'}
                         decoding="async"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />

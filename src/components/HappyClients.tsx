@@ -3,35 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { motion } from 'motion/react';
 import { Instagram, Youtube } from 'lucide-react';
 import { siteConfig } from '../data/siteConfig';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 type HappyClient = (typeof siteConfig.happyClients)[number];
 
 export const HappyClients = () => {
   const clients = siteConfig.happyClients;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const mediaQuery = window.matchMedia('(hover: none), (pointer: coarse)');
-    const updateTouchState = () => setIsTouchDevice(mediaQuery.matches);
-
-    updateTouchState();
-
-    if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener('change', updateTouchState);
-      return () => mediaQuery.removeEventListener('change', updateTouchState);
-    }
-
-    mediaQuery.addListener(updateTouchState);
-    return () => mediaQuery.removeListener(updateTouchState);
-  }, []);
+  const isTouchDevice = useMediaQuery('(hover: none), (pointer: coarse)');
 
   const handleCardClick = (index: number, event: ReactMouseEvent<HTMLElement>) => {
     if (!isTouchDevice) return;
@@ -93,7 +77,8 @@ export const HappyClients = () => {
                     src={client.image}
                     alt={client.name}
                     className="happy-client-card__image"
-                    loading="lazy"
+                    loading={isTouchDevice ? 'eager' : 'lazy'}
+                    fetchPriority={isTouchDevice ? 'high' : 'low'}
                     decoding="async"
                   />
                 </div>

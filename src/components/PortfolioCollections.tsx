@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
 import { useRevealOnView } from '../hooks/useRevealOnView';
+import { useIsMobileViewport } from '../hooks/useMediaQuery';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -47,8 +48,9 @@ export function MediaSection({
   registerRef?: (node: HTMLElement | null) => void;
 }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
+  const isMobileViewport = useIsMobileViewport();
   const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
-    rootMargin: '560px 0px',
+    rootMargin: isMobileViewport ? '900px 0px' : '560px 0px',
     threshold: 0.08
   });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -95,9 +97,13 @@ export function MediaSection({
               {items.map((item: any, idx: number) => (
                 <motion.div
                   key={`${id}-${idx}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={isMobileViewport ? { opacity: 0, scale: 0.995 } : { opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+                  transition={
+                    isMobileViewport
+                      ? { duration: 0.32, delay: idx * 0.025, ease: [0.22, 1, 0.36, 1] }
+                      : { duration: 0.45, delay: idx * 0.05 }
+                  }
                   viewport={{ once: true, margin: '-80px' }}
                   onClick={() => setSelectedIndex(idx)}
                   className={`premium-card group relative w-full max-w-[min(88vw,360px)] cursor-pointer overflow-hidden sm:max-w-[420px] md:max-w-[480px] ${getVideoAspectClass(item)}`}
@@ -105,7 +111,7 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={mediaReady ? item.poster : undefined}
+                    poster={item.poster}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay={mediaReady}
                     muted
@@ -141,9 +147,13 @@ export function MediaSection({
             {items.map((item: any, idx: number) => (
               <motion.div
                 key={`${id}-${idx}`}
-                initial={{ opacity: 0, y: 20 }}
+                initial={isMobileViewport ? { opacity: 0, scale: 0.995 } : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: idx * 0.05 }}
+                transition={
+                  isMobileViewport
+                    ? { duration: 0.32, delay: idx * 0.025, ease: [0.22, 1, 0.36, 1] }
+                    : { duration: 0.45, delay: idx * 0.05 }
+                }
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedIndex(idx)}
                 className={`premium-card group relative cursor-pointer overflow-hidden ${getVideoAspectClass(item)}`}
@@ -151,7 +161,7 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={mediaReady ? item.poster : undefined}
+                    poster={item.poster}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay={idx === 0 && mediaReady}
                     muted
@@ -164,8 +174,8 @@ export function MediaSection({
                     src={item.src}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    fetchPriority="low"
+                    loading={isMobileViewport ? 'eager' : 'lazy'}
+                    fetchPriority={isMobileViewport ? 'high' : 'low'}
                     decoding="async"
                   />
                 )}

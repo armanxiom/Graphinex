@@ -25,7 +25,7 @@ export function useRevealOnView<T extends HTMLElement = HTMLElement>(options: In
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, [isVisible]);
+  }, [isVisible, options.root, options.rootMargin, options.threshold]);
 
   return { ref, isVisible };
 }
