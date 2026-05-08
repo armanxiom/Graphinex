@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 
 const transition = {
-  duration: 0.6,
+  duration: 0.35,
   ease: [0.22, 1, 0.36, 1] as const
 };
 
@@ -18,9 +18,9 @@ export function PageTransition({ children }: { children: ReactNode }) {
         exit: { opacity: 0 }
       }
     : {
-        initial: { opacity: 0, y: 40, scale: 0.97, filter: 'blur(10px)' },
+        initial: { opacity: 0, y: 24, scale: 0.985, filter: 'blur(6px)' },
         animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' },
-        exit: { opacity: 0, scale: 0.97, filter: 'blur(8px)' }
+        exit: { opacity: 0, scale: 0.985, filter: 'blur(4px)' }
       };
 
   return (

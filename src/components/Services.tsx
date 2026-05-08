@@ -207,12 +207,13 @@ function ServiceRow({
             {service.icon}
           </div>
           <img
-            src={service.previewImage}
-            alt={`${service.title} preview`}
-            className="h-full w-full object-cover"
-            loading="eager"
-            decoding="async"
-          />
+                  src={service.previewImage}
+                  alt={`${service.title} preview`}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_45%,rgba(0,0,0,0.26))]" />
         </div>
       </motion.article>

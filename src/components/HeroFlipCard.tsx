@@ -82,6 +82,7 @@ export function HeroFlipCard({ imageSrc, alt, triggerRef }: HeroFlipCardProps) {
             alt={alt}
             className="card-image"
             loading="eager"
+            fetchPriority="high"
             decoding="async"
             draggable="false"
           />
@@ -93,6 +94,7 @@ export function HeroFlipCard({ imageSrc, alt, triggerRef }: HeroFlipCardProps) {
             alt={alt}
             className="card-image"
             loading="eager"
+            fetchPriority="high"
             decoding="async"
             draggable="false"
           />

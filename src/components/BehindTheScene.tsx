@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
+import { useRevealOnView } from '../hooks/useRevealOnView';
 
 type BTSItem = {
   id: string;
@@ -85,6 +86,10 @@ function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
 
 export function BehindTheScene() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const { ref: sectionRevealRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
+    rootMargin: '700px 0px',
+    threshold: 0.05
+  });
   const [scrollState, setScrollState] = useState({
     canScrollLeft: false,
     canScrollRight: true
@@ -145,6 +150,9 @@ export function BehindTheScene() {
 
   return (
     <section
+      ref={(node) => {
+        sectionRevealRef.current = node;
+      }}
       id="behind-the-scene"
       aria-labelledby="behind-the-scene-title"
       className="relative isolate overflow-hidden bg-[#050505] text-white"
@@ -198,12 +206,12 @@ export function BehindTheScene() {
               >
                 <div className="absolute inset-0 overflow-hidden">
                   <video
-                    src={buildVideoSrc(item.fileName)}
+                    src={mediaReady ? buildVideoSrc(item.fileName) : undefined}
                     muted
-                    autoPlay
-                    loop
+                    autoPlay={mediaReady}
+                    loop={mediaReady}
                     playsInline
-                    preload="auto"
+                    preload={mediaReady ? 'auto' : 'none'}
                     aria-label={`Graphinex behind the scene clip ${index + 1}`}
                     className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                     style={{ objectPosition: item.objectPosition }}

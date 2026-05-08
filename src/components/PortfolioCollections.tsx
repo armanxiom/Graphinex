@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
+import { useRevealOnView } from '../hooks/useRevealOnView';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -46,6 +47,10 @@ export function MediaSection({
   registerRef?: (node: HTMLElement | null) => void;
 }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
+  const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
+    rootMargin: '560px 0px',
+    threshold: 0.08
+  });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selectedMedia = selectedIndex === null ? null : items[selectedIndex];
 
@@ -65,7 +70,10 @@ export function MediaSection({
 
   return (
     <section
-      ref={registerRef}
+      ref={(node) => {
+        sectionRef.current = node;
+        registerRef?.(node);
+      }}
       className={`theme-panel py-12 sm:py-20 ${
         active ? 'rounded-[2rem] bg-brand-orange/5 shadow-[0_0_0_1px_rgba(255,106,0,0.12)]' : ''
       }`}
@@ -97,13 +105,13 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster}
+                    poster={mediaReady ? item.poster : undefined}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay
+                    autoPlay={mediaReady}
                     muted
-                    loop
+                    loop={mediaReady}
                     playsInline
-                    preload="metadata"
+                    preload={mediaReady ? 'metadata' : 'none'}
                   />
                 ) : (
                   <img
@@ -111,6 +119,7 @@ export function MediaSection({
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
+                    fetchPriority="low"
                     decoding="async"
                   />
                 )}
@@ -142,13 +151,13 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster}
+                    poster={mediaReady ? item.poster : undefined}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay={idx === 0}
+                    autoPlay={idx === 0 && mediaReady}
                     muted
-                    loop={idx === 0}
+                    loop={idx === 0 && mediaReady}
                     playsInline
-                    preload="metadata"
+                    preload={mediaReady ? 'metadata' : 'none'}
                   />
                 ) : (
                   <img
@@ -156,6 +165,7 @@ export function MediaSection({
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
+                    fetchPriority="low"
                     decoding="async"
                   />
                 )}

@@ -8,6 +8,7 @@ import { siteConfig } from '../data/siteConfig';
 import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
+import { useRevealOnView } from '../hooks/useRevealOnView';
 
 type FeaturedWorkItem = {
   type: string;
@@ -20,6 +21,10 @@ type FeaturedWorkItem = {
 };
 
 export const Portfolio = () => {
+  const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
+    rootMargin: '560px 0px',
+    threshold: 0.08
+  });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const featuredWorks = (siteConfig.homeFeaturedWorks || siteConfig.featuredWorks.slice(0, 4)) as FeaturedWorkItem[];
   const selectedMedia = selectedIndex === null ? null : featuredWorks[selectedIndex];
@@ -39,7 +44,7 @@ export const Portfolio = () => {
   };
 
   return (
-    <section className="theme-panel relative overflow-hidden py-20 md:py-28" id="work">
+    <section ref={sectionRef} className="theme-panel relative overflow-hidden py-20 md:py-28" id="work">
       <div className="container-boxed mb-12 md:mb-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="max-w-xl">
@@ -90,19 +95,20 @@ export const Portfolio = () => {
                   index === 0 ? (
                     <video 
                       src={item.src} 
-                      poster={item.poster}
-                    autoPlay 
-                    muted 
-                    loop 
+                      poster={mediaReady ? item.poster : undefined}
+                      autoPlay={mediaReady} 
+                      muted 
+                      loop={mediaReady}
                     playsInline
-                    preload="metadata"
+                    preload={mediaReady ? 'metadata' : 'none'}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
                       <img
                         src={item.poster}
                         alt={item.title}
-                        loading="eager"
+                        loading="lazy"
+                        fetchPriority="low"
                         decoding="async"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
@@ -111,7 +117,8 @@ export const Portfolio = () => {
                 <img 
                   src={item.src} 
                   alt={item.title}
-                  loading="eager"
+                  loading="lazy"
+                  fetchPriority="low"
                   decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
