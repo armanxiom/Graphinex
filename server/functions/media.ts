@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { appendActivity, readMediaIndex, safeUnlink, writeMediaIndex, UPLOAD_DIR } from '../../server/storage/content-store.js';
-import { loadMediaLibrary, loadSiteContent, replaceContentAssetReference } from '../../server/utils/content.js';
+import { appendActivity, readMediaIndex, safeUnlink, writeMediaIndex, UPLOAD_DIR } from '../storage/content-store.js';
+import { loadMediaLibrary, loadSiteContent, replaceContentAssetReference } from '../utils/content.js';
 
 function slugify(value: string) {
   return value

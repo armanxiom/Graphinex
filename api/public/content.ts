@@ -1,5 +1,5 @@
 import { cloneSiteContent, defaultSiteContent } from '../../src/lib/siteContent';
-import { jsonResponse } from '../_lib/http';
+import { jsonResponse } from '../../server/functions/http';
 import { loadSiteContent } from '../../server/utils/content.js';
 
 export async function GET(request: Request) {

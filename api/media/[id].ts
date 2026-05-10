@@ -1,5 +1,5 @@
-import { hasValidAdminAccess } from '../_lib/access';
-import { forbidden, jsonResponse, notFound, unauthorized } from '../_lib/http';
+import { hasValidAdminAccess } from '../../server/functions/access';
+import { forbidden, jsonResponse, notFound, unauthorized } from '../../server/functions/http';
 import {
   appendMediaActivity,
   deleteMediaRecord,
@@ -8,7 +8,7 @@ import {
   rewireContentPath,
   storeUploadFile,
   upsertMediaRecord
-} from '../_lib/media';
+} from '../../server/functions/media';
 import { getUploadPublicUrl } from '../../server/storage/content-store.js';
 
 function resolveMediaKind(value: unknown, mimeType: string) {

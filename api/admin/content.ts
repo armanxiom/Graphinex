@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
-import { hasValidAdminAccess } from '../_lib/access';
-import { badRequest, jsonResponse, unauthorized } from '../_lib/http';
+import { hasValidAdminAccess } from '../../server/functions/access';
+import { badRequest, jsonResponse, unauthorized } from '../../server/functions/http';
 import { appendActivity } from '../../server/storage/content-store.js';
 import { getAdminBootstrap, saveSiteContent } from '../../server/utils/content.js';
 
