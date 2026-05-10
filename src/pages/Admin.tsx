@@ -1417,6 +1417,8 @@ export default function Admin() {
       return;
     }
 
+    setAccessState('checking');
+
     try {
       await requestJson<{ ok: boolean }>('/api/admin/status');
       setAccessState('allowed');
@@ -1651,17 +1653,25 @@ export default function Admin() {
   }
 
   const selectedSectionAssets = selectedSection?.assets ?? [];
+  const retryAccessCheck = () => {
+    setError(null);
+    void validateAccess();
+  };
 
   if (accessState === 'redirect-home') {
     return <Navigate to="/" replace />;
   }
 
+  if (accessState === 'checking' && !bootstrap) {
+    return <LoadingState />;
+  }
+
   if (accessState === 'not-found') {
-    return <AccessDeniedState onRetry={() => setAccessState('checking')} />;
+    return <AccessDeniedState onRetry={retryAccessCheck} />;
   }
 
   if (accessState === 'error' && !bootstrap) {
-    return <AccessErrorState error={error ?? 'Unable to validate hidden admin access.'} onRetry={() => setAccessState('checking')} />;
+    return <AccessErrorState error={error ?? 'Unable to validate hidden admin access.'} onRetry={retryAccessCheck} />;
   }
 
   return (
