@@ -28,6 +28,9 @@
       content="Graphinex Creative is a results-driven creative agency specializing in video editing, graphic design, and branding. We turn your content into clients."
     />
     <meta name="theme-color" content="#0f0f0f" />
+    <link rel="preload" as="image" href="/assets/hero/hero-background.avif" type="image/avif" />
+    <link rel="preload" as="image" href="/assets/hero/hero-card.avif" type="image/avif" />
+    <link rel="preload" as="image" href="/Graphinex%20logo/logo.avif" type="image/avif" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://www.youtube.com" />
@@ -39,12 +42,25 @@
     <script>
       (function () {
         try {
+          var root = document.documentElement;
           var storedTheme = localStorage.getItem('graphinex-theme');
           var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
           var theme = storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : (prefersDark ? 'dark' : 'light');
+          var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+          var saveData = Boolean(connection && connection.saveData);
+          var effectiveType = (connection && connection.effectiveType) || '';
+          var cores = navigator.hardwareConcurrency || 4;
+          var memory = navigator.deviceMemory || 4;
+          var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var lowNetwork = /(^|[^a-z])(slow-2g|2g)([^a-z]|$)/i.test(effectiveType);
+          var minViewport = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+          var lowEnd = reducedMotion || saveData || lowNetwork || cores <= 4 || memory <= 4 || minViewport <= 440;
+          var performance = lowEnd ? 'low' : (cores <= 6 || memory <= 6) ? 'balanced' : 'high';
 
-          document.documentElement.dataset.theme = theme;
-          document.documentElement.style.colorScheme = theme;
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+          root.dataset.performance = performance;
+          root.dataset.appReady = 'false';
 
           var metaThemeColor = document.querySelector('meta[name="theme-color"]');
           if (metaThemeColor) {
@@ -55,6 +71,191 @@
         }
       })();
     </script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #faf6f0;
+      }
+
+      body {
+        overflow-x: hidden;
+      }
+
+      #root {
+        min-height: 100vh;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.42s ease, transform 0.42s ease;
+      }
+
+      html[data-app-ready='true'] #root {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #boot-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at top left, rgba(255, 186, 120, 0.22), transparent 24%),
+          radial-gradient(circle at 86% 16%, rgba(255, 255, 255, 0.07), transparent 18%),
+          linear-gradient(180deg, #fbf7f1 0%, #f6efe6 100%);
+        color: #111111;
+        opacity: 1;
+        transition: opacity 0.42s ease, visibility 0.42s ease;
+      }
+
+      html[data-theme='dark'] #boot-screen {
+        background:
+          radial-gradient(circle at top left, rgba(255, 145, 48, 0.18), transparent 24%),
+          radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.06), transparent 18%),
+          linear-gradient(180deg, #090909 0%, #0c0c0c 100%);
+        color: #f6f1e8;
+      }
+
+      html[data-app-ready='true'] #boot-screen {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .boot-screen__inner {
+        width: min(100%, 1120px);
+        padding: 22px;
+      }
+
+      .boot-screen__panel {
+        border-radius: 32px;
+        border: 1px solid rgba(17, 17, 17, 0.08);
+        background: rgba(255, 255, 255, 0.56);
+        box-shadow: 0 28px 96px rgba(17, 17, 17, 0.08);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        padding: clamp(1.25rem, 3vw, 2rem);
+      }
+
+      html[data-theme='dark'] .boot-screen__panel {
+        border-color: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: 0 28px 96px rgba(0, 0, 0, 0.34);
+      }
+
+      .boot-screen__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .boot-screen__brand {
+        font-family: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+        font-size: clamp(1.2rem, 2vw, 1.8rem);
+        font-weight: 900;
+        letter-spacing: -0.08em;
+        text-transform: uppercase;
+      }
+
+      .boot-skeleton {
+        position: relative;
+        overflow: hidden;
+        background-image: linear-gradient(110deg, rgba(255, 255, 255, 0.06) 8%, rgba(255, 255, 255, 0.16) 18%, rgba(255, 255, 255, 0.06) 33%);
+        background-size: 200% 100%;
+        animation: bootShimmer 1.7s linear infinite;
+      }
+
+      html[data-theme='dark'] .boot-skeleton {
+        background-image: linear-gradient(110deg, rgba(255, 255, 255, 0.03) 8%, rgba(255, 255, 255, 0.09) 18%, rgba(255, 255, 255, 0.03) 33%);
+      }
+
+      .boot-shell {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: clamp(1rem, 3vw, 2rem);
+        align-items: center;
+      }
+
+      .boot-copy {
+        display: grid;
+        gap: 14px;
+      }
+
+      .boot-line {
+        border-radius: 999px;
+        height: 16px;
+      }
+
+      .boot-line--lg {
+        width: min(92%, 28rem);
+        height: clamp(2rem, 4vw, 3.75rem);
+      }
+
+      .boot-line--md {
+        width: min(78%, 22rem);
+      }
+
+      .boot-line--sm {
+        width: 42%;
+      }
+
+      .boot-media {
+        aspect-ratio: 4 / 5;
+        border-radius: 28px;
+      }
+
+      .boot-chip {
+        width: 6.5rem;
+        height: 1.9rem;
+        border-radius: 999px;
+      }
+
+      .boot-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .boot-stack .boot-chip:nth-child(1) {
+        width: 7rem;
+      }
+
+      .boot-stack .boot-chip:nth-child(2) {
+        width: 9.5rem;
+      }
+
+      @keyframes bootShimmer {
+        0% {
+          background-position: 200% 0;
+        }
+
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .boot-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .boot-media {
+          aspect-ratio: 16 / 10;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .boot-skeleton {
+          animation: none;
+        }
+      }
+    </style>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -67,6 +268,28 @@
     </script>
   </head>
   <body>
+    <div id="boot-screen" aria-hidden="true">
+      <div class="boot-screen__inner">
+        <div class="boot-screen__panel">
+          <div class="boot-screen__top">
+            <div class="boot-screen__brand">GRAPHINEX</div>
+            <div class="boot-skeleton boot-chip"></div>
+          </div>
+          <div class="boot-shell">
+            <div class="boot-copy">
+              <div class="boot-skeleton boot-line boot-line--sm"></div>
+              <div class="boot-skeleton boot-line boot-line--lg"></div>
+              <div class="boot-skeleton boot-line boot-line--md"></div>
+              <div class="boot-stack">
+                <div class="boot-skeleton boot-chip"></div>
+                <div class="boot-skeleton boot-chip"></div>
+              </div>
+            </div>
+            <div class="boot-skeleton boot-media"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

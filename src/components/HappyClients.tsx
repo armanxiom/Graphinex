@@ -7,15 +7,25 @@ import { useState } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { motion } from 'motion/react';
 import { Instagram, Youtube } from 'lucide-react';
-import { siteConfig } from '../data/siteConfig';
+import { happyClients } from '../data/siteConfig';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useDevicePerformance } from '../lib/performance';
+import { OptimizedImage } from './OptimizedImage';
 
-type HappyClient = (typeof siteConfig.happyClients)[number];
+type HappyClient = {
+  name: string;
+  role: string;
+  quote: string;
+  image: string;
+  instagram: string;
+  youtube?: string;
+};
 
 export const HappyClients = () => {
-  const clients = siteConfig.happyClients;
+  const clients = happyClients as ReadonlyArray<HappyClient>;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const isTouchDevice = useMediaQuery('(hover: none), (pointer: coarse)');
+  const performance = useDevicePerformance();
 
   const handleCardClick = (index: number, event: ReactMouseEvent<HTMLElement>) => {
     if (!isTouchDevice) return;
@@ -34,8 +44,8 @@ export const HappyClients = () => {
       <div className="container-boxed relative z-10">
         <div className="mb-10 max-w-4xl md:mb-14">
           <motion.span
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
+            whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
             className="section-kicker text-white/55"
@@ -44,8 +54,8 @@ export const HappyClients = () => {
           </motion.span>
 
           <motion.h2
-            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
+            whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
             className="ios-bold text-[clamp(2.4rem,5vw,5.6rem)] uppercase leading-[0.94] text-white"
@@ -73,13 +83,12 @@ export const HappyClients = () => {
                 }}
               >
                 <div className="happy-client-card__media">
-                  <img
+                  <OptimizedImage
                     src={client.image}
                     alt={client.name}
                     className="happy-client-card__image"
-                    loading={isTouchDevice ? 'eager' : 'lazy'}
-                    fetchPriority={isTouchDevice ? 'high' : 'low'}
-                    decoding="async"
+                    pictureClassName="absolute inset-0"
+                    priority={index === 0 || isTouchDevice || !performance.shouldUsePremiumMotion}
                   />
                 </div>
 

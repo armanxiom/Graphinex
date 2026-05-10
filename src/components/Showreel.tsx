@@ -1,9 +1,13 @@
 import { motion } from 'motion/react';
 import { PlayCircle } from 'lucide-react';
-import { siteConfig } from '../data/siteConfig';
+import { showreel } from '../data/siteConfig';
 import { YouTubeEmbed } from './YouTubeEmbed';
+import { useDevicePerformance } from '../lib/performance';
 
 export const Showreel = () => {
+  const performance = useDevicePerformance();
+  const reduceMotion = !performance.shouldUsePremiumMotion;
+
   return (
     <section className="theme-panel relative overflow-hidden" id="showreel">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,214,183,0.08),transparent_24%)]" />
@@ -14,8 +18,8 @@ export const Showreel = () => {
       <div className="container-boxed relative z-10">
         <div className="mx-auto mb-12 max-w-4xl text-center md:mb-14">
           <motion.span
-            initial={{ opacity: 0, y: 14, filter: 'blur(8px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: 'blur(8px)' }}
+            whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mb-6 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.26em] text-brand-orange"
           >
@@ -24,12 +28,12 @@ export const Showreel = () => {
           </motion.span>
 
           <motion.h2
-            initial={{ opacity: 0, y: 22, filter: 'blur(12px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 22, filter: 'blur(12px)' }}
+            whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.08, duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
             className="text-reveal ios-bold mb-6 text-[clamp(2.5rem,5vw,5.5rem)] uppercase leading-[0.95] text-white"
           >
-            {siteConfig.showreel.title}
+            {showreel.title}
           </motion.h2>
 
           <motion.p
@@ -51,7 +55,7 @@ export const Showreel = () => {
           className="motion-optimised group relative mx-auto aspect-video w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_28px_80px_rgba(0,0,0,0.32)]"
         >
           <YouTubeEmbed
-            videoId={siteConfig.showreel.youtubeId}
+            videoId={showreel.youtubeId}
             title="Agency Showreel"
             className="absolute inset-0 block h-full w-full"
           />
@@ -66,8 +70,8 @@ export const Showreel = () => {
           transition={{ delay: 0.14, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="mt-9 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-white/62 md:text-xs"
         >
-          {siteConfig.showreel.caption}
-        </motion.p>
+            {showreel.caption}
+          </motion.p>
       </div>
     </section>
   );

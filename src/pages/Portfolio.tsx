@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 import { Play } from 'lucide-react';
-import { siteConfig } from '../data/siteConfig';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { MediaLightbox } from '../components/MediaLightbox';
 import { Portfolio as FeaturedWorksSection } from '../components/Portfolio';
 import { MediaSection as SharedMediaSection } from '../components/PortfolioCollections';
 import { YouTubeEmbed } from '../components/YouTubeEmbed';
+import { brand, logos, portfolioCollections, portfolioPage, showreel } from '../data/siteConfig';
+import { getOptimizedImageSource } from '../lib/image';
+import { useDevicePerformance } from '../lib/performance';
+import { OptimizedImage } from '../components/OptimizedImage';
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -53,12 +56,14 @@ function PortfolioMediaSection({
 }: {
   id: SectionKey;
   title: string;
-  items: MediaItem[];
+  items: ReadonlyArray<MediaItem>;
   active: boolean;
   registerRef: (node: HTMLElement | null) => void;
   onSelect: (index: number) => void;
 }) {
   const isSingleVideoFocus = items.length === 1 && items[0]?.type === 'video';
+  const performance = useDevicePerformance();
+  const imagePriorityCount = 1;
 
   return (
     <section
@@ -82,7 +87,7 @@ function PortfolioMediaSection({
               <motion.button
                 key={`${id}-${item.src}-${idx}`}
                 type="button"
-                initial={{ opacity: 0, y: 20, scale: 0.99 }}
+                initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.99 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.45, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true, margin: '-80px' }}
@@ -93,13 +98,13 @@ function PortfolioMediaSection({
               >
                 <video
                   src={item.src}
-                  poster={item.poster}
+                  poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  autoPlay
+                  autoPlay={performance.shouldAutoplayMedia}
                   muted
-                  loop
+                  loop={performance.shouldAutoplayMedia}
                   playsInline
-                  preload="metadata"
+                  preload={performance.shouldAutoplayMedia ? 'metadata' : 'none'}
                 />
 
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.08))] transition-colors duration-300 group-hover:bg-brand-dark/12" />
@@ -118,7 +123,7 @@ function PortfolioMediaSection({
               <motion.button
                 key={`${id}-${item.src}-${idx}`}
                 type="button"
-                initial={{ opacity: 0, y: 20, scale: 0.99 }}
+                initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.99 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.45, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true, margin: '-80px' }}
@@ -130,21 +135,21 @@ function PortfolioMediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster}
+                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay={idx === 0}
+                    autoPlay={idx === 0 && performance.shouldAutoplayMedia}
                     muted
-                    loop={idx === 0}
+                    loop={idx === 0 && performance.shouldAutoplayMedia}
                     playsInline
-                    preload="metadata"
+                    preload={idx === 0 && performance.shouldAutoplayMedia ? 'metadata' : 'none'}
                   />
                 ) : (
-                  <img
+                  <OptimizedImage
                     src={item.src}
                     alt={item.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="eager"
-                    decoding="async"
+                    pictureClassName="absolute inset-0"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority={idx < imagePriorityCount}
                   />
                 )}
 
@@ -167,11 +172,12 @@ function PortfolioMediaSection({
 }
 
 export default function PortfolioPage() {
-  const [selectedGallery, setSelectedGallery] = useState<MediaItem[] | null>(null);
+  const [selectedGallery, setSelectedGallery] = useState<ReadonlyArray<MediaItem> | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
   const sectionRefs = useRef<Partial<Record<SectionKey, HTMLElement | null>>>({});
   const location = useLocation();
+  const performance = useDevicePerformance();
   const selectedMedia =
     selectedGallery && selectedIndex !== null ? selectedGallery[selectedIndex] || null : null;
 
@@ -193,7 +199,7 @@ export default function PortfolioPage() {
     if (!target) return;
 
     const scrollTimer = window.setTimeout(() => {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      target.scrollIntoView({ behavior: performance.isLowEnd ? 'auto' : 'smooth', block: 'start' });
     }, 120);
 
     const clearTimer = window.setTimeout(() => {
@@ -204,15 +210,13 @@ export default function PortfolioPage() {
       window.clearTimeout(scrollTimer);
       window.clearTimeout(clearTimer);
     };
-  }, [location.search]);
+  }, [location.search, performance.isLowEnd]);
 
-  const { hero } = siteConfig.portfolioPage;
-  const showreel = siteConfig.showreel;
-  const logos = siteConfig.logos;
-  const collections = siteConfig.portfolioCollections;
-  const videoEditingItems = siteConfig.homePortfolioCollections['video-editing'] || collections['video-editing'];
+  const { hero } = portfolioPage;
+  const collections = portfolioCollections;
+  const videoEditingItems = collections['video-editing'];
 
-  const openGallery = (gallery: MediaItem[], index: number) => {
+  const openGallery = (gallery: ReadonlyArray<MediaItem>, index: number) => {
     setSelectedGallery(gallery);
     setSelectedIndex(index);
   };
@@ -254,7 +258,7 @@ export default function PortfolioPage() {
 
         <div className="container-boxed relative z-10 text-center">
           <motion.span
-            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+            initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="section-kicker mx-auto justify-center"
@@ -262,7 +266,7 @@ export default function PortfolioPage() {
             Portfolio
           </motion.span>
           <motion.h1
-            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+            initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.08, duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
             className="ios-bold mx-auto mb-6 max-w-5xl text-[clamp(3rem,9vw,7rem)] uppercase leading-[0.9] text-brand-dark"
@@ -270,7 +274,7 @@ export default function PortfolioPage() {
             {hero.title}
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+            initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.16, duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
             className="mx-auto max-w-2xl text-base leading-8 text-muted md:text-lg"
@@ -360,14 +364,14 @@ export default function PortfolioPage() {
                 onClick={() => openGallery(logos, idx)}
                 className="motion-optimised group relative aspect-square overflow-hidden rounded-[1.45rem] bg-transparent shadow-none transition-transform duration-500 hover:-translate-y-1 focus-visible:outline-none"
               >
-                <img
+                <OptimizedImage
                   src={item.src}
                   alt={item.title}
-                  className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
-                  loading="lazy"
-                  decoding="async"
+                  pictureClassName="absolute inset-0"
+                  className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                  priority={idx < 2}
                   onError={(event) => {
-                    (event.target as HTMLImageElement).src = siteConfig.brand.logo;
+                    (event.target as HTMLImageElement).src = brand.logo;
                   }}
                 />
               </motion.button>

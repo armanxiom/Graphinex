@@ -5,9 +5,10 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
-import { useState, useEffect, type PointerEvent as ReactPointerEvent } from 'react';
+import { brand, contact, navigation } from '../data/siteConfig';
+import { useState, useEffect, type Key, type PointerEvent as ReactPointerEvent } from 'react';
 import { ChevronRight, Menu, Moon, SunMedium, X } from 'lucide-react';
+import { OptimizedImage } from './OptimizedImage';
 
 const activityItems = [
   "Client from Dubai booked Branding Package",
@@ -29,6 +30,7 @@ function HoverNavItem({
   to,
   label
 }: {
+  key?: Key;
   to: string;
   label: string;
 }) {
@@ -240,11 +242,11 @@ export const Navbar = () => {
             </p>
           </div>
 
-          <a
-            href={siteConfig.contact.whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            onPointerEnter={handleLiquidPointer}
+            <a
+              href={contact.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              onPointerEnter={handleLiquidPointer}
             onPointerMove={handleLiquidPointer}
             onPointerLeave={resetLiquidPointer}
             onFocus={(event) => {
@@ -266,20 +268,21 @@ export const Navbar = () => {
       <nav className="flex items-center justify-center py-3 md:py-4" id="navbar">
         <div className="hidden md:flex w-[min(94vw,1120px)] items-center justify-between gap-4 rounded-full border border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] px-4 py-3 shadow-[0_22px_64px_rgba(15,15,15,0.12)] backdrop-blur-2xl">
           <Link to="/" className="flex items-center gap-2 group z-[60] shrink-0" id="nav-logo">
-            <img
-              src={siteConfig.brand.logo}
-              alt={siteConfig.brand.name}
+            <OptimizedImage
+              src={brand.logo}
+              alt={brand.name}
+              width={32}
+              height={32}
               className="w-8 h-auto transition-transform duration-300 group-hover:scale-105 motion-optimised"
-              loading="eager"
-              decoding="async"
+              priority
             />
             <span className="ios-bold text-sm uppercase whitespace-nowrap text-brand-dark">
-              {siteConfig.brand.name}
+              {brand.name}
             </span>
           </Link>
 
           <div className="flex items-center gap-2 rounded-full border border-[color:var(--nav-border)] bg-[color:var(--nav-chip-surface)] px-2 py-2 shadow-[0_12px_40px_rgba(15,15,15,0.08)] backdrop-blur-xl">
-            {siteConfig.navigation.map((item) => (
+            {navigation.map((item) => (
               <HoverNavItem key={item.href} to={item.href} label={item.name} />
             ))}
           </div>
@@ -287,7 +290,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-3">
             <ThemeToggle theme={theme} onToggle={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))} />
             <a
-              href={siteConfig.contact.whatsapp}
+              href={contact.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               onPointerEnter={handleLiquidPointer}
@@ -310,15 +313,16 @@ export const Navbar = () => {
 
         <div className="flex w-full items-center justify-between px-4 md:hidden">
           <Link to="/" className="flex items-center gap-2 group z-[60]">
-            <img
-              src={siteConfig.brand.logo}
-              alt={siteConfig.brand.name}
+            <OptimizedImage
+              src={brand.logo}
+              alt={brand.name}
+              width={32}
+              height={32}
               className="w-8 h-auto transition-transform duration-300 group-hover:scale-105 motion-optimised"
-              loading="eager"
-              decoding="async"
+              priority
             />
             <span className="text-sm font-semibold text-brand-dark tracking-tight uppercase whitespace-nowrap">
-              {siteConfig.brand.name}
+              {brand.name}
             </span>
           </Link>
 
@@ -374,7 +378,7 @@ export const Navbar = () => {
                         <p className="mobile-menu-title" id="mobile-menu-title">
                           Menu
                         </p>
-                        <h2 className="mobile-menu-heading mt-2">{siteConfig.brand.name}</h2>
+                        <h2 className="mobile-menu-heading mt-2">{brand.name}</h2>
                       </div>
                       <button
                         type="button"
@@ -387,30 +391,31 @@ export const Navbar = () => {
                     </div>
 
                     <div className="mobile-menu-brand mt-4">
-                      <img
-                        src={siteConfig.brand.logo}
-                        alt={siteConfig.brand.name}
+                    <OptimizedImage
+                        src={brand.logo}
+                        alt={brand.name}
+                        width={44}
+                        height={44}
                         className="h-11 w-11 shrink-0 rounded-full object-contain"
-                        loading="eager"
-                        decoding="async"
+                        priority
                       />
                       <div className="min-w-0">
-                        <p className="mobile-menu-brand__name">{siteConfig.brand.name}</p>
-                        <p className="mobile-menu-brand__meta">{siteConfig.brand.tagline}</p>
+                        <p className="mobile-menu-brand__name">{brand.name}</p>
+                        <p className="mobile-menu-brand__meta">{brand.tagline}</p>
                       </div>
                     </div>
 
                     <div className="mt-3 flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:var(--page-muted)]">
-                      <span>{siteConfig.brand.location}</span>
+                      <span>{brand.location}</span>
                       <span className="h-1 w-1 rounded-full bg-brand-orange" aria-hidden="true" />
-                      <span>{siteConfig.brand.reach}</span>
+                      <span>{brand.reach}</span>
                     </div>
                   </div>
 
                   <div className="px-4 py-4">
                     <p className="mobile-menu-section">Quick links</p>
                     <nav className="mobile-menu-nav mt-3" aria-label="Mobile navigation">
-                      {siteConfig.navigation.map((item) => (
+                      {navigation.map((item) => (
                         <Link
                           key={item.href}
                           to={item.href}
@@ -433,7 +438,7 @@ export const Navbar = () => {
 
                   <div className="mobile-menu-footer">
                     <a
-                      href={siteConfig.contact.whatsapp}
+                      href={contact.whatsapp}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={closeMenu}

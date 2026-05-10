@@ -9,6 +9,19 @@ import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
 import { useRevealOnView } from '../hooks/useRevealOnView';
 import { useIsMobileViewport } from '../hooks/useMediaQuery';
+import { homePortfolioCollections } from '../data/siteConfig';
+import { useDevicePerformance } from '../lib/performance';
+import { getOptimizedImageSource } from '../lib/image';
+import { OptimizedImage } from './OptimizedImage';
+
+type MediaItem = {
+  type: 'video' | 'image';
+  title: string;
+  category: string;
+  src: string;
+  poster?: string;
+  ratio?: 'landscape' | 'square';
+};
 
 type SectionKey = 'video-editing' | 'graphic-design' | 'branding';
 
@@ -43,18 +56,20 @@ export function MediaSection({
 }: {
   id: SectionKey;
   title: string;
-  items: any[];
+  items: ReadonlyArray<MediaItem>;
   active?: boolean;
   registerRef?: (node: HTMLElement | null) => void;
 }) {
   const isSingleVideoFocus = id === 'video-editing' && items.length === 1 && items[0]?.type === 'video';
   const isMobileViewport = useIsMobileViewport();
+  const performance = useDevicePerformance();
   const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
     rootMargin: isMobileViewport ? '900px 0px' : '560px 0px',
     threshold: 0.08
   });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selectedMedia = selectedIndex === null ? null : items[selectedIndex];
+  const imagePriorityCount = isMobileViewport ? 2 : 1;
 
   const goToPrevious = () => {
     setSelectedIndex((current) => {
@@ -94,10 +109,16 @@ export function MediaSection({
 
         {isSingleVideoFocus ? (
           <div className="flex justify-center">
-              {items.map((item: any, idx: number) => (
+              {items.map((item, idx) => (
                 <motion.div
                   key={`${id}-${idx}`}
-                  initial={isMobileViewport ? { opacity: 0, scale: 0.995 } : { opacity: 0, y: 20 }}
+                  initial={
+                    !performance.shouldUsePremiumMotion
+                      ? { opacity: 0 }
+                      : isMobileViewport
+                        ? { opacity: 0, scale: 0.995 }
+                        : { opacity: 0, y: 20 }
+                  }
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={
                     isMobileViewport
@@ -111,22 +132,23 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster}
+                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay={mediaReady}
+                    autoPlay={mediaReady && performance.shouldAutoplayMedia}
                     muted
-                    loop={mediaReady}
+                    loop={mediaReady && performance.shouldAutoplayMedia}
                     playsInline
-                    preload={mediaReady ? 'metadata' : 'none'}
+                    preload={mediaReady && performance.shouldAutoplayMedia ? 'metadata' : 'none'}
                   />
                 ) : (
-                  <img
+                  <OptimizedImage
                     src={item.src}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    fetchPriority="low"
-                    decoding="async"
+                    pictureClassName="absolute inset-0"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority={false}
+                    loading={idx < imagePriorityCount ? 'eager' : 'lazy'}
+                    fetchPriority={idx < imagePriorityCount ? 'high' : 'low'}
                   />
                 )}
 
@@ -144,15 +166,21 @@ export function MediaSection({
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-4">
-            {items.map((item: any, idx: number) => (
-              <motion.div
-                key={`${id}-${idx}`}
-                initial={isMobileViewport ? { opacity: 0, scale: 0.995 } : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={
-                  isMobileViewport
-                    ? { duration: 0.32, delay: idx * 0.025, ease: [0.22, 1, 0.36, 1] }
-                    : { duration: 0.45, delay: idx * 0.05 }
+            {items.map((item, idx) => (
+                <motion.div
+                  key={`${id}-${idx}`}
+                  initial={
+                    !performance.shouldUsePremiumMotion
+                      ? { opacity: 0 }
+                      : isMobileViewport
+                        ? { opacity: 0, scale: 0.995 }
+                        : { opacity: 0, y: 20 }
+                  }
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={
+                    isMobileViewport
+                      ? { duration: 0.32, delay: idx * 0.025, ease: [0.22, 1, 0.36, 1] }
+                      : { duration: 0.45, delay: idx * 0.05 }
                 }
                 viewport={{ once: true, margin: '-80px' }}
                 onClick={() => setSelectedIndex(idx)}
@@ -161,22 +189,21 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster}
+                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    autoPlay={idx === 0 && mediaReady}
+                    autoPlay={idx === 0 && mediaReady && performance.shouldAutoplayMedia}
                     muted
-                    loop={idx === 0 && mediaReady}
+                    loop={idx === 0 && mediaReady && performance.shouldAutoplayMedia}
                     playsInline
-                    preload={mediaReady ? 'metadata' : 'none'}
+                    preload={idx === 0 && mediaReady && performance.shouldAutoplayMedia ? 'metadata' : 'none'}
                   />
                 ) : (
-                  <img
+                  <OptimizedImage
                     src={item.src}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading={isMobileViewport ? 'eager' : 'lazy'}
-                    fetchPriority={isMobileViewport ? 'high' : 'low'}
-                    decoding="async"
+                    pictureClassName="absolute inset-0"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority={idx < imagePriorityCount}
                   />
                 )}
 
@@ -210,11 +237,12 @@ export function MediaSection({
 export function PortfolioCollections({
   collections
 }: {
-  collections: Record<string, any[]>;
+  collections?: Record<string, any[]>;
 }) {
-  const videoEditing = collections['video-editing'] || [];
-  const graphicDesign = collections['graphic-design'] || [];
-  const branding = collections['branding'] || [];
+  const data = collections ?? homePortfolioCollections;
+  const videoEditing = data['video-editing'] || [];
+  const graphicDesign = data['graphic-design'] || [];
+  const branding = data['branding'] || [];
 
   return (
     <>

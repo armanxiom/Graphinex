@@ -7,12 +7,15 @@ import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { siteConfig } from '../data/siteConfig';
+import { contact, hero, results } from '../data/siteConfig';
 import { useCountUp } from '../hooks/useCountUp';
+import { useDevicePerformance } from '../lib/performance';
 import { HeroFlipCard } from './HeroFlipCard';
 
-const heroBackgroundImage = new URL('../../hero background image/hero background image.jpeg', import.meta.url).href;
-const heroCardImage = new URL('../../hero card image/hero card image.png', import.meta.url).href;
+const heroBackgroundImage = '/assets/hero/hero-background.webp';
+const heroBackgroundImageAvif = '/assets/hero/hero-background.avif';
+const heroCardImage = '/assets/hero/hero-card.webp';
+const heroCardImageAvif = '/assets/hero/hero-card.avif';
 
 function parseStatValue(value: string) {
   const trimmed = value.trim();
@@ -86,12 +89,14 @@ function HeroStatValue({
 export const Hero = () => {
   const heroRef = useRef<HTMLElement | null>(null);
   const statsRef = useRef<HTMLDivElement | null>(null);
-  const reduceMotion = useReducedMotion();
+  const performance = useDevicePerformance();
+  const prefersReducedMotion = Boolean(useReducedMotion());
+  const simplifyMotion = prefersReducedMotion || !performance.shouldUsePremiumMotion;
   const [statsActive, setStatsActive] = useState(false);
 
-  const headingWords = useMemo(() => siteConfig.hero.heading.split(/\s+/), []);
+  const headingWords = useMemo(() => hero.heading.split(/\s+/), []);
   const highlightWords = useMemo(
-    () => new Set(siteConfig.hero.headingHighlights.map((word) => word.toLowerCase())),
+    () => new Set(hero.headingHighlights.map((word) => word.toLowerCase())),
     []
   );
 
@@ -127,15 +132,19 @@ export const Hero = () => {
       id="hero"
     >
       <div className="absolute inset-0 -z-30 overflow-hidden">
-        <img
-          src={heroBackgroundImage}
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-          className="h-full w-full object-cover object-center"
-        />
+        <picture>
+          <source srcSet={heroBackgroundImageAvif} type="image/avif" />
+          <source srcSet={heroBackgroundImage} type="image/webp" />
+          <img
+            src={heroBackgroundImage}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center"
+          />
+        </picture>
       </div>
 
       <div className="absolute inset-0 -z-20 bg-[linear-gradient(120deg,rgba(8,8,8,0.88),rgba(8,8,8,0.64)_42%,rgba(8,8,8,0.58)_64%,rgba(8,8,8,0.82))]" />
@@ -144,8 +153,8 @@ export const Hero = () => {
       <div className="container-boxed relative z-10 grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <div className="z-10" id="hero-text">
           <motion.span
-            initial={{ opacity: 0, y: 14, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: 'blur(10px)' }}
+            animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="glass-pill-black font-hero-ui mb-7 inline-flex px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.28em] text-white"
           >
@@ -160,8 +169,8 @@ export const Hero = () => {
               return (
                 <span key={`${word}-${index}`} className="inline-block overflow-hidden align-bottom">
                   <motion.span
-                    initial={reduceMotion ? false : { opacity: 0, y: '110%' }}
-                    animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: '0%' }}
+                    initial={simplifyMotion ? false : { opacity: 0, y: '110%' }}
+                    animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: '0%' }}
                     transition={{
                       duration: 0.72,
                       delay: 0.08 + index * 0.08,
@@ -177,22 +186,22 @@ export const Hero = () => {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
+            animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.62, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8 max-w-xl text-base leading-8 text-white/80 md:text-lg"
           >
-            {siteConfig.hero.subheading}
+            {hero.subheading}
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
+            animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: 0.56, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="mb-10 flex flex-wrap gap-3"
           >
             <a
-              href={siteConfig.contact.whatsapp}
+              href={contact.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               className="premium-button rounded-full bg-brand-orange px-6 text-white"
@@ -211,20 +220,20 @@ export const Hero = () => {
 
           <motion.div
             ref={statsRef}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
+            animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: 0.56, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="hero-stage__stats grid max-w-2xl grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4"
           >
-            {siteConfig.results.map((res, i) => (
+            {results.map((res, i) => (
               <motion.div
                 key={res.label}
-                initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(8px)' }}
+                animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.5, delay: 0.58 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 className="hero-stage__stat rounded-[1.05rem] border border-white/12 bg-white/8 px-3 py-3 backdrop-blur-md sm:rounded-[1.25rem] sm:px-4 sm:py-4"
               >
-                <HeroStatValue value={res.value} active={statsActive} reduceMotion={Boolean(reduceMotion)} />
+                <HeroStatValue value={res.value} active={statsActive} reduceMotion={prefersReducedMotion} />
                 <div className="hero-stage__stat-label mt-1.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/62 sm:mt-2 sm:text-[10px] sm:tracking-[0.2em]">
                   {res.label}
                 </div>
@@ -234,7 +243,12 @@ export const Hero = () => {
         </div>
 
         <div className="relative mt-10 lg:mt-0" id="hero-media">
-          <HeroFlipCard imageSrc={heroCardImage} alt="Graphinex Studio workspace" triggerRef={heroRef} />
+          <HeroFlipCard
+            imageSrc={heroCardImage}
+            imageSrcAvif={heroCardImageAvif}
+            alt="Graphinex Studio workspace"
+            triggerRef={heroRef}
+          />
         </div>
       </div>
     </section>

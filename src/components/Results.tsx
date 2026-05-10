@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
+import { useEffect, useRef, useState, type Key } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
+import { results as resultMetrics } from '../data/siteConfig';
 import { useCountUp } from '../hooks/useCountUp';
+import { useDevicePerformance } from '../lib/performance';
 
 type StatValueKind = 'count' | 'text';
 
@@ -64,6 +65,9 @@ export const Results = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
   const [playId, setPlayId] = useState(0);
+  const performance = useDevicePerformance();
+  const prefersReducedMotion = Boolean(useReducedMotion());
+  const simplifyMotion = prefersReducedMotion || !performance.shouldUsePremiumMotion;
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -99,8 +103,8 @@ export const Results = () => {
       <div className="container-boxed relative z-10">
         <div className="mb-14 max-w-3xl">
           <motion.span
-            initial={{ opacity: 0, y: 12, filter: 'blur(8px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 12, filter: 'blur(8px)' }}
+            whileInView={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
             className="section-kicker"
@@ -108,8 +112,8 @@ export const Results = () => {
             Our Impact
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
+            whileInView={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
             className="ios-bold text-[clamp(2.1rem,8.5vw,4.8rem)] uppercase leading-[1.02] text-white"
@@ -122,10 +126,10 @@ export const Results = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-6">
-          {siteConfig.results.map((result, index) => (
+          {resultMetrics.map((result, index) => (
             <motion.div
               key={result.label}
-              initial={{ opacity: 0, y: 16, scale: 0.99 }}
+              initial={simplifyMotion ? { opacity: 0, y: 12, scale: 0.995 } : { opacity: 0, y: 16, scale: 0.99 }}
               animate={hasEntered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.99 }}
               transition={{ duration: 0.62, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="group rounded-[1.25rem] border border-white/8 bg-white/[0.03] px-4 py-5 backdrop-blur-sm md:rounded-[1.5rem] md:px-5 md:py-6"
@@ -146,11 +150,17 @@ function StatValue({
   result,
   active
 }: {
+  key?: Key;
   result: string;
   active: boolean;
 }) {
+  const performance = useDevicePerformance();
   const parsed = parseStatValue(result);
-  const current = useCountUp(active && parsed.kind === 'count', parsed.kind === 'count' ? parsed.target : 0, 1300);
+  const current = useCountUp(
+    active && parsed.kind === 'count' && !performance.isLowEnd,
+    parsed.kind === 'count' ? parsed.target : 0,
+    1300
+  );
 
   if (parsed.kind === 'text') {
     return (

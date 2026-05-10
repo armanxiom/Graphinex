@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useRevealOnView } from '../hooks/useRevealOnView';
 import { useIsMobileViewport } from '../hooks/useMediaQuery';
+import { useDevicePerformance } from '../lib/performance';
 
 type BTSItem = {
   id: string;
@@ -88,6 +89,7 @@ function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
 export function BehindTheScene() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const isMobileViewport = useIsMobileViewport();
+  const performance = useDevicePerformance();
   const { ref: sectionRevealRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
     rootMargin: isMobileViewport ? '1000px 0px' : '700px 0px',
     threshold: 0.05
@@ -210,10 +212,16 @@ export function BehindTheScene() {
                   <video
                     src={mediaReady ? buildVideoSrc(item.fileName) : undefined}
                     muted
-                    autoPlay={mediaReady}
-                    loop={mediaReady}
+                    autoPlay={mediaReady && performance.shouldAutoplayMedia}
+                    loop={mediaReady && performance.shouldAutoplayMedia}
                     playsInline
-                    preload={isMobileViewport ? 'metadata' : mediaReady ? 'auto' : 'none'}
+                    preload={
+                      mediaReady && performance.shouldAutoplayMedia
+                        ? isMobileViewport
+                          ? 'metadata'
+                          : 'auto'
+                        : 'none'
+                    }
                     aria-label={`Graphinex behind the scene clip ${index + 1}`}
                     className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                     style={{ objectPosition: item.objectPosition }}

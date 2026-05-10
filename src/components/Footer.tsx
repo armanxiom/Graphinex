@@ -1,7 +1,8 @@
 import { motion } from 'motion/react';
 import { Instagram, Linkedin, Twitter, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { siteConfig } from '../data/siteConfig';
+import { brand, contact, navigation, socials, trustCertificates } from '../data/siteConfig';
+import { OptimizedImage } from './OptimizedImage';
 
 const socialCardMeta = [
   {
@@ -39,9 +40,9 @@ const socialCardMeta = [
 ] as const;
 
 export const Footer = () => {
-  const registrationLinks = siteConfig.trustCertificates || [];
+  const registrationLinks = trustCertificates || [];
   const socialCards = socialCardMeta.map((item) => {
-    const configured = siteConfig.socials.find((social) => social.name === item.name);
+    const configured = socials.find((social) => social.name === item.name);
 
     return {
       ...item,
@@ -63,15 +64,14 @@ export const Footer = () => {
           id="footer-brand"
         >
           <div className="flex items-center gap-3">
-            <img
-              src={siteConfig.brand.logo}
-              alt={siteConfig.brand.name}
+            <OptimizedImage
+              src={brand.logo}
+              alt={brand.name}
               className="motion-optimised h-auto w-8"
-              loading="lazy"
-              decoding="async"
+              priority
             />
             <span className="ios-bold text-base uppercase tracking-[-0.04em] text-white">
-              {siteConfig.brand.name}
+              {brand.name}
             </span>
           </div>
 
@@ -150,7 +150,7 @@ export const Footer = () => {
               Navigation
             </span>
             <div className="flex flex-col gap-3">
-              {siteConfig.navigation.map((item) => (
+              {navigation.map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
@@ -167,16 +167,16 @@ export const Footer = () => {
             <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/38">
               Contact
             </span>
-            <span className="text-sm font-medium text-white">{siteConfig.contact.phone}</span>
+            <span className="text-sm font-medium text-white">{contact.phone}</span>
             <a
-              href={`mailto:${siteConfig.contact.email}`}
+              href={`mailto:${contact.email}`}
               className="text-sm text-white/68 transition-colors duration-300 hover:text-white"
             >
-              {siteConfig.contact.email}
+              {contact.email}
             </a>
             <div className="pt-2 text-[12px] leading-6 text-white/46">
-              <p>{siteConfig.brand.location}</p>
-              <p className="uppercase tracking-[0.18em]">{siteConfig.brand.reach}</p>
+              <p>{brand.location}</p>
+              <p className="uppercase tracking-[0.18em]">{brand.reach}</p>
             </div>
           </div>
         </motion.div>
@@ -274,7 +274,7 @@ export const Footer = () => {
 
       <div className="relative mx-auto mt-10 flex max-w-6xl flex-col items-center justify-between gap-4 border-t border-white/10 pt-5 text-[11px] text-white/38 md:flex-row">
         <span className="text-center sm:text-left">
-          &copy; {new Date().getFullYear()} {siteConfig.brand.name}. All rights reserved.
+          &copy; {new Date().getFullYear()} {brand.name}. All rights reserved.
         </span>
         <div className="flex gap-6">
           <span className="transition-colors duration-300 hover:text-white">Privacy Policy</span>

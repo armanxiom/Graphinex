@@ -3,72 +3,94 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef, type RefObject } from 'react';
 import { useReducedMotion } from 'motion/react';
-import { useLayoutEffect, useRef, type RefObject } from 'react';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useDevicePerformance } from '../lib/performance';
 
 type HeroFlipCardProps = {
   imageSrc: string;
+  imageSrcAvif?: string;
   alt: string;
   triggerRef: RefObject<HTMLElement | null>;
 };
 
-export function HeroFlipCard({ imageSrc, alt, triggerRef }: HeroFlipCardProps) {
+export function HeroFlipCard({ imageSrc, imageSrcAvif, alt, triggerRef }: HeroFlipCardProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const reduceMotion = useReducedMotion();
+  const performance = useDevicePerformance();
+  const reduceMotion = Boolean(useReducedMotion()) || !performance.shouldUsePremiumMotion;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const container = containerRef.current;
     const card = cardRef.current;
     const trigger = triggerRef.current;
 
-    if (!container || !card || !trigger || reduceMotion) {
+    if (!container || !card || !trigger || reduceMotion || !performance.shouldUseScrollFX) {
       return;
     }
 
-    const mm = gsap.matchMedia();
+    let disposed = false;
+    let cleanup = () => undefined;
 
-    const createTimeline = (endDistance: number, finalScale: number) => {
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger,
-          pin: container,
-          start: 'top top',
-          end: `+=${endDistance}`,
-          scrub: 1,
-          pinSpacing: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true
-        }
-      });
+    const init = async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import('gsap'),
+        import('gsap/ScrollTrigger')
+      ]);
 
-      timeline.to(
-        card,
-        {
-          rotateY: 180,
-          scale: finalScale,
-          ease: 'none',
-          transformOrigin: 'center center',
-          transformPerspective: 1000
-        },
-        0
-      );
+      if (disposed) {
+        return;
+      }
 
-      return timeline;
+      gsap.registerPlugin(ScrollTrigger);
+
+      const mm = gsap.matchMedia();
+
+      const createTimeline = (endDistance: number, finalScale: number) => {
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger,
+            pin: container,
+            start: 'top top',
+            end: `+=${endDistance}`,
+            scrub: 1,
+            pinSpacing: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true
+          }
+        });
+
+        timeline.to(
+          card,
+          {
+            rotateY: 180,
+            scale: finalScale,
+            ease: 'none',
+            transformOrigin: 'center center',
+            transformPerspective: 1000
+          },
+          0
+        );
+
+        return timeline;
+      };
+
+      mm.add('(min-width: 1024px)', () => createTimeline(800, 0.85));
+      mm.add('(min-width: 768px) and (max-width: 1023px)', () => createTimeline(680, 0.88));
+      mm.add('(max-width: 767px)', () => createTimeline(560, 0.92));
+
+      cleanup = () => {
+        mm.revert();
+      };
     };
 
-    mm.add('(min-width: 1024px)', () => createTimeline(800, 0.85));
-    mm.add('(min-width: 768px) and (max-width: 1023px)', () => createTimeline(680, 0.88));
-    mm.add('(max-width: 767px)', () => createTimeline(560, 0.92));
+    void init();
 
     return () => {
-      mm.revert();
+      disposed = true;
+      cleanup();
     };
-  }, [reduceMotion, triggerRef]);
+  }, [performance.shouldUsePremiumMotion, performance.shouldUseScrollFX, reduceMotion, triggerRef]);
 
   return (
     <div
@@ -77,27 +99,35 @@ export function HeroFlipCard({ imageSrc, alt, triggerRef }: HeroFlipCardProps) {
     >
       <div ref={cardRef} className="card-3d">
         <div className="card-face card-front">
-          <img
-            src={imageSrc}
-            alt={alt}
-            className="card-image"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            draggable="false"
-          />
+          <picture>
+            {imageSrcAvif ? <source srcSet={imageSrcAvif} type="image/avif" /> : null}
+            <source srcSet={imageSrc} type="image/webp" />
+            <img
+              src={imageSrc}
+              alt={alt}
+              className="card-image"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              draggable="false"
+            />
+          </picture>
         </div>
 
         <div className="card-face card-back">
-          <img
-            src={imageSrc}
-            alt={alt}
-            className="card-image"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            draggable="false"
-          />
+          <picture>
+            {imageSrcAvif ? <source srcSet={imageSrcAvif} type="image/avif" /> : null}
+            <source srcSet={imageSrc} type="image/webp" />
+            <img
+              src={imageSrc}
+              alt={alt}
+              className="card-image"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              draggable="false"
+            />
+          </picture>
         </div>
       </div>
 

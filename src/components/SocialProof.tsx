@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
+import { reviews } from '../data/siteConfig';
+
+type Review = (typeof reviews)[number];
+const reviewList = reviews as ReadonlyArray<Review>;
 
 export const SocialProof = () => {
-  const [currentReview, setCurrentReview] = useState<any>(null);
+  const [currentReview, setCurrentReview] = useState<(Review & { id: number }) | null>(null);
 
   useEffect(() => {
-    const reviews = siteConfig.reviews;
-    if (!reviews || reviews.length === 0) return;
+    if (reviewList.length < 1) return;
 
     const cycleReview = () => {
-      const randomIndex = Math.floor(Math.random() * reviews.length);
-      setCurrentReview({ ...reviews[randomIndex], id: Date.now() });
+      const randomIndex = Math.floor(Math.random() * reviewList.length);
+      setCurrentReview({ ...reviewList[randomIndex], id: Date.now() });
     };
 
     const interval = window.setInterval(cycleReview, 5000);

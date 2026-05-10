@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Expand, Minimize2, X } from 'lucide-react';
+import { OptimizedImage } from './OptimizedImage';
+import { getOptimizedImageSource } from '../lib/image';
 
 type MediaItem = {
   type: string;
@@ -184,7 +186,7 @@ export function MediaLightbox({
               {media.type === 'video' ? (
                 <video
                   src={media.src}
-                  poster={media.poster}
+                  poster={media.poster ? getOptimizedImageSource(media.poster, 'webp') : undefined}
                   controls
                   autoPlay
                   playsInline
@@ -194,12 +196,12 @@ export function MediaLightbox({
                   className="h-full w-full bg-black object-contain"
                 />
               ) : (
-                <img
+                <OptimizedImage
                   src={media.src}
                   alt={media.title || 'Graphinex asset'}
                   className="h-full w-full bg-black object-contain"
-                  loading="eager"
-                  decoding="async"
+                  pictureClassName="block h-full w-full"
+                  priority
                 />
               )}
             </motion.div>

@@ -4,12 +4,15 @@
  */
 
 import { motion } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
+import { homeFeaturedWorks } from '../data/siteConfig';
 import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
 import { useRevealOnView } from '../hooks/useRevealOnView';
 import { useIsMobileViewport } from '../hooks/useMediaQuery';
+import { useDevicePerformance } from '../lib/performance';
+import { getOptimizedImageSource } from '../lib/image';
+import { OptimizedImage } from './OptimizedImage';
 
 type FeaturedWorkItem = {
   type: string;
@@ -23,13 +26,15 @@ type FeaturedWorkItem = {
 
 export const Portfolio = () => {
   const isMobileViewport = useIsMobileViewport();
+  const performance = useDevicePerformance();
   const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
     rootMargin: isMobileViewport ? '900px 0px' : '560px 0px',
     threshold: 0.08
   });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const featuredWorks = (siteConfig.homeFeaturedWorks || siteConfig.featuredWorks.slice(0, 4)) as FeaturedWorkItem[];
+  const featuredWorks = homeFeaturedWorks as ReadonlyArray<FeaturedWorkItem>;
   const selectedMedia = selectedIndex === null ? null : featuredWorks[selectedIndex];
+  const imagePriorityCount = isMobileViewport ? 2 : 1;
 
   const goToPrevious = () => {
     setSelectedIndex((current) => {
@@ -51,8 +56,8 @@ export const Portfolio = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="max-w-xl">
             <motion.span
-              initial={{ opacity: 0, y: 12, filter: 'blur(8px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 12, filter: 'blur(8px)' }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.24em] mb-6 block"
@@ -60,8 +65,8 @@ export const Portfolio = () => {
               Our Portfolio
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.05] mb-0 ios-bold"
@@ -75,9 +80,15 @@ export const Portfolio = () => {
       <div className="container-boxed">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-5">
           {featuredWorks.map((item, index) => (
-            <motion.div
+              <motion.div
               key={index}
-              initial={isMobileViewport ? { opacity: 0, scale: 0.995 } : { opacity: 0, y: 18, scale: 0.99 }}
+              initial={
+                !performance.shouldUsePremiumMotion
+                  ? { opacity: 0 }
+                  : isMobileViewport
+                    ? { opacity: 0, scale: 0.995 }
+                    : { opacity: 0, y: 18, scale: 0.99 }
+              }
               whileInView={{ opacity: 1, y: 0 }}
               transition={
                 isMobileViewport
@@ -101,32 +112,31 @@ export const Portfolio = () => {
                   index === 0 ? (
                     <video 
                       src={item.src} 
-                      poster={item.poster}
-                      autoPlay={mediaReady} 
+                      poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                      autoPlay={mediaReady && performance.shouldAutoplayMedia} 
                       muted 
-                      loop={mediaReady}
-                    playsInline
-                    preload={mediaReady ? 'metadata' : 'none'}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                      loop={mediaReady && performance.shouldAutoplayMedia}
+                      playsInline
+                      preload={mediaReady && performance.shouldAutoplayMedia ? 'metadata' : 'none'}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                 ) : (
                     <img
-                        src={item.poster}
-                        alt={item.title}
-                        loading={isMobileViewport ? 'eager' : 'lazy'}
-                        fetchPriority={isMobileViewport ? 'high' : 'low'}
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
+                      src={item.poster ? getOptimizedImageSource(item.poster, 'webp') : item.src}
+                      alt={item.title}
+                      loading={index < imagePriorityCount ? 'eager' : 'lazy'}
+                      fetchPriority={index < imagePriorityCount ? 'high' : 'low'}
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                 )
               ) : (
-                <img 
-                  src={item.src} 
+                <OptimizedImage
+                  src={item.src}
                   alt={item.title}
-                  loading="lazy"
-                  fetchPriority="low"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  pictureClassName="absolute inset-0"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  priority={index < imagePriorityCount}
                 />
               )}
               

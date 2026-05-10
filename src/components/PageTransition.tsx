@@ -1,15 +1,15 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
-
-const transition = {
-  duration: 0.35,
-  ease: [0.22, 1, 0.36, 1] as const
-};
+import { useDevicePerformance } from '../lib/performance';
 
 export function PageTransition({ children }: { children: ReactNode }) {
   const location = useLocation();
-  const reduceMotion = useReducedMotion();
+  const performance = useDevicePerformance();
+  const reduceMotion = Boolean(useReducedMotion()) || !performance.shouldUsePremiumMotion;
+  const transition = performance.shouldUsePremiumMotion
+    ? { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }
+    : { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const };
 
   const variants = reduceMotion
     ? {
@@ -33,7 +33,11 @@ export function PageTransition({ children }: { children: ReactNode }) {
         exit="exit"
         variants={variants}
         transition={transition}
-        style={{ willChange: 'transform, opacity, filter' }}
+        style={{
+          willChange: performance.shouldUsePremiumMotion
+            ? 'transform, opacity, filter'
+            : 'transform, opacity'
+        }}
       >
         {children}
       </motion.div>

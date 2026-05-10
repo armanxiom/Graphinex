@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type Key } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
+import { testimonials as testimonialData } from '../data/siteConfig';
+import { useDevicePerformance } from '../lib/performance';
 
-type Testimonial = (typeof siteConfig.testimonials)[number];
+type Testimonial = (typeof testimonialData)[number];
 
 const AUTO_ROTATE_MS = 6200;
 
@@ -51,6 +52,7 @@ function TestimonialCard({
   testimonial,
   reducedMotion
 }: {
+  key?: Key;
   testimonial: Testimonial;
   reducedMotion: boolean;
 }) {
@@ -149,9 +151,10 @@ export const Testimonials = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCycling, setIsCycling] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const performance = useDevicePerformance();
+  const reduceMotion = Boolean(useReducedMotion()) || !performance.shouldUsePremiumMotion;
 
-  const testimonials = siteConfig.testimonials || [];
+  const testimonials = testimonialData || [];
 
   useEffect(() => {
     const node = sectionRef.current;
