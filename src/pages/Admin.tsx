@@ -1,211 +1,124 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import type { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
 import {
   Activity,
   ArrowLeft,
+  ArrowRight,
   Database,
   Eye,
   FileText,
   Image,
   Loader2,
-  LogOut,
   Pencil,
   Plus,
   RefreshCw,
   Save,
   Search,
   Settings,
-  Shield,
   Sparkles,
   Trash2,
   Upload,
   Video,
-  X
+  X,
+  ChevronDown,
+  ChevronUp,
+  Copy
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { upload } from '@vercel/blob/client';
-import { announceContentRefresh, enablePreviewMode } from '../state/site-content';
+import { announceContentRefresh } from '../state/site-content';
 import { cloneSiteContent, defaultSiteContent, type SiteContent } from '../lib/siteContent';
 
-type AdminRole = {
-  slug: string;
-  name: string;
-  permissions: Record<string, boolean>;
+type MediaKind = 'image' | 'video' | 'document' | 'logo';
+
+type AdminSection = {
+  key: string;
+  group: string;
+  title: string;
+  summary: string;
+  assets: AdminMedia[];
+  editable: string[];
+  data: unknown;
 };
 
-type AdminUser = {
+type AdminMedia = {
   id: string;
-  email: string;
-  displayName: string;
-  avatarUrl: string | null;
-  role: AdminRole;
-  status: string;
-};
-
-type AdminRow = Record<string, any> & {
-  id?: string;
-  slug?: string;
-  resource_key?: string;
-  payload?: Record<string, any>;
-  status?: string;
-  sort_order?: number;
-  featured?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  name?: string;
+  title?: string;
+  altText?: string;
+  kind?: MediaKind;
+  category?: string;
+  root?: string;
+  sourcePath?: string;
+  publicPath?: string;
+  previewUrl?: string;
+  path?: string;
+  sizeBytes?: number;
+  modifiedAt?: string;
+  uploaded?: boolean;
+  protected?: boolean;
+  usedIn?: string[];
   filename?: string;
-  kind?: string;
-  public_url?: string;
-  preview_url?: string;
-  mime_type?: string;
-  size_bytes?: number;
-  storage_provider?: string;
-  storage_path?: string;
-  alt_text?: string;
+  mimeType?: string;
   width?: number;
   height?: number;
-  duration_seconds?: number;
-  checksum?: string;
+  durationSeconds?: number;
+  notes?: string;
+  storageProvider?: string;
+  status?: string;
+};
+
+type AdminActivity = {
+  id: string;
+  action: string;
+  summary: string;
+  createdAt: string;
+  metadata?: unknown;
 };
 
 type AdminBootstrap = {
-  published: SiteContent;
-  draft: SiteContent;
-  workingCopy: SiteContent;
-  resources: Record<string, AdminRow[]>;
-  session: {
-    user: AdminUser;
-    expiresAt: string;
-    csrfToken: string;
-  };
+  content: SiteContent;
+  updatedAt: string | null;
+  version: string;
+  sections: AdminSection[];
+  media: AdminMedia[];
+  activity: AdminActivity[];
+  fileRoots: string[];
 };
 
-type EditorState = {
-  resource: string;
-  row: AdminRow | null;
-  resourceKey: string;
-  status: string;
-  sortOrder: string;
-  featured: boolean;
-  payloadText: string;
-};
-
-type UploadState = {
+type UploadDraft = {
   file: File | null;
-  kind: 'image' | 'video' | 'logo' | 'document';
   title: string;
   altText: string;
-  collectionKey: string;
-  progress: number;
-  busy: boolean;
-  error: string | null;
-  notice: string | null;
+  kind: MediaKind;
+  category: string;
+  notes: string;
 };
 
-type TabKey = 'overview' | 'content' | 'media' | 'activity' | 'settings';
-
-const CONTENT_RESOURCE_KEYS = [
-  'homepage_content',
-  'hero_sections',
-  'services',
-  'portfolio_projects',
-  'testimonials',
-  'team_members',
-  'seo_settings',
-  'contact_details',
-  'footer_content'
-] as const;
-
-const SYSTEM_RESOURCE_KEYS = ['drafts', 'published_content', 'roles', 'admin_users'] as const;
-
-const TAB_ITEMS: Array<{ key: TabKey; label: string; icon: typeof Database }> = [
-  { key: 'overview', label: 'Overview', icon: Database },
-  { key: 'content', label: 'Content', icon: FileText },
-  { key: 'media', label: 'Media', icon: Image },
-  { key: 'activity', label: 'Activity', icon: Activity },
-  { key: 'settings', label: 'Settings', icon: Settings }
-];
-
-const RESOURCE_LABELS: Record<string, string> = {
-  homepage_content: 'Homepage Content',
-  hero_sections: 'Hero Section',
-  services: 'Services',
-  portfolio_projects: 'Portfolio Projects',
-  testimonials: 'Testimonials',
-  team_members: 'Team Members',
-  media_assets: 'Media Assets',
-  seo_settings: 'SEO Settings',
-  contact_details: 'Contact Details',
-  footer_content: 'Footer Content',
-  drafts: 'Draft Snapshots',
-  published_content: 'Published Snapshots',
-  roles: 'Roles',
-  admin_users: 'Admin Users',
-  activity_logs: 'Activity Logs'
+type ReplaceDraft = {
+  file: File | null;
+  publicPath: string;
+  title: string;
+  altText: string;
+  category: string;
+  notes: string;
 };
 
-const RESOURCE_DESCRIPTIONS: Record<string, string> = {
-  homepage_content: 'Global brand, navigation, and homepage sections.',
-  hero_sections: 'Hero copy and opening banner content.',
-  services: 'Service rows powering the services block.',
-  portfolio_projects: 'Portfolio items and featured work.',
-  testimonials: 'Social proof and testimonial cards.',
-  team_members: 'Team member cards and bios.',
-  media_assets: 'Uploaded images, videos, logos, and assets.',
-  seo_settings: 'Metadata for home and portfolio pages.',
-  contact_details: 'Phone, email, and WhatsApp contact details.',
-  footer_content: 'Footer copy and legal labels.',
-  drafts: 'Current draft snapshots awaiting publish.',
-  published_content: 'Live snapshots currently serving the public site.',
-  roles: 'Role definitions and permissions.',
-  admin_users: 'Admin accounts and access levels.',
-  activity_logs: 'Recent admin actions and audit entries.'
+type FilterValue = 'all' | 'image' | 'video' | 'document' | 'logo' | 'uploaded' | 'protected';
+
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+type RequestError = Error & {
+  status?: number;
+  payload?: unknown;
 };
 
-function createFallbackBootstrap(): AdminBootstrap {
-  return {
-    published: cloneSiteContent(defaultSiteContent),
-    draft: cloneSiteContent(defaultSiteContent),
-    workingCopy: cloneSiteContent(defaultSiteContent),
-    resources: {
-      homepage_content: [],
-      hero_sections: [],
-      services: [],
-      portfolio_projects: [],
-      testimonials: [],
-      team_members: [],
-      media_assets: [],
-      seo_settings: [],
-      contact_details: [],
-      footer_content: [],
-      activity_logs: [],
-      drafts: [],
-      published_content: [],
-      roles: [],
-      admin_users: []
-    },
-    session: {
-      user: {
-        id: 'direct-access',
-        email: 'admin@graphinex.in',
-        displayName: 'Graphinex Admin',
-        avatarUrl: null,
-        role: {
-          slug: 'superadmin',
-          name: 'Super Admin',
-          permissions: { all: true }
-        },
-        status: 'active'
-      },
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
-      csrfToken: 'direct-access'
-    }
-  };
-}
+const SECTION_TABS = ['All', 'Homepage', 'Portfolio', 'Social Proof', 'Header / Footer', 'Settings'] as const;
+const MEDIA_FILTERS: FilterValue[] = ['all', 'image', 'video', 'document', 'logo', 'uploaded', 'protected'];
 
-function requestJson<T>(url: string, init: RequestInit = {}) {
+function createRequestUrl(url: string) {
   const requestUrl = new URL(url, window.location.origin);
 
-  if (requestUrl.pathname.startsWith('/api/admin/')) {
+  if (requestUrl.pathname.startsWith('/api/') && !requestUrl.pathname.startsWith('/api/public/')) {
     const accessCode = new URLSearchParams(window.location.search).get('access');
 
     if (accessCode && !requestUrl.searchParams.has('access')) {
@@ -213,130 +126,115 @@ function requestJson<T>(url: string, init: RequestInit = {}) {
     }
   }
 
-  return fetch(requestUrl.toString(), {
+  return requestUrl;
+}
+
+async function requestJson<T>(url: string, init: RequestInit = {}) {
+  const requestUrl = createRequestUrl(url);
+
+  const headers = new Headers(init.headers ?? {});
+  if (!headers.has('Accept')) {
+    headers.set('Accept', 'application/json');
+  }
+
+  if (init.body && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  const response = await fetch(requestUrl.toString(), {
     ...init,
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      ...(init.body ? { 'content-type': 'application/json' } : {}),
-      ...(init.headers ?? {})
-    }
-  }).then(async (response) => {
-    const text = await response.text();
-    let payload: any = null;
+    headers,
+    credentials: 'include'
+  });
 
-    if (text) {
-      try {
-        payload = JSON.parse(text);
-      } catch {
-        payload = text;
+  const text = await response.text();
+  let payload: any = null;
+
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = text;
+    }
+  }
+
+  if (!response.ok) {
+    const errorValue = payload && typeof payload === 'object' ? payload.message ?? payload.error ?? payload.details : payload;
+    const message =
+      typeof errorValue === 'string'
+        ? errorValue
+        : errorValue && typeof errorValue === 'object'
+          ? JSON.stringify(errorValue)
+          : `Request failed (${response.status})`;
+    throw Object.assign(new Error(message), {
+      status: response.status,
+      payload
+    }) as RequestError;
+  }
+
+  return payload as T;
+}
+
+function sendMultipart<T>(
+  url: string,
+  method: 'POST' | 'PUT',
+  body: FormData,
+  onProgress?: (progress: number) => void
+) {
+  return new Promise<T>((resolve, reject) => {
+    const requestUrl = createRequestUrl(url);
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(method, requestUrl.toString(), true);
+    xhr.withCredentials = true;
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) {
+        onProgress(Math.min(100, Math.max(0, (event.loaded / event.total) * 100)));
       }
-    }
+    };
+    xhr.onload = () => {
+      const text = xhr.responseText ?? '';
+      let payload: any = null;
 
-    if (!response.ok) {
-      const errorValue = payload && typeof payload === 'object' ? payload.error ?? payload.details ?? payload.message : payload;
-      const message =
-        typeof errorValue === 'string'
-          ? errorValue
-          : errorValue && typeof errorValue === 'object'
-            ? JSON.stringify(errorValue)
-            : `Request failed (${response.status})`;
-      throw new Error(message);
-    }
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch {
+          payload = text;
+        }
+      }
 
-    return payload as T;
+      if (xhr.status < 200 || xhr.status >= 300) {
+        const errorValue = payload && typeof payload === 'object' ? payload.message ?? payload.error ?? payload.details : payload;
+        const message =
+          typeof errorValue === 'string'
+            ? errorValue
+            : errorValue && typeof errorValue === 'object'
+              ? JSON.stringify(errorValue)
+              : `Request failed (${xhr.status})`;
+        reject(
+          Object.assign(new Error(message), {
+            status: xhr.status,
+            payload
+          }) as RequestError
+        );
+        return;
+      }
+
+      resolve(payload as T);
+    };
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.send(body);
   });
 }
 
-function friendlyResourceName(key: string) {
-  return RESOURCE_LABELS[key] ?? key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function resourceDescription(key: string) {
-  return RESOURCE_DESCRIPTIONS[key] ?? 'Editable content resource.';
-}
-
-function safeStringify(value: unknown) {
-  try {
-    return JSON.stringify(value, null, 2);
-  } catch {
-    return '{}';
-  }
-}
-
-function summarizePayload(row: AdminRow) {
-  const payload = row.payload && typeof row.payload === 'object' ? row.payload : {};
-  return (
-    row.filename ??
-    payload.title ??
-    payload.name ??
-    payload.label ??
-    payload.step ??
-    payload.heading ??
-    row.resource_key ??
-    row.slug ??
-    row.id ??
-    'Untitled'
-  );
-}
-
-function summarizeRow(row: AdminRow) {
-  const payload = row.payload && typeof row.payload === 'object' ? row.payload : {};
-  const primary = summarizePayload(row);
-  const secondary = payload.description ?? payload.subtitle ?? payload.role ?? payload.category ?? '';
-
-  return {
-    primary: String(primary),
-    secondary: String(secondary)
-  };
-}
-
-function createEditorState(resource: string, row: AdminRow | null): EditorState {
-  const payload = buildEditorPayload(resource, row);
-
-  return {
-    resource,
-    row,
-    resourceKey: String(row?.resource_key ?? row?.slug ?? row?.id ?? payload.title ?? payload.name ?? ''),
-    status: String(row?.status ?? 'published'),
-    sortOrder: String(row?.sort_order ?? 0),
-    featured: Boolean(row?.featured),
-    payloadText: safeStringify(payload)
-  };
-}
-
-function buildEditorPayload(resource: string, row: AdminRow | null) {
-  const payload = row?.payload && typeof row.payload === 'object' ? row.payload : {};
-
-  if (resource !== 'media_assets' || !row) {
-    return payload;
-  }
-
-  return {
-    ...payload,
-    filename: row.filename,
-    kind: row.kind,
-    mimeType: row.mime_type,
-    storageProvider: row.storage_provider,
-    storagePath: row.storage_path,
-    publicUrl: row.public_url,
-    previewUrl: row.preview_url,
-    altText: row.alt_text,
-    sizeBytes: row.size_bytes,
-    width: row.width,
-    height: row.height,
-    durationSeconds: row.duration_seconds,
-    checksum: row.checksum
-  };
-}
-
-function formatDate(value?: string) {
+function formatDate(value?: string | null) {
   if (!value) {
     return 'Unknown';
   }
 
   const parsed = new Date(value);
-
   if (Number.isNaN(parsed.getTime())) {
     return value;
   }
@@ -354,152 +252,758 @@ function formatBytes(size?: number) {
 
   const units = ['B', 'KB', 'MB', 'GB'];
   let value = size;
-  let unitIndex = 0;
+  let index = 0;
 
-  while (value >= 1024 && unitIndex < units.length - 1) {
+  while (value >= 1024 && index < units.length - 1) {
     value /= 1024;
-    unitIndex += 1;
+    index += 1;
   }
 
-  return `${value.toFixed(value >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+  return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
 }
 
-function hasPermission(session: AdminBootstrap['session'] | null, permission: string) {
-  const permissions = session?.user.role.permissions ?? {};
-  return Boolean(permissions.all || permissions[permission] || session?.user.role.slug === 'superadmin');
+function titleCase(value: string) {
+  return value
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
-function ResourceCard({
-  resource,
-  rows,
-  searchTerm,
-  canEdit,
-  onCreate,
-  onEdit,
-  onDelete
-}: {
-  resource: string;
-  rows: AdminRow[];
-  searchTerm: string;
-  canEdit: boolean;
-  onCreate: () => void;
-  onEdit: (row: AdminRow) => void;
-  onDelete: (row: AdminRow) => void;
-}) {
-  const filteredRows = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
+function pathLabel(pathName: string) {
+  return pathName.split('.').map(titleCase).join(' / ');
+}
 
-    if (!query) {
-      return rows;
+function getPathValue(source: any, pathName: string) {
+  return pathName.split('.').reduce((current, segment) => current?.[segment], source);
+}
+
+function setPathValue(source: any, pathName: string, nextValue: unknown) {
+  const next = structuredClone(source);
+  const segments = pathName.split('.');
+  let cursor: any = next;
+
+  for (let index = 0; index < segments.length - 1; index += 1) {
+    const segment = segments[index];
+    if (!cursor[segment] || typeof cursor[segment] !== 'object') {
+      cursor[segment] = {};
     }
+    cursor = cursor[segment];
+  }
 
-    return rows.filter((row) => {
-      const haystack = `${summarizePayload(row)} ${row.resource_key ?? ''} ${row.slug ?? ''} ${safeStringify(row.payload ?? row)}`.toLowerCase();
-      return haystack.includes(query);
-    });
-  }, [rows, searchTerm]);
+  cursor[segments[segments.length - 1]] = nextValue;
+  return next;
+}
+
+function createBlankValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return [];
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, nextValue]) => [
+        key,
+        key === 'id' ? createId() : createBlankValue(nextValue)
+      ])
+    );
+  }
+
+  if (typeof value === 'number') {
+    return 0;
+  }
+
+  if (typeof value === 'boolean') {
+    return false;
+  }
+
+  return '';
+}
+
+function getItemLabel(item: unknown, index: number) {
+  if (!item || typeof item !== 'object') {
+    return `Item ${index + 1}`;
+  }
+
+  const record = item as Record<string, unknown>;
+  return String(
+    record.title ??
+      record.name ??
+      record.label ??
+      record.step ??
+      record.heading ??
+      record.category ??
+      record.role ??
+      record.id ??
+      `Item ${index + 1}`
+  );
+}
+
+function createId() {
+  return globalThis.crypto?.randomUUID?.() ?? `item-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function isLongText(label: string, value: unknown) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  return value.length > 120 || /(description|review|quote|bio|caption|summary|message|robots|html)/i.test(label);
+}
+
+function assetKind(asset: AdminMedia) {
+  if (asset.kind) {
+    return asset.kind;
+  }
+
+  if (asset.mimeType?.startsWith('video/')) {
+    return 'video';
+  }
+
+  if (asset.mimeType?.startsWith('image/')) {
+    return 'image';
+  }
+
+  if (asset.mimeType?.includes('pdf')) {
+    return 'document';
+  }
+
+  return 'image';
+}
+
+function assetPreviewUrl(asset: AdminMedia) {
+  return asset.previewUrl ?? asset.publicPath ?? asset.path ?? '';
+}
+
+function matchesSearch(text: string, search: string) {
+  if (!search.trim()) {
+    return true;
+  }
+
+  return text.toLowerCase().includes(search.trim().toLowerCase());
+}
+
+function sectionPreviewSummary(section: AdminSection) {
+  return [
+    section.title,
+    section.group,
+    section.summary,
+    section.key,
+    ...(section.editable ?? []),
+    ...(section.assets ?? []).map((asset) => asset.publicPath ?? asset.path ?? asset.title ?? '')
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function mediaPreviewSummary(media: AdminMedia) {
+  return [
+    media.title,
+    media.name,
+    media.category,
+    media.kind,
+    media.publicPath,
+    media.path,
+    media.filename,
+    media.notes,
+    ...(media.usedIn ?? [])
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function previewGroup(asset: AdminMedia) {
+  const kind = assetKind(asset);
+
+  if (kind === 'video') {
+    return 'Video';
+  }
+
+  if (kind === 'document') {
+    return 'Document';
+  }
+
+  return 'Image';
+}
+
+function IconForKind({ kind, className }: { kind: string; className?: string }) {
+  if (kind === 'video') {
+    return <Video className={className} />;
+  }
+
+  if (kind === 'document') {
+    return <FileText className={className} />;
+  }
+
+  return <Image className={className} />;
+}
+
+function previewNode(asset: AdminMedia, className = 'h-full w-full object-cover') {
+  const url = assetPreviewUrl(asset);
+  const kind = assetKind(asset);
+
+  if (!url) {
+    return (
+      <div className="grid h-full w-full place-items-center bg-black/30 text-xs uppercase tracking-[0.22em] text-white/40">
+        No preview
+      </div>
+    );
+  }
+
+  if (kind === 'video') {
+    return <video src={url} controls muted playsInline className={className} />;
+  }
+
+  if (kind === 'document') {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-black/35 p-4 text-center">
+        <FileText className="h-9 w-9 text-white/70" />
+        <div className="text-xs uppercase tracking-[0.2em] text-white/44">PDF / Document</div>
+      </div>
+    );
+  }
+
+  return <img src={url} alt={asset.altText ?? asset.title ?? asset.name ?? 'Media asset'} className={className} />;
+}
+
+function downloadLabel(asset: AdminMedia) {
+  return asset.title ?? asset.name ?? asset.filename ?? 'Untitled asset';
+}
+
+function valueToDisplay(value: unknown) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  return JSON.stringify(value, null, 2);
+}
+
+function getRequestStatus(error: unknown) {
+  if (!error || typeof error !== 'object') {
+    return null;
+  }
+
+  const record = error as RequestError;
+  return typeof record.status === 'number' ? record.status : null;
+}
+
+function sectionAssetSummary(section: AdminSection) {
+  return section.assets.slice(0, 3);
+}
+
+function AdminBadge({
+  children,
+  tone = 'default'
+}: {
+  children: ReactNode;
+  tone?: 'default' | 'success' | 'danger' | 'muted';
+}) {
+  const toneClasses: Record<typeof tone, string> = {
+    default: 'border-white/10 bg-white/5 text-white/72',
+    success: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-100',
+    danger: 'border-red-400/20 bg-red-500/10 text-red-100',
+    muted: 'border-white/8 bg-black/20 text-white/52'
+  };
 
   return (
-    <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:p-5">
-      <div className="flex flex-col gap-4 border-b border-white/8 pb-4 sm:flex-row sm:items-end sm:justify-between">
+    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] ${toneClasses[tone]}`}>
+      {children}
+    </span>
+  );
+}
+
+function SectionCard({
+  section,
+  active,
+  onSelect
+}: {
+  section: AdminSection;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const previewAssets = sectionAssetSummary(section);
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`group overflow-hidden rounded-[1.6rem] border p-4 text-left transition-all duration-200 ${
+        active
+          ? 'border-brand-orange/45 bg-brand-orange/10 shadow-[0_18px_60px_rgba(255,122,0,0.16)]'
+          : 'border-white/10 bg-white/[0.035] hover:border-white/16 hover:bg-white/[0.05]'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/42">
-            {friendlyResourceName(resource)}
-          </div>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
-            {resourceDescription(resource)}
-          </p>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">{section.group}</div>
+          <div className="mt-2 text-lg font-semibold text-white">{section.title}</div>
+          <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/58">{section.summary}</p>
         </div>
 
-        {canEdit ? (
-          <button
-            type="button"
-            onClick={onCreate}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-orange/30 bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white transition-transform duration-200 hover:translate-y-[-1px]"
-          >
-            <Plus size={14} />
-            New
-          </button>
-        ) : null}
+        <AdminBadge tone={active ? 'success' : 'muted'}>{section.assets.length} assets</AdminBadge>
       </div>
 
-      <div className="mt-4 grid gap-3">
-        {filteredRows.length > 0 ? (
-          filteredRows.map((row) => {
-            const { primary, secondary } = summarizeRow(row);
-            const keyLabel = row.resource_key ?? row.slug ?? row.id ?? 'row';
+      <div className="mt-4 flex min-h-[4.8rem] gap-2 overflow-hidden">
+        {previewAssets.length > 0 ? (
+          previewAssets.map((asset) => {
+            const kind = assetKind(asset);
+            const url = assetPreviewUrl(asset);
 
             return (
               <div
-                key={`${resource}-${row.id ?? keyLabel}`}
-                className="rounded-[1.35rem] border border-white/8 bg-black/20 p-4 transition-colors hover:border-white/15"
+                key={`${section.key}-${asset.id}`}
+                className="relative flex-1 overflow-hidden rounded-[1.05rem] border border-white/10 bg-black/25"
               >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0">
-                    <div className="truncate text-base font-semibold text-white">{primary}</div>
-                    <div className="mt-1 text-xs uppercase tracking-[0.2em] text-white/42">{keyLabel}</div>
-                    {secondary ? <p className="mt-2 text-sm leading-6 text-white/64">{secondary}</p> : null}
+                {kind === 'video' ? (
+                  <video src={url} muted playsInline className="h-full w-full object-cover" />
+                ) : kind === 'document' ? (
+                  <div className="grid h-full place-items-center">
+                    <FileText className="h-6 w-6 text-white/65" />
                   </div>
-
-                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/46">
-                    <span className="rounded-full border border-white/10 px-3 py-1">{row.status ?? 'published'}</span>
-                    <span className="rounded-full border border-white/10 px-3 py-1">Sort {row.sort_order ?? 0}</span>
-                    <span className="rounded-full border border-white/10 px-3 py-1">
-                      {row.featured ? 'Featured' : 'Standard'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {canEdit ? (
-                    <button
-                      type="button"
-                      onClick={() => onEdit(row)}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:bg-white/10"
-                    >
-                      <Pencil size={13} />
-                      Edit
-                    </button>
-                  ) : null}
-
-                  {canEdit ? (
-                    <button
-                      type="button"
-                      onClick={() => onDelete(row)}
-                      className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-red-200 transition-colors hover:bg-red-500/20"
-                    >
-                      <Trash2 size={13} />
-                      Delete
-                    </button>
-                  ) : null}
-                </div>
+                ) : (
+                  <img src={url} alt={asset.title ?? asset.name ?? 'Section asset'} className="h-full w-full object-cover" />
+                )}
               </div>
             );
           })
         ) : (
-          <div className="rounded-[1.35rem] border border-dashed border-white/10 bg-black/10 p-6 text-sm text-white/50">
-            No rows match this filter.
+          <div className="grid h-full min-h-[4.6rem] flex-1 place-items-center rounded-[1.05rem] border border-dashed border-white/10 bg-black/20 text-[10px] uppercase tracking-[0.28em] text-white/38">
+            No direct asset
           </div>
         )}
       </div>
-    </section>
+    </button>
   );
 }
 
-function EditorModal({
-  editor,
-  saving,
-  onClose,
-  onChange,
-  onSave
+function ValueEditor({
+  label,
+  value,
+  onChange
 }: {
-  editor: EditorState | null;
-  saving: boolean;
-  onClose: () => void;
-  onChange: (next: EditorState) => void;
-  onSave: () => void;
+  label: string;
+  value: unknown;
+  onChange: (value: unknown) => void;
 }) {
-  if (!editor) {
+  if (Array.isArray(value)) {
+    return <CollectionEditor label={label} value={value} onChange={onChange} />;
+  }
+
+  if (value && typeof value === 'object') {
+    return <ObjectEditor label={label} value={value as Record<string, unknown>} onChange={onChange} />;
+  }
+
+  if (typeof value === 'boolean') {
+    return (
+      <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/72">
+        <input
+          type="checkbox"
+          checked={value}
+          onChange={(event) => onChange(event.target.checked)}
+          className="h-4 w-4 rounded border-white/20 bg-transparent text-brand-orange"
+        />
+        {label}
+      </label>
+    );
+  }
+
+  if (typeof value === 'number') {
+    return (
+      <label className="block">
+        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-white/44">{titleCase(label)}</span>
+        <input
+          type="number"
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+          className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/45"
+        />
+      </label>
+    );
+  }
+
+  const nextValue = valueToDisplay(value);
+  const multiline = isLongText(label, nextValue);
+
+  return (
+    <label className="block">
+      <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-white/44">{titleCase(label)}</span>
+      {multiline ? (
+        <textarea
+          value={nextValue}
+          onChange={(event) => onChange(event.target.value)}
+          className="min-h-[8rem] w-full rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-white outline-none focus:border-brand-orange/45"
+        />
+      ) : (
+        <input
+          value={nextValue}
+          onChange={(event) => onChange(event.target.value)}
+          className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/45"
+        />
+      )}
+    </label>
+  );
+}
+
+function ObjectEditor({
+  label,
+  value,
+  onChange
+}: {
+  label: string;
+  value: Record<string, unknown>;
+  onChange: (value: unknown) => void;
+}) {
+  const entries = Object.entries(value ?? {});
+
+  return (
+    <div className="space-y-4 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">{titleCase(label)}</div>
+          <div className="mt-1 text-sm text-white/52">{entries.length} fields</div>
+        </div>
+      </div>
+
+      <div className="grid gap-4">
+        {entries.map(([field, fieldValue]) => (
+          <div key={field}>
+            <ValueEditor
+              label={field}
+              value={fieldValue}
+              onChange={(nextValue) => onChange({ ...value, [field]: nextValue })}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CollectionEditor({
+  label,
+  value,
+  onChange
+}: {
+  label: string;
+  value: unknown[];
+  onChange: (value: unknown) => void;
+}) {
+  const [expandedKeys, setExpandedKeys] = useState<string[]>(() => {
+    const first = value[0];
+    return first && typeof first === 'object' ? [String((first as Record<string, unknown>).id ?? 0)] : ['0'];
+  });
+
+  useEffect(() => {
+    const first = value[0];
+    const firstKey = first && typeof first === 'object' ? String((first as Record<string, unknown>).id ?? 0) : '0';
+    setExpandedKeys((current) => (current.length > 0 ? current : [firstKey]));
+  }, [value]);
+
+  function itemKey(item: unknown, index: number) {
+    if (item && typeof item === 'object') {
+      const record = item as Record<string, unknown>;
+      return String(record.id ?? record.slug ?? record.name ?? record.title ?? index);
+    }
+
+    return String(index);
+  }
+
+  function toggleKey(key: string) {
+    setExpandedKeys((current) =>
+      current.includes(key) ? current.filter((entry) => entry !== key) : [...current, key]
+    );
+  }
+
+  function updateItem(index: number, nextItem: unknown) {
+    const next = structuredClone(value);
+    next[index] = nextItem;
+    onChange(next);
+  }
+
+  function moveItem(index: number, direction: -1 | 1) {
+    const next = structuredClone(value);
+    const target = index + direction;
+
+    if (target < 0 || target >= next.length) {
+      return;
+    }
+
+    const [item] = next.splice(index, 1);
+    next.splice(target, 0, item);
+    onChange(next);
+  }
+
+  function duplicateItem(index: number) {
+    const next = structuredClone(value);
+    const current = next[index];
+    const copy = current && typeof current === 'object' ? createBlankValue(current) : current;
+
+    if (copy && typeof copy === 'object' && !Array.isArray(copy)) {
+      const record = copy as Record<string, unknown>;
+      record.id = createId();
+      if (!record.title && !record.name && !record.label && !record.step) {
+        record.title = `${label} ${next.length + 1}`;
+      }
+    }
+
+    next.splice(index + 1, 0, copy);
+    onChange(next);
+  }
+
+  function deleteItem(index: number) {
+    const next = structuredClone(value);
+    next.splice(index, 1);
+    onChange(next);
+  }
+
+  function addItem() {
+    const template = value[0];
+    const next = structuredClone(value);
+    next.push(template && typeof template === 'object' ? createBlankValue(template) : '');
+    onChange(next);
+  }
+
+  return (
+    <div className="space-y-4 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">{titleCase(label)}</div>
+          <div className="mt-1 text-sm text-white/52">{value.length} items</div>
+        </div>
+
+        <button
+          type="button"
+          onClick={addItem}
+          className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white transition-transform hover:translate-y-[-1px]"
+        >
+          <Plus size={14} />
+          Add item
+        </button>
+      </div>
+
+      <div className="grid gap-3">
+        {value.length > 0 ? (
+          value.map((item, index) => {
+            const key = itemKey(item, index);
+            const expanded = expandedKeys.includes(key);
+            const labelText = getItemLabel(item, index);
+
+            return (
+              <div key={key} className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/20">
+                <button
+                  type="button"
+                  onClick={() => toggleKey(key)}
+                  className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-white/5"
+                >
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-semibold text-white">{labelText}</div>
+                    <div className="mt-1 truncate text-[10px] uppercase tracking-[0.22em] text-white/38">
+                      Item {index + 1}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        moveItem(index, -1);
+                      }}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70 hover:bg-white/10"
+                    >
+                      Up
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        moveItem(index, 1);
+                      }}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70 hover:bg-white/10"
+                    >
+                      Down
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        duplicateItem(index);
+                      }}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70 hover:bg-white/10"
+                    >
+                      Copy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        deleteItem(index);
+                      }}
+                      className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-red-100 hover:bg-red-500/20"
+                    >
+                      Delete
+                    </button>
+                    {expanded ? <ChevronUp size={14} className="text-white/70" /> : <ChevronDown size={14} className="text-white/70" />}
+                  </div>
+                </button>
+
+                {expanded ? (
+                  <div className="border-t border-white/10 p-4">
+                    <ValueEditor
+                      label={`${titleCase(label)} item ${index + 1}`}
+                      value={item}
+                      onChange={(nextValue) => updateItem(index, nextValue)}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            );
+          })
+        ) : (
+          <div className="rounded-[1.1rem] border border-dashed border-white/10 bg-black/20 p-5 text-sm text-white/52">
+            This collection is empty.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MediaCard({
+  media,
+  selected,
+  onSelect,
+  onReplace,
+  onDelete,
+  onCopyPath
+}: {
+  media: AdminMedia;
+  selected: boolean;
+  onSelect: () => void;
+  onReplace: () => void;
+  onDelete: () => void;
+  onCopyPath: () => void;
+}) {
+  const kind = assetKind(media);
+  const url = assetPreviewUrl(media);
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`group overflow-hidden rounded-[1.5rem] border text-left transition-all duration-200 ${
+        selected
+          ? 'border-brand-orange/40 bg-brand-orange/10 shadow-[0_18px_50px_rgba(255,122,0,0.16)]'
+          : 'border-white/10 bg-white/[0.035] hover:border-white/16 hover:bg-white/[0.05]'
+      }`}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden bg-black/30">
+        {kind === 'video' ? (
+          <video src={url} controls muted playsInline className="h-full w-full object-cover" />
+        ) : kind === 'document' ? (
+          <div className="grid h-full place-items-center">
+            <FileText className="h-10 w-10 text-white/72" />
+          </div>
+        ) : (
+          <img src={url} alt={media.title ?? media.name ?? 'Media asset'} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+        )}
+
+        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+          <AdminBadge tone="muted">{previewGroup(media)}</AdminBadge>
+          {media.protected ? <AdminBadge tone="danger">Protected</AdminBadge> : <AdminBadge tone="success">Editable</AdminBadge>}
+        </div>
+      </div>
+
+      <div className="space-y-3 p-4">
+        <div>
+          <div className="truncate text-sm font-semibold text-white">{downloadLabel(media)}</div>
+          <div className="mt-1 truncate text-[10px] uppercase tracking-[0.24em] text-white/38">
+            {media.category ?? media.root ?? 'Asset'}
+          </div>
+        </div>
+
+        <div className="text-xs text-white/54">
+          <div className="truncate">{media.publicPath ?? media.path ?? 'No path'}</div>
+          <div className="mt-1">{formatBytes(media.sizeBytes)}</div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onReplace();
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/72 hover:bg-white/10"
+          >
+            <Pencil size={13} />
+            Replace
+          </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onCopyPath();
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/72 hover:bg-white/10"
+          >
+            <Copy size={13} />
+            Copy path
+          </button>
+          <button
+            type="button"
+            disabled={media.protected}
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete();
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-red-100 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Trash2 size={13} />
+            Delete
+          </button>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function ReplaceModal({
+  media,
+  onClose,
+  onSubmit,
+  progress,
+  busy
+}: {
+  media: AdminMedia | null;
+  onClose: () => void;
+  onSubmit: (draft: ReplaceDraft) => Promise<void>;
+  progress: number;
+  busy: boolean;
+}) {
+  const [draft, setDraft] = useState<ReplaceDraft>({
+    file: null,
+    publicPath: media?.publicPath ?? media?.path ?? '',
+    title: media?.title ?? media?.name ?? '',
+    altText: media?.altText ?? media?.title ?? media?.name ?? '',
+    category: media?.category ?? '',
+    notes: media?.notes ?? ''
+  });
+
+  useEffect(() => {
+    setDraft({
+      file: null,
+      publicPath: media?.publicPath ?? media?.path ?? '',
+      title: media?.title ?? media?.name ?? '',
+      altText: media?.altText ?? media?.title ?? media?.name ?? '',
+      category: media?.category ?? '',
+      notes: media?.notes ?? ''
+    });
+  }, [media]);
+
+  if (!media) {
     return null;
   }
 
@@ -508,1265 +1012,1248 @@ function EditorModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[220] grid place-items-center bg-black/75 px-4 py-6 backdrop-blur-sm"
+      className="fixed inset-0 z-[300] grid place-items-center bg-black/76 px-4 py-6 backdrop-blur-sm"
     >
       <motion.div
         initial={{ y: 24, opacity: 0, scale: 0.98 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         exit={{ y: 24, opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#070a10] shadow-[0_34px_110px_rgba(0,0,0,0.55)]"
+        className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#070a10] shadow-[0_36px_110px_rgba(0,0,0,0.55)]"
       >
         <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4 sm:px-6">
           <div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/44">
-              {friendlyResourceName(editor.resource)}
+            <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40">
+              Replace asset
             </div>
-            <h3 className="mt-2 text-xl font-semibold text-white">Edit record</h3>
+            <h3 className="mt-2 text-xl font-semibold text-white">{media.title ?? media.name ?? 'Media asset'}</h3>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/6 text-white transition-colors hover:bg-white/12"
-            aria-label="Close editor"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white hover:bg-white/10"
+            aria-label="Close replace modal"
           >
             <X size={16} />
           </button>
         </div>
 
-        <div className="grid gap-4 overflow-y-auto px-5 py-5 sm:px-6 lg:grid-cols-[0.82fr_1.18fr]">
+        <form
+          className="grid gap-5 overflow-y-auto px-5 py-5 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            await onSubmit(draft);
+          }}
+        >
           <div className="space-y-4">
+            <div className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/30">
+              <div className="aspect-[4/3]">{previewNode(media)}</div>
+              <div className="p-4 text-xs text-white/54">
+                <div className="truncate">{media.publicPath ?? media.path ?? 'No path'}</div>
+                <div className="mt-1">{media.protected ? 'Protected source asset' : 'Editable uploaded asset'}</div>
+              </div>
+            </div>
+
             <label className="block">
-              <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                Resource key
+              <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/44">
+                Replacement file
               </span>
               <input
-                value={editor.resourceKey}
-                onChange={(event) => onChange({ ...editor, resourceKey: event.target.value })}
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-white/28 focus:border-brand-orange/40"
-                placeholder="slug-or-key"
+                type="file"
+                accept="image/*,video/*,.pdf"
+                onChange={(event) => setDraft((current) => ({ ...current, file: event.target.files?.[0] ?? null }))}
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-brand-orange file:px-4 file:py-2 file:text-[10px] file:font-semibold file:uppercase file:tracking-[0.24em] file:text-white"
               />
             </label>
 
-            <div className="grid grid-cols-2 gap-4">
+            {busy ? (
+              <div className="rounded-[1.25rem] border border-white/10 bg-black/25 p-4">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.24em] text-white/46">
+                  <span>Uploading</span>
+                  <span>{Math.round(progress)}%</span>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-brand-orange transition-all duration-200" style={{ width: `${Math.max(4, progress)}%` }} />
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                  Status
+                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/44">
+                  Title
                 </span>
-                <select
-                  value={editor.status}
-                  onChange={(event) => onChange({ ...editor, status: event.target.value })}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none ring-0 focus:border-brand-orange/40"
-                >
-                  <option value="published">published</option>
-                  <option value="draft">draft</option>
-                  <option value="active">active</option>
-                  <option value="inactive">inactive</option>
-                  <option value="archived">archived</option>
-                </select>
+                <input
+                  value={draft.title}
+                  onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/45"
+                />
               </label>
 
               <label className="block">
-                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                  Sort order
+                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/44">
+                  Alt text
                 </span>
                 <input
-                  type="number"
-                  value={editor.sortOrder}
-                  onChange={(event) => onChange({ ...editor, sortOrder: event.target.value })}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none ring-0 focus:border-brand-orange/40"
+                  value={draft.altText}
+                  onChange={(event) => setDraft((current) => ({ ...current, altText: event.target.value }))}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/45"
                 />
               </label>
             </div>
 
-            <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white">
-              <input
-                type="checkbox"
-                checked={editor.featured}
-                onChange={(event) => onChange({ ...editor, featured: event.target.checked })}
-                className="h-4 w-4 rounded border-white/20 bg-transparent text-brand-orange"
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/44">
+                  Category
+                </span>
+                <input
+                  value={draft.category}
+                  onChange={(event) => setDraft((current) => ({ ...current, category: event.target.value }))}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/45"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/44">
+                  Target path
+                </span>
+                <input
+                  value={draft.publicPath}
+                  onChange={(event) => setDraft((current) => ({ ...current, publicPath: event.target.value }))}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/45"
+                />
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/44">
+                Notes
+              </span>
+              <textarea
+                value={draft.notes}
+                onChange={(event) => setDraft((current) => ({ ...current, notes: event.target.value }))}
+                className="min-h-[8rem] w-full rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-sm leading-6 text-white outline-none focus:border-brand-orange/45"
               />
-              Featured
             </label>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+              <div className="text-xs text-white/48">
+                The replacement file will be written locally and the public content snapshot will refresh after save.
+              </div>
+
+              <button
+                type="submit"
+                disabled={busy}
+                className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white transition-transform hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {busy ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                Replace asset
+              </button>
+            </div>
           </div>
-
-          <label className="block">
-            <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-              Payload JSON
-            </span>
-            <textarea
-              value={editor.payloadText}
-              onChange={(event) => onChange({ ...editor, payloadText: event.target.value })}
-              className="min-h-[24rem] w-full rounded-[1.5rem] border border-white/10 bg-black/35 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none ring-0 placeholder:text-white/28 focus:border-brand-orange/40"
-              spellCheck={false}
-            />
-          </label>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-4 sm:px-6">
-          <p className="text-xs text-white/50">
-            Changes are saved to the database and reflected live after publish or refresh.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:bg-white/10"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={onSave}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-transform hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-              Save
-            </button>
-          </div>
-        </div>
+        </form>
       </motion.div>
     </motion.div>
   );
 }
 
-export default function AdminPage() {
-  const [bootstrap, setBootstrap] = useState<AdminBootstrap | null>(() => createFallbackBootstrap());
+function LoadingState() {
+  return (
+    <div className="grid min-h-[70vh] place-items-center rounded-[2rem] border border-white/10 bg-white/[0.03] p-8 text-center">
+      <div>
+        <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+          <Loader2 className="h-6 w-6 animate-spin text-brand-orange" />
+        </div>
+        <div className="mt-4 text-lg font-semibold text-white">Loading control panel</div>
+        <div className="mt-2 text-sm text-white/54">Reading the live site structure and local asset inventory.</div>
+      </div>
+    </div>
+  );
+}
+
+function AccessDeniedState({
+  onRetry
+}: {
+  onRetry: () => void;
+}) {
+  return (
+    <div className="grid min-h-screen place-items-center bg-[#05070b] px-4 text-center text-white">
+      <div className="max-w-lg rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-black/25 text-2xl font-semibold text-white/82">
+          404
+        </div>
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight">The requested page could not be found</h1>
+        <p className="mt-3 text-sm leading-7 text-white/58">
+          The hidden control panel requires the secret access code in the URL. If you pasted the correct link, try reloading once.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-white"
+          >
+            Return home
+          </a>
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/76 hover:bg-white/10"
+          >
+            Retry access check
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AccessErrorState({
+  error,
+  onRetry
+}: {
+  error: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="grid min-h-screen place-items-center bg-[#05070b] px-4 text-center text-white">
+      <div className="max-w-lg rounded-[2rem] border border-red-500/20 bg-red-500/10 p-8 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-red-400/20 bg-black/25 text-2xl font-semibold text-red-50">
+          !
+        </div>
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight">Admin access check failed</h1>
+        <p className="mt-3 text-sm leading-7 text-red-50/80">{error}</p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-white"
+          >
+            Retry
+          </button>
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/76 hover:bg-white/10"
+          >
+            Return home
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ErrorBanner({
+  error,
+  onRetry
+}: {
+  error: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="rounded-[1.4rem] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-50">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>{error}</div>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="inline-flex items-center gap-2 rounded-full border border-red-400/20 bg-black/20 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-red-50 hover:bg-black/30"
+        >
+          <RefreshCw size={13} />
+          Retry
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Admin() {
+  const hasAccessQuery = new URLSearchParams(window.location.search).has('access');
+  const [bootstrap, setBootstrap] = useState<AdminBootstrap | null>(null);
+  const [contentDraft, setContentDraft] = useState<SiteContent>(() => cloneSiteContent(defaultSiteContent));
+  const [selectedSectionKey, setSelectedSectionKey] = useState('');
+  const [selectedMediaId, setSelectedMediaId] = useState('');
+  const [structureGroup, setStructureGroup] = useState<(typeof SECTION_TABS)[number]>('All');
+  const [mediaFilter, setMediaFilter] = useState<FilterValue>('all');
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
-  const [selectedResource, setSelectedResource] = useState<string>(CONTENT_RESOURCE_KEYS[0]);
-  const [editor, setEditor] = useState<EditorState | null>(null);
-  const [savingEditor, setSavingEditor] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [uploadState, setUploadState] = useState<UploadState>({
+  const [notice, setNotice] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [replaceProgress, setReplaceProgress] = useState(0);
+  const [replaceTarget, setReplaceTarget] = useState<AdminMedia | null>(null);
+  const [accessState, setAccessState] = useState<'checking' | 'allowed' | 'redirect-home' | 'not-found' | 'error'>(
+    hasAccessQuery ? 'checking' : 'redirect-home'
+  );
+  const [uploadDraft, setUploadDraft] = useState<UploadDraft>({
     file: null,
-    kind: 'image',
     title: '',
     altText: '',
-    collectionKey: '',
-    progress: 0,
-    busy: false,
-    error: null,
-    notice: null
+    kind: 'image',
+    category: 'Website Assets',
+    notes: ''
   });
 
-  const csrfToken = bootstrap?.session.csrfToken ?? '';
-  const session = bootstrap?.session ?? null;
-  const canManageContent = hasPermission(session, 'manage_content');
-  const canManageMedia = hasPermission(session, 'manage_media');
-  const canManageAccount = hasPermission(session, 'manage_account');
+  const contentRef = useRef(cloneSiteContent(defaultSiteContent));
+  const bootstrapRef = useRef<AdminBootstrap | null>(null);
+  const selectionRef = useRef({ sectionKey: '', mediaId: '' });
+  const saveTimerRef = useRef<number | null>(null);
+  const pendingSnapshotRef = useRef<SiteContent | null>(null);
+  const savingRef = useRef(false);
+  const skipAutosaveRef = useRef(true);
 
-  const resourceKeys = useMemo(() => {
-    if (!bootstrap) {
-      return [] as string[];
-    }
+  const sections = bootstrap?.sections ?? [];
+  const media = bootstrap?.media ?? [];
+  const activity = bootstrap?.activity ?? [];
+  const fileRoots = bootstrap?.fileRoots ?? [];
 
-    return [
-      ...CONTENT_RESOURCE_KEYS,
-      ...SYSTEM_RESOURCE_KEYS,
-      'media_assets',
-      'activity_logs'
-    ].filter((key, index, array) => array.indexOf(key) === index && Boolean(bootstrap.resources[key]));
-  }, [bootstrap]);
+  const selectedSection = useMemo(
+    () => sections.find((section) => section.key === selectedSectionKey) ?? sections[0] ?? null,
+    [sections, selectedSectionKey]
+  );
 
-  const loadBootstrap = async () => {
+  const selectedMedia = useMemo(
+    () => media.find((entry) => entry.id === selectedMediaId) ?? media[0] ?? null,
+    [media, selectedMediaId]
+  );
+
+  const visibleSections = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return sections.filter((section) => {
+      const groupMatches = structureGroup === 'All' || section.group === structureGroup;
+      if (!groupMatches) {
+        return false;
+      }
+
+      if (!query) {
+        return true;
+      }
+
+      return sectionPreviewSummary(section).toLowerCase().includes(query);
+    });
+  }, [search, sections, structureGroup]);
+
+  const visibleMedia = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return media.filter((entry) => {
+      const kind = assetKind(entry);
+
+      if (mediaFilter !== 'all') {
+        if (mediaFilter === 'uploaded' && !entry.uploaded) {
+          return false;
+        }
+
+        if (mediaFilter === 'protected' && !entry.protected) {
+          return false;
+        }
+
+        if (mediaFilter !== 'uploaded' && mediaFilter !== 'protected' && kind !== mediaFilter) {
+          return false;
+        }
+      }
+
+      if (!query) {
+        return true;
+      }
+
+      return mediaPreviewSummary(entry).toLowerCase().includes(query);
+    });
+  }, [media, mediaFilter, search]);
+
+  const groups = useMemo(() => {
+    const next = ['All', ...new Set(sections.map((section) => section.group))];
+    return next as (typeof SECTION_TABS)[number][];
+  }, [sections]);
+
+  const loadBootstrap = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const payload = await requestJson<AdminBootstrap>('/api/admin/content', {
-        method: 'GET'
-      });
-
+      const payload = await requestJson<AdminBootstrap>('/api/admin/content');
+      bootstrapRef.current = payload;
       setBootstrap(payload);
+      contentRef.current = cloneSiteContent(payload.content);
+      setContentDraft(cloneSiteContent(payload.content));
+      skipAutosaveRef.current = true;
+      setDirty(false);
+      setNotice(`Loaded local content snapshot ${payload.version.slice(0, 8)}`);
 
-      if (!CONTENT_RESOURCE_KEYS.includes(selectedResource as (typeof CONTENT_RESOURCE_KEYS)[number]) && payload.resources[selectedResource]) {
-        setSelectedResource(selectedResource);
+      const currentSelection = selectionRef.current;
+      const nextSectionKey =
+        payload.sections.some((section) => section.key === currentSelection.sectionKey)
+          ? currentSelection.sectionKey
+          : payload.sections[0]?.key ?? '';
+      const nextMediaId =
+        payload.media.some((entry) => entry.id === currentSelection.mediaId)
+          ? currentSelection.mediaId
+          : payload.media[0]?.id ?? '';
+
+      if (nextSectionKey !== currentSelection.sectionKey) {
+        setSelectedSectionKey(nextSectionKey);
       }
 
-      if (!payload.resources[selectedResource]) {
-        const fallback = CONTENT_RESOURCE_KEYS.find((key) => payload.resources[key]) ?? Object.keys(payload.resources)[0];
-        if (fallback) {
-          setSelectedResource(fallback);
-        }
+      if (nextMediaId !== currentSelection.mediaId) {
+        setSelectedMediaId(nextMediaId);
       }
-    } catch (fetchError) {
-      setError(null);
-      setBootstrap((current) => current ?? createFallbackBootstrap());
+    } catch (loadError) {
+      const message = loadError instanceof Error ? loadError.message : 'Failed to load admin data.';
+      setError(message);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    void loadBootstrap();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const validateAccess = useCallback(async () => {
+    if (!hasAccessQuery) {
+      setAccessState('redirect-home');
+      return;
+    }
+
+    try {
+      await requestJson<{ ok: boolean }>('/api/admin/status');
+      setAccessState('allowed');
+    } catch (checkError) {
+      const status = getRequestStatus(checkError);
+      const message = checkError instanceof Error ? checkError.message : 'Unable to verify admin access.';
+
+      if (status === 404 || status === 401 || status === 403) {
+        setAccessState('not-found');
+        setError(message);
+        return;
+      }
+
+      setAccessState('error');
+      setError(message);
+    }
+  }, [hasAccessQuery]);
+
+  const persistContent = useCallback(
+    async function saveSnapshot(snapshot: SiteContent): Promise<void> {
+      if (savingRef.current) {
+        pendingSnapshotRef.current = snapshot;
+        return;
+      }
+
+      savingRef.current = true;
+      setSaving(true);
+      setError(null);
+
+      try {
+        const payload = await requestJson<{ ok: boolean; updatedAt: string; version: string; content: SiteContent }>(
+          '/api/admin/content',
+          {
+            method: 'PUT',
+            body: JSON.stringify({ content: snapshot })
+          }
+        );
+
+        setDirty(false);
+        setNotice(`Saved at ${formatDate(payload.updatedAt)}`);
+        announceContentRefresh();
+        await loadBootstrap();
+      } catch (saveError) {
+        const message = saveError instanceof Error ? saveError.message : 'Failed to save content.';
+        setError(message);
+      } finally {
+        savingRef.current = false;
+        setSaving(false);
+
+        const queued = pendingSnapshotRef.current;
+        pendingSnapshotRef.current = null;
+
+        if (queued) {
+          void saveSnapshot(queued);
+        }
+      }
+    },
+    [loadBootstrap]
+  );
+
   useEffect(() => {
-    if (!bootstrap) {
+    void validateAccess();
+  }, [validateAccess]);
+
+  useEffect(() => {
+    if (accessState !== 'allowed') {
       return;
     }
 
-    if (!bootstrap.resources[selectedResource]) {
-      const fallback = CONTENT_RESOURCE_KEYS.find((key) => bootstrap.resources[key]) ?? Object.keys(bootstrap.resources)[0];
-      if (fallback) {
-        setSelectedResource(fallback);
-      }
-    }
-  }, [bootstrap, selectedResource]);
+    void loadBootstrap();
+  }, [accessState, loadBootstrap]);
 
-  const logout = async () => {
-    if (!csrfToken) {
-      return;
-    }
-
-    try {
-      await requestJson('/api/admin/auth/logout', {
-        method: 'POST',
-        headers: {
-          'x-csrf-token': csrfToken
-        }
-      });
-    } finally {
-      setBootstrap(null);
-      setActiveTab('overview');
-      setSearchTerm('');
-    }
-  };
-
-  const publish = async () => {
-    if (!csrfToken) {
-      return;
-    }
-
-    await requestJson('/api/admin/publish', {
-      method: 'POST',
-      headers: {
-        'x-csrf-token': csrfToken
-      }
-    });
-
-    announceContentRefresh();
-    await loadBootstrap();
-  };
-
-  const openEditor = (resource: string, row: AdminRow | null = null) => {
-    setEditor(createEditorState(resource, row));
-  };
-
-  const closeEditor = () => {
-    setEditor(null);
-    setSavingEditor(false);
-  };
-
-  const saveEditor = async () => {
-    if (!editor || !csrfToken) {
-      return;
-    }
-
-    let payload: Record<string, any>;
-
-    try {
-      payload = JSON.parse(editor.payloadText || '{}') as Record<string, any>;
-    } catch {
-      setError('Payload JSON is invalid.');
-      return;
-    }
-
-    setSavingEditor(true);
-
-    const body = {
-      resourceKey: editor.resourceKey.trim() || undefined,
-      payload,
-      status: editor.status,
-      sortOrder: Number.isFinite(Number(editor.sortOrder)) ? Number(editor.sortOrder) : 0,
-      featured: editor.featured
+  useEffect(() => {
+    selectionRef.current = {
+      sectionKey: selectedSectionKey,
+      mediaId: selectedMediaId
     };
+  }, [selectedMediaId, selectedSectionKey]);
 
-    try {
-      const endpoint = editor.row?.id
-        ? `/api/admin/records/${editor.resource}/${editor.row.id}`
-        : `/api/admin/records/${editor.resource}`;
-
-      await requestJson(endpoint, {
-        method: editor.row?.id ? 'PATCH' : 'POST',
-        headers: {
-          'x-csrf-token': csrfToken
-        },
-        body: JSON.stringify(body)
-      });
-
-      announceContentRefresh();
-      await loadBootstrap();
-      closeEditor();
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'Unable to save record');
-      setSavingEditor(false);
-    }
-  };
-
-  const deleteRow = async (resource: string, row: AdminRow) => {
-    if (!csrfToken || !row.id) {
+  useEffect(() => {
+    if (skipAutosaveRef.current) {
+      skipAutosaveRef.current = false;
       return;
     }
 
-    const confirmed = window.confirm(`Delete ${summarizePayload(row)}?`);
-    if (!confirmed) {
+    if (!dirty || loading) {
       return;
     }
 
-    await requestJson(`/api/admin/records/${resource}/${row.id}`, {
-      method: 'DELETE',
-      headers: {
-        'x-csrf-token': csrfToken
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current);
+    }
+
+    saveTimerRef.current = window.setTimeout(() => {
+      void persistContent(contentRef.current);
+    }, 700);
+
+    return () => {
+      if (saveTimerRef.current) {
+        window.clearTimeout(saveTimerRef.current);
       }
-    });
+    };
+  }, [contentDraft, dirty, loading, persistContent]);
 
-    announceContentRefresh();
-    await loadBootstrap();
-  };
+  function mutateContent(mutator: (draft: SiteContent) => SiteContent | void) {
+    const next = cloneSiteContent(contentRef.current);
+    const result = mutator(next);
+    const snapshot = (result as SiteContent) ?? next;
+    contentRef.current = snapshot;
+    setContentDraft(snapshot);
+    setDirty(true);
+    setNotice(null);
+  }
 
-  const uploadMedia = async (event: FormEvent) => {
-    event.preventDefault();
+  function updatePath(pathName: string, nextValue: unknown) {
+    mutateContent((draft) => setPathValue(draft, pathName, nextValue));
+  }
 
-    if (!uploadState.file || !csrfToken) {
+  async function handleManualSave() {
+    await persistContent(contentRef.current);
+  }
+
+  async function handleUpload() {
+    if (!uploadDraft.file) {
+      setError('Choose a file to upload first.');
       return;
     }
 
-    setUploadState((current) => ({
-      ...current,
-      busy: true,
-      error: null,
-      notice: null,
-      progress: 0
-    }));
+    const form = new FormData();
+    form.append('file', uploadDraft.file);
+    form.append('title', uploadDraft.title || uploadDraft.file.name);
+    form.append('altText', uploadDraft.altText || uploadDraft.title || uploadDraft.file.name);
+    form.append('kind', uploadDraft.kind);
+    form.append('collectionKey', uploadDraft.category);
+    form.append('notes', uploadDraft.notes);
+
+    setUploading(true);
+    setUploadProgress(0);
+    setError(null);
 
     try {
-      await upload(uploadState.file.name, uploadState.file, {
-        access: 'public',
-        handleUploadUrl: '/api/admin/media/upload',
-        clientPayload: JSON.stringify({
-          kind: uploadState.kind,
-          title: uploadState.title,
-          altText: uploadState.altText,
-          collectionKey: uploadState.collectionKey
-        }),
-        headers: {
-          'x-csrf-token': csrfToken
-        },
-        onUploadProgress(progressEvent) {
-          setUploadState((current) => ({
-            ...current,
-            progress: progressEvent.percentage
-          }));
-        }
-      });
-
-      setUploadState({
+      await sendMultipart<{ ok: boolean; item: AdminMedia }>('/api/media', 'POST', form, setUploadProgress);
+      setUploadDraft({
         file: null,
-        kind: 'image',
         title: '',
         altText: '',
-        collectionKey: '',
-        progress: 0,
-        busy: false,
-        error: null,
-        notice: 'Upload completed successfully.'
+        kind: 'image',
+        category: 'Website Assets',
+        notes: ''
       });
-
+      setNotice('Uploaded local file into the media library.');
       announceContentRefresh();
       await loadBootstrap();
     } catch (uploadError) {
-      setUploadState((current) => ({
-        ...current,
-        busy: false,
-        error: uploadError instanceof Error ? uploadError.message : 'Upload failed'
-      }));
+      const message = uploadError instanceof Error ? uploadError.message : 'Upload failed.';
+      setError(message);
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
     }
-  };
-
-  const openPreview = () => {
-    enablePreviewMode();
-    window.open('/?preview=1', '_blank', 'noopener,noreferrer');
-  };
-
-  const contentRows = bootstrap?.resources[selectedResource] ?? [];
-  const activeRows = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
-
-    if (!query) {
-      return contentRows;
-    }
-
-    return contentRows.filter((row) => {
-      const summary = `${summarizePayload(row)} ${row.resource_key ?? ''} ${row.slug ?? ''} ${safeStringify(row.payload ?? row)}`.toLowerCase();
-      return summary.includes(query);
-    });
-  }, [contentRows, searchTerm]);
-
-  const activityRows = bootstrap?.resources.activity_logs ?? [];
-  const mediaRows = bootstrap?.resources.media_assets ?? [];
-  const draftSnapshot = bootstrap?.draft;
-  const publishedSnapshot = bootstrap?.published;
-  const workingCopy = bootstrap?.workingCopy;
-
-  const totalContentRows = useMemo(
-    () =>
-      Object.values((bootstrap?.resources ?? {}) as Record<string, AdminRow[]>).reduce(
-        (count, rows) => count + rows.length,
-        0
-      ),
-    [bootstrap]
-  );
-
-  if (loading && !bootstrap) {
-    return (
-      <div className="min-h-screen bg-[#05070b] text-white">
-        <div className="grid min-h-screen place-items-center">
-          <div className="flex items-center gap-3 text-sm uppercase tracking-[0.28em] text-white/50">
-            <Loader2 className="animate-spin" size={18} />
-            Loading admin console
-          </div>
-        </div>
-      </div>
-    );
   }
 
-  if (!bootstrap) {
-    return (
-      <div className="min-h-screen bg-[#05070b] text-white">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -left-32 top-24 h-80 w-80 rounded-full bg-brand-orange/15 blur-3xl" />
-          <div className="absolute right-0 top-0 h-[28rem] w-[28rem] rounded-full bg-white/5 blur-3xl" />
-        </div>
+  async function handleReplace(nextDraft: ReplaceDraft) {
+    if (!replaceTarget) {
+      return;
+    }
 
-        <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center px-4 py-10 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-8">
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-white/56 transition-colors hover:text-white"
-              >
-                <ArrowLeft size={14} />
-                Back to website
-              </Link>
+    const form = new FormData();
+    if (nextDraft.file) {
+      form.append('file', nextDraft.file);
+    }
+    form.append('title', nextDraft.title);
+    form.append('altText', nextDraft.altText);
+    form.append('category', nextDraft.category);
+    form.append('notes', nextDraft.notes);
+    form.append('publicPath', nextDraft.publicPath);
+    form.append('replaceTarget', nextDraft.publicPath);
+    form.append('kind', assetKind(replaceTarget));
 
-              <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-brand-orange/20 bg-brand-orange/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-orange">
-                <Shield size={12} />
-                Hidden access only
-              </div>
+    setUploading(true);
+    setReplaceProgress(0);
+    setError(null);
 
-              <h1 className="mt-5 text-[clamp(2.4rem,5vw,4.8rem)] font-black uppercase leading-[0.94] tracking-[-0.05em] text-white">
-                Graphinex Control Plane
-              </h1>
+    try {
+      await sendMultipart<{ ok: boolean; item: AdminMedia }>(
+        `/api/media/${encodeURIComponent(replaceTarget.id)}`,
+        'PUT',
+        form,
+        setReplaceProgress
+      );
 
-              <p className="mt-5 max-w-xl text-sm leading-7 text-white/66">
-                Open the hidden URL with the access code and the dashboard will load directly. No login screen is used.
-              </p>
+      setReplaceTarget(null);
+      setNotice(`Replaced ${downloadLabel(replaceTarget)}.`);
+      announceContentRefresh();
+      await loadBootstrap();
+    } catch (replaceError) {
+      const message = replaceError instanceof Error ? replaceError.message : 'Replacement failed.';
+      setError(message);
+    } finally {
+      setUploading(false);
+      setReplaceProgress(0);
+    }
+  }
 
-              {error ? (
-                <div className="mt-8 rounded-[1.5rem] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                  {error}
-                </div>
-              ) : (
-                <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/62">
-                  The hidden URL is valid. If the dashboard does not appear, refresh once or check the deployment logs.
-                </div>
-              )}
-            </div>
+  async function handleDeleteMedia(entry: AdminMedia) {
+    if (!window.confirm(`Delete ${downloadLabel(entry)}?`)) {
+      return;
+    }
 
-            <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.06] via-white/[0.04] to-brand-orange/10 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-8">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Route</div>
-                  <div className="mt-2 text-lg font-semibold text-white">/armanxion-core</div>
-                </div>
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Access</div>
-                  <div className="mt-2 text-lg font-semibold text-white">Direct URL only</div>
-                </div>
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Data</div>
-                  <div className="mt-2 text-lg font-semibold text-white">PostgreSQL + Blob storage</div>
-                </div>
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Updates</div>
-                  <div className="mt-2 text-lg font-semibold text-white">Live refresh + publish flow</div>
-                </div>
-              </div>
+    setError(null);
 
-              <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                  What this console does
-                </div>
-                <ul className="mt-4 space-y-3 text-sm leading-7 text-white/64">
-                  <li>Edits homepage, hero, services, portfolio, testimonials, SEO, contact, and footer content.</li>
-                  <li>Uploads and manages media assets with real Blob storage metadata.</li>
-                  <li>Publishes draft snapshots and broadcasts live refreshes to the public site.</li>
-                  <li>Opens directly from the hidden URL without a login form.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    try {
+      await requestJson(`/api/media/${encodeURIComponent(entry.id)}`, {
+        method: 'DELETE'
+      });
+      setNotice(`Deleted ${downloadLabel(entry)}.`);
+      announceContentRefresh();
+      await loadBootstrap();
+    } catch (deleteError) {
+      const message = deleteError instanceof Error ? deleteError.message : 'Delete failed.';
+      setError(message);
+    }
+  }
+
+  async function copyPath(pathValue?: string) {
+    if (!pathValue) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(pathValue);
+    setNotice(`Copied ${pathValue}`);
+  }
+
+  const selectedSectionAssets = selectedSection?.assets ?? [];
+
+  if (accessState === 'redirect-home') {
+    return <Navigate to="/" replace />;
+  }
+
+  if (accessState === 'not-found') {
+    return <AccessDeniedState onRetry={() => setAccessState('checking')} />;
+  }
+
+  if (accessState === 'error' && !bootstrap) {
+    return <AccessErrorState error={error ?? 'Unable to validate hidden admin access.'} onRetry={() => setAccessState('checking')} />;
   }
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-24 h-80 w-80 rounded-full bg-brand-orange/12 blur-3xl" />
-        <div className="absolute right-0 top-0 h-[34rem] w-[34rem] rounded-full bg-white/5 blur-3xl" />
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,122,0,0.15),_transparent_24%),radial-gradient(circle_at_82%_16%,_rgba(255,255,255,0.08),_transparent_20%),linear-gradient(180deg,_#05070b_0%,_#080b12_100%)]" />
+        <div className="absolute left-1/2 top-0 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-brand-orange/10 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] gap-5 px-3 py-3 sm:px-4 sm:py-4 lg:px-5">
-        <aside className="hidden w-[18rem] shrink-0 flex-col rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl xl:flex">
-          <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-orange text-white">
-              <Shield size={18} />
-            </div>
-            <div className="min-w-0">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Control Plane</div>
-              <div className="truncate text-lg font-semibold text-white">{session?.user.displayName}</div>
-            </div>
-          </div>
-
-          <nav className="mt-4 space-y-2">
-            {TAB_ITEMS.map((tab) => {
-              const Icon = tab.icon;
-
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                    activeTab === tab.key
-                      ? 'border-brand-orange/30 bg-brand-orange/10 text-white'
-                      : 'border-white/8 bg-black/10 text-white/68 hover:border-white/14 hover:bg-white/6'
-                  }`}
-                >
-                  <Icon size={16} />
-                  <span className="text-sm font-medium">{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-
-          <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Session</div>
-            <div className="mt-2 text-sm text-white/80">{session?.user.email}</div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/54">
-                {session?.user.role.name}
-              </span>
-              <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/54">
-                Expires {formatDate(session?.expiresAt)}
-              </span>
-            </div>
-          </div>
-        </aside>
-
-        <main className="flex-1">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-orange text-white">
-                  <Shield size={18} />
-                </div>
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                    Hidden admin
-                  </div>
-                  <h1 className="text-2xl font-semibold text-white">Graphinex Control Plane</h1>
-                </div>
+      <div className="relative mx-auto max-w-[1760px] px-4 py-5 sm:px-6 lg:px-8">
+        <header className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl sm:p-5">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <AdminBadge tone="success">Direct access</AdminBadge>
+                <AdminBadge tone="muted">Hidden route /armanxion-core</AdminBadge>
+                <AdminBadge tone="muted">Local file mode</AdminBadge>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={openPreview}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-colors hover:bg-white/10"
-                >
-                  <Eye size={14} />
-                  Preview
-                </button>
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.36em] text-white/40">
+                  Graphinex control panel
+                </div>
+                <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  Real website structure, assets, and content. No login. No demo data.
+                </h1>
+                <p className="mt-3 max-w-4xl text-sm leading-7 text-white/60 sm:text-base">
+                  This panel reads the live local site content, shows the actual section inventory, and writes edits back to the file-based snapshot and asset library.
+                </p>
+              </div>
+            </div>
 
-                {canManageContent ? (
+            <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[520px]">
+              <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">Last sync</div>
+                <div className="mt-2 text-lg font-semibold text-white">{formatDate(bootstrap?.updatedAt ?? null)}</div>
+                <div className="mt-1 text-xs text-white/48">Version {bootstrap?.version?.slice(0, 12) ?? 'loading'}</div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">Controls</div>
+                <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => void publish()}
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-transform hover:translate-y-[-1px]"
+                    onClick={() => void loadBootstrap()}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/76 hover:bg-white/10"
                   >
-                    <Sparkles size={14} />
-                    Publish
+                    <RefreshCw size={14} />
+                    Reload
                   </button>
-                ) : null}
-
-                <button
-                  type="button"
-                  onClick={() => void loadBootstrap()}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-colors hover:bg-white/10"
-                >
-                  <RefreshCw size={14} />
-                  Refresh
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => void logout()}
-                  className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-red-200 transition-colors hover:bg-red-500/20"
-                >
-                  <LogOut size={14} />
-                  Logout
-                </button>
-              </div>
-            </div>
-
-            {error ? (
-              <div className="mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                {error}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Content rows</div>
-              <div className="mt-2 text-3xl font-semibold text-white">{totalContentRows}</div>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Media assets</div>
-              <div className="mt-2 text-3xl font-semibold text-white">{mediaRows.length}</div>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Audit logs</div>
-              <div className="mt-2 text-3xl font-semibold text-white">{activityRows.length}</div>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Status</div>
-              <div className="mt-2 text-3xl font-semibold text-emerald-300">
-                {session?.user.role.slug ?? 'viewer'}
+                  <button
+                    type="button"
+                    onClick={() => void handleManualSave()}
+                    className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white hover:translate-y-[-1px]"
+                  >
+                    <Save size={14} />
+                    Save now
+                  </button>
+                  <a
+                    href="/"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/76 hover:bg-white/10"
+                  >
+                    <ArrowLeft size={14} />
+                    Public site
+                  </a>
+                </div>
               </div>
             </div>
           </div>
+        </header>
 
-          <div className="mt-5 flex flex-wrap gap-2 xl:hidden">
-            {TAB_ITEMS.map((tab) => {
-              const Icon = tab.icon;
-
-              return (
+        <div className="mt-5 space-y-4">
+          {error ? <ErrorBanner error={error} onRetry={() => void loadBootstrap()} /> : null}
+          {notice ? (
+            <div className="rounded-[1.4rem] border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-50">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>{notice}</div>
                 <button
-                  key={tab.key}
                   type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] ${
-                    activeTab === tab.key
-                      ? 'border-brand-orange/30 bg-brand-orange/10 text-white'
-                      : 'border-white/10 bg-white/5 text-white/70'
-                  }`}
+                  onClick={() => setNotice(null)}
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-black/20 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-50 hover:bg-black/30"
                 >
-                  <Icon size={14} />
-                  {tab.label}
+                  <X size={13} />
+                  Dismiss
                 </button>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
 
+        {loading && !bootstrap ? (
           <div className="mt-5">
-            <AnimatePresence mode="wait">
-              {activeTab === 'overview' ? (
-                <motion.div
-                  key="overview"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]"
-                >
-                  <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="flex items-center justify-between gap-4">
+            <LoadingState />
+          </div>
+        ) : null}
+
+        {bootstrap ? (
+          <>
+            <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {[
+                { label: 'Sections', value: sections.length },
+                { label: 'Media', value: media.length },
+                { label: 'Uploads', value: media.filter((entry) => entry.uploaded).length },
+                { label: 'Protected', value: media.filter((entry) => entry.protected).length }
+              ].map((item) => (
+                <div key={item.label} className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.2)]">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">{item.label}</div>
+                  <div className="mt-3 text-3xl font-semibold text-white">{item.value}</div>
+                </div>
+              ))}
+            </section>
+
+            <section className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-5">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">
+                    Website structure viewer
+                  </div>
+                  <h2 className="mt-2 text-2xl font-semibold text-white">Real sections from the live Graphinex site</h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-white/58">
+                    Select a section card to inspect the actual content and assets, then edit the underlying local snapshot directly.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[560px]">
+                  <label className="block">
+                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                      Search
+                    </span>
+                    <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                      <Search size={15} className="text-white/40" />
+                      <input
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        placeholder="Find sections, assets, or copy"
+                        className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/28"
+                      />
+                    </div>
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                      Section group
+                    </span>
+                    <select
+                      value={structureGroup}
+                      onChange={(event) => setStructureGroup(event.target.value as (typeof SECTION_TABS)[number])}
+                      className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none"
+                    >
+                      {groups.map((groupName) => (
+                        <option key={groupName} value={groupName} className="bg-[#0d1118]">
+                          {groupName}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                {visibleSections.map((section) => (
+                  <div key={section.key}>
+                    <SectionCard
+                      section={section}
+                      active={section.key === selectedSection?.key}
+                      onSelect={() => setSelectedSectionKey(section.key)}
+                    />
+                  </div>
+                ))}
+
+                {visibleSections.length === 0 ? (
+                  <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/52">
+                    No sections match the current filters.
+                  </div>
+                ) : null}
+              </div>
+            </section>
+
+            <section className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-5">
+                {selectedSection ? (
+                  <>
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                          Live operations
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">
+                          Selected section
                         </div>
-                        <h2 className="mt-2 text-2xl font-semibold text-white">One-click publishing and preview</h2>
+                        <h3 className="mt-2 text-2xl font-semibold text-white">{selectedSection.title}</h3>
+                        <p className="mt-2 max-w-3xl text-sm leading-7 text-white/58">{selectedSection.summary}</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <AdminBadge tone="success">{selectedSection.group}</AdminBadge>
+                          <AdminBadge tone="muted">{selectedSection.key}</AdminBadge>
+                          <AdminBadge tone="muted">{selectedSection.editable.length} editable paths</AdminBadge>
+                        </div>
                       </div>
 
-                      <Sparkles size={24} className="text-brand-orange" />
-                    </div>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <button
-                        type="button"
-                        onClick={openPreview}
-                        className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4 text-left transition-colors hover:border-white/15 hover:bg-white/6"
-                      >
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                          Preview mode
-                        </div>
-                        <div className="mt-2 text-lg font-semibold text-white">Open draft site in a new tab</div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => void publish()}
-                        className="rounded-[1.4rem] border border-brand-orange/20 bg-brand-orange/10 p-4 text-left transition-colors hover:bg-brand-orange/15"
-                      >
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-orange">
-                          Publish draft
-                        </div>
-                        <div className="mt-2 text-lg font-semibold text-white">Promote the current draft to live</div>
-                      </button>
-                    </div>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                          Working copy
-                        </div>
-                        <p className="mt-2 text-sm leading-6 text-white/62">
-                          Live content is sourced from the draft snapshot and revalidated after each save.
-                        </p>
-                      </div>
-                      <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                          Session expiry
-                        </div>
-                        <p className="mt-2 text-sm leading-6 text-white/62">{formatDate(session?.expiresAt)}</p>
-                      </div>
-                    </div>
-                  </section>
-
-                  <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                      Content summary
-                    </div>
-
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      {CONTENT_RESOURCE_KEYS.map((key) => (
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
-                          key={key}
                           type="button"
                           onClick={() => {
-                            setSelectedResource(key);
-                            setActiveTab('content');
+                            setSelectedSectionKey(selectedSection.key);
+                            void handleManualSave();
                           }}
-                          className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4 text-left transition-colors hover:border-white/15 hover:bg-white/6"
+                          className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white hover:translate-y-[-1px]"
                         >
-                          <div className="text-sm font-semibold text-white">{friendlyResourceName(key)}</div>
-                          <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                            {(bootstrap.resources[key] ?? []).length} rows
-                          </div>
+                          <Save size={14} />
+                          Save section
                         </button>
-                      ))}
-                    </div>
-                  </section>
-                </motion.div>
-              ) : null}
-
-              {activeTab === 'content' ? (
-                <motion.div
-                  key="content"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid gap-5 lg:grid-cols-[18rem_1fr]"
-                >
-                  <aside className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                      Content resources
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      {CONTENT_RESOURCE_KEYS.map((key) => {
-                        const active = selectedResource === key;
-                        const rows = bootstrap.resources[key] ?? [];
-
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => {
-                              setSelectedResource(key);
-                              setSearchTerm('');
-                            }}
-                            className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                              active
-                                ? 'border-brand-orange/25 bg-brand-orange/10 text-white'
-                                : 'border-white/8 bg-black/10 text-white/70 hover:border-white/14 hover:bg-white/6'
-                            }`}
-                          >
-                            <span className="text-sm font-medium">{friendlyResourceName(key)}</span>
-                            <span className="rounded-full border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white/54">
-                              {rows.length}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </aside>
-
-                  <div className="space-y-5">
-                    <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                            {friendlyResourceName(selectedResource)}
-                          </div>
-                          <p className="mt-2 text-sm leading-6 text-white/60">
-                            {resourceDescription(selectedResource)}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <div className="relative">
-                            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/34" />
-                            <input
-                              value={searchTerm}
-                              onChange={(event) => setSearchTerm(event.target.value)}
-                              placeholder="Search rows..."
-                              className="w-full rounded-full border border-white/10 bg-black/20 py-2.5 pl-9 pr-4 text-sm text-white outline-none focus:border-brand-orange/40 sm:w-72"
-                            />
-                          </div>
-
-                          {canManageContent ? (
-                            <button
-                              type="button"
-                              onClick={() => openEditor(selectedResource)}
-                              className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-transform hover:translate-y-[-1px]"
-                            >
-                              <Plus size={14} />
-                              New row
-                            </button>
-                          ) : null}
-                        </div>
                       </div>
                     </div>
 
-                    <ResourceCard
-                      resource={selectedResource}
-                      rows={activeRows}
-                      searchTerm={searchTerm}
-                      canEdit={canManageContent}
-                      onCreate={() => openEditor(selectedResource)}
-                      onEdit={(row) => openEditor(selectedResource, row)}
-                      onDelete={(row) => void deleteRow(selectedResource, row)}
-                    />
-
-                    <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">System records</div>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        {SYSTEM_RESOURCE_KEYS.map((key) => (
-                          <div key={key} className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-                            <div className="text-sm font-semibold text-white">{friendlyResourceName(key)}</div>
-                            <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                              {(bootstrap.resources[key] ?? []).length} rows
-                            </div>
+                    <div className="mt-5 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+                      <div className="space-y-4">
+                        <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">
+                            Asset preview
                           </div>
-                        ))}
+                          <div className="mt-4 grid gap-3">
+                            {selectedSectionAssets.length > 0 ? (
+                              selectedSectionAssets.map((asset) => {
+                                const kind = assetKind(asset);
+                                const url = assetPreviewUrl(asset);
+
+                                return (
+                                  <div
+                                    key={`${selectedSection.key}-${asset.id}`}
+                                    className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/30"
+                                  >
+                                    <div className="aspect-[16/9]">{previewNode(asset)}</div>
+                                    <div className="flex items-center justify-between gap-4 px-4 py-3 text-xs text-white/55">
+                                      <div className="min-w-0">
+                                        <div className="truncate font-semibold text-white">{downloadLabel(asset)}</div>
+                                        <div className="mt-1 truncate">{asset.publicPath ?? asset.path ?? 'No path'}</div>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={async () => copyPath(asset.publicPath ?? asset.path ?? '')}
+                                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/72 hover:bg-white/10"
+                                      >
+                                        <Copy size={13} />
+                                        Copy
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })
+                            ) : (
+                              <div className="rounded-[1.2rem] border border-dashed border-white/10 bg-black/20 p-5 text-sm text-white/52">
+                                No direct asset attached to this section.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">
+                            Section notes
+                          </div>
+                          <div className="mt-3 space-y-2 text-sm leading-6 text-white/58">
+                            <div>Path: <span className="text-white">{selectedSection.key}</span></div>
+                            <div>Group: <span className="text-white">{selectedSection.group}</span></div>
+                            <div>Assets: <span className="text-white">{selectedSection.assets.length}</span></div>
+                            <div>Edit paths: <span className="text-white">{selectedSection.editable.join(', ') || 'None'}</span></div>
+                          </div>
+                        </div>
                       </div>
-                    </section>
+
+                      <div className="space-y-4">
+                        {selectedSection.editable.length > 0 ? (
+                          selectedSection.editable.map((pathName) => {
+                            const pathValue = getPathValue(contentDraft, pathName);
+
+                            return (
+                              <div key={pathName} className="space-y-3 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                                <div className="flex items-center justify-between gap-4">
+                                  <div>
+                                    <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">
+                                      {pathLabel(pathName)}
+                                    </div>
+                                    <div className="mt-1 text-sm text-white/54">
+                                      {Array.isArray(pathValue)
+                                        ? `${pathValue.length} items`
+                                        : pathValue && typeof pathValue === 'object'
+                                          ? `${Object.keys(pathValue as Record<string, unknown>).length} fields`
+                                          : 'Primitive value'}
+                                    </div>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => void handleManualSave()}
+                                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/72 hover:bg-white/10"
+                                  >
+                                    <Save size={13} />
+                                    Save now
+                                  </button>
+                                </div>
+
+                                <ValueEditor
+                                  label={pathName}
+                                  value={pathValue}
+                                  onChange={(nextValue) => updatePath(pathName, nextValue)}
+                                />
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="rounded-[1.4rem] border border-dashed border-white/10 bg-black/20 p-5 text-sm text-white/52">
+                            This section does not expose editable fields.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-[1.4rem] border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/52">
+                    No section selected.
                   </div>
-                </motion.div>
-              ) : null}
+                )}
+              </div>
 
-              {activeTab === 'media' ? (
-                <motion.div
-                  key="media"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]"
-                >
-                  <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                          Upload media
-                        </div>
-                        <h2 className="mt-2 text-2xl font-semibold text-white">Add images, videos, logos, and documents</h2>
+              <div className="space-y-6">
+                <section className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">
+                        Media manager
                       </div>
-                      <Upload size={22} className="text-brand-orange" />
+                      <h3 className="mt-2 text-xl font-semibold text-white">Real files in public/assets and uploads</h3>
                     </div>
 
-                    <form className="mt-5 space-y-4" onSubmit={uploadMedia}>
+                    <div className="flex items-center gap-2">
+                      <AdminBadge tone="muted">{visibleMedia.length} shown</AdminBadge>
+                    </div>
+                  </div>
+
+                  <form
+                    className="mt-5 grid gap-4 rounded-[1.4rem] border border-white/10 bg-black/20 p-4"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      void handleUpload();
+                    }}
+                  >
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <label className="block">
-                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
+                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
                           File
                         </span>
                         <input
                           type="file"
-                          accept="image/*,video/*,application/pdf"
+                          accept="image/*,video/*,.pdf"
                           onChange={(event) =>
-                            setUploadState((current) => ({
-                              ...current,
-                              file: event.target.files?.[0] ?? null
-                            }))
+                            setUploadDraft((current) => ({ ...current, file: event.target.files?.[0] ?? null }))
                           }
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-brand-orange file:px-4 file:py-2 file:text-[11px] file:font-semibold file:uppercase file:tracking-[0.22em] file:text-white"
-                          required
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-brand-orange file:px-4 file:py-2 file:text-[10px] file:font-semibold file:uppercase file:tracking-[0.24em] file:text-white"
                         />
                       </label>
 
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <label className="block">
-                          <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                            Title
-                          </span>
-                          <input
-                            value={uploadState.title}
-                            onChange={(event) => setUploadState((current) => ({ ...current, title: event.target.value }))}
-                            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                          />
-                        </label>
+                      <label className="block">
+                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                          Kind
+                        </span>
+                        <select
+                          value={uploadDraft.kind}
+                          onChange={(event) =>
+                            setUploadDraft((current) => ({ ...current, kind: event.target.value as MediaKind }))
+                          }
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                        >
+                          <option value="image">image</option>
+                          <option value="video">video</option>
+                          <option value="document">document</option>
+                          <option value="logo">logo</option>
+                        </select>
+                      </label>
+                    </div>
 
-                        <label className="block">
-                          <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                            Kind
-                          </span>
-                          <select
-                            value={uploadState.kind}
-                            onChange={(event) =>
-                              setUploadState((current) => ({
-                                ...current,
-                                kind: event.target.value as UploadState['kind']
-                              }))
-                            }
-                            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                          >
-                            <option value="image">image</option>
-                            <option value="video">video</option>
-                            <option value="logo">logo</option>
-                            <option value="document">document</option>
-                          </select>
-                        </label>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="block">
+                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                          Title
+                        </span>
+                        <input
+                          value={uploadDraft.title}
+                          onChange={(event) => setUploadDraft((current) => ({ ...current, title: event.target.value }))}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                        />
+                      </label>
+
+                      <label className="block">
+                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                          Alt text
+                        </span>
+                        <input
+                          value={uploadDraft.altText}
+                          onChange={(event) => setUploadDraft((current) => ({ ...current, altText: event.target.value }))}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="block">
+                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                          Category
+                        </span>
+                        <input
+                          value={uploadDraft.category}
+                          onChange={(event) => setUploadDraft((current) => ({ ...current, category: event.target.value }))}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                        />
+                      </label>
+
+                      <label className="block">
+                        <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/38">
+                          Notes
+                        </span>
+                        <input
+                          value={uploadDraft.notes}
+                          onChange={(event) => setUploadDraft((current) => ({ ...current, notes: event.target.value }))}
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                        />
+                      </label>
+                    </div>
+
+                    {uploading ? (
+                      <div className="rounded-[1.2rem] border border-white/10 bg-black/20 p-4">
+                        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-white/44">
+                          <span>Upload progress</span>
+                          <span>{Math.round(uploadProgress)}%</span>
+                        </div>
+                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-full rounded-full bg-brand-orange transition-all duration-200" style={{ width: `${Math.max(4, uploadProgress)}%` }} />
+                        </div>
                       </div>
+                    ) : null}
 
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <label className="block">
-                          <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                            Alt text
-                          </span>
-                          <input
-                            value={uploadState.altText}
-                            onChange={(event) => setUploadState((current) => ({ ...current, altText: event.target.value }))}
-                            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
+                    <button
+                      type="submit"
+                      disabled={uploading}
+                      className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white transition-transform hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                      Upload asset
+                    </button>
+                  </form>
+
+                  <div className="mt-5 grid gap-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {MEDIA_FILTERS.map((filter) => (
+                        <button
+                          key={filter}
+                          type="button"
+                          onClick={() => setMediaFilter(filter)}
+                          className={`rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] ${
+                            mediaFilter === filter
+                              ? 'border-brand-orange/35 bg-brand-orange/15 text-white'
+                              : 'border-white/10 bg-white/[0.04] text-white/58 hover:bg-white/8'
+                          }`}
+                        >
+                          {filter}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2">
+                      {visibleMedia.map((entry) => (
+                        <div key={entry.id}>
+                          <MediaCard
+                            media={entry}
+                            selected={entry.id === selectedMedia?.id}
+                            onSelect={() => setSelectedMediaId(entry.id)}
+                            onReplace={() => setReplaceTarget(entry)}
+                            onDelete={() => void handleDeleteMedia(entry)}
+                            onCopyPath={() => void copyPath(entry.publicPath ?? entry.path ?? '')}
                           />
-                        </label>
-
-                        <label className="block">
-                          <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                            Collection key
-                          </span>
-                          <input
-                            value={uploadState.collectionKey}
-                            onChange={(event) =>
-                              setUploadState((current) => ({ ...current, collectionKey: event.target.value }))
-                            }
-                            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                            placeholder="video-editing"
-                          />
-                        </label>
-                      </div>
-
-                      {uploadState.error ? <div className="text-sm text-red-200">{uploadState.error}</div> : null}
-                      {uploadState.notice ? <div className="text-sm text-emerald-200">{uploadState.notice}</div> : null}
-
-                      {uploadState.busy ? (
-                        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-white/46">
-                            <span>Uploading</span>
-                            <span>{Math.round(uploadState.progress)}%</span>
-                          </div>
-                          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-                            <div
-                              className="h-full rounded-full bg-brand-orange transition-all duration-200"
-                              style={{ width: `${Math.max(4, uploadState.progress)}%` }}
-                            />
-                          </div>
+                        </div>
+                      ))}
+                      {visibleMedia.length === 0 ? (
+                        <div className="rounded-[1.4rem] border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/52">
+                          No media items match the current filters.
                         </div>
                       ) : null}
-
-                      <button
-                        type="submit"
-                        disabled={!canManageMedia || uploadState.busy}
-                        className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white transition-transform hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        {uploadState.busy ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                        Upload file
-                      </button>
-                    </form>
-                  </section>
-
-                  <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                      Media library
                     </div>
-                    <div className="mt-4 grid gap-3 md:grid-cols-2">
-                      {mediaRows.length > 0 ? (
-                        mediaRows.map((row) => {
-                          const isVideo = row.kind === 'video' || row.mime_type?.startsWith('video/');
-                          const previewUrl = row.preview_url ?? row.public_url;
+                  </div>
+                </section>
 
-                          return (
-                            <div
-                              key={row.id ?? row.storage_path ?? row.public_url}
-                              className="overflow-hidden rounded-[1.45rem] border border-white/10 bg-black/20"
-                            >
-                              <div className="aspect-[4/3] bg-black/40">
-                                {isVideo ? (
-                                  <video src={previewUrl} controls className="h-full w-full object-cover" />
-                                ) : (
-                                  <img src={previewUrl} alt={row.alt_text ?? row.filename ?? 'Media asset'} className="h-full w-full object-cover" />
-                                )}
-                              </div>
+                <section className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-5">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">
+                    Selected asset
+                  </div>
+                  {selectedMedia ? (
+                    <div className="mt-4 space-y-4">
+                      <div className="overflow-hidden rounded-[1.35rem] border border-white/10 bg-black/30">
+                        <div className="aspect-[4/3]">{previewNode(selectedMedia)}</div>
+                      </div>
 
-                              <div className="space-y-2 p-4">
-                                <div className="text-sm font-semibold text-white">{row.filename ?? 'Unnamed asset'}</div>
-                                <div className="text-xs uppercase tracking-[0.22em] text-white/42">{row.kind ?? 'asset'}</div>
-                                <div className="text-xs text-white/52">{formatBytes(row.size_bytes)}</div>
+                      <div className="space-y-3 text-sm text-white/60">
+                        <div className="text-xl font-semibold text-white">{downloadLabel(selectedMedia)}</div>
+                        <div>Path: <span className="text-white">{selectedMedia.publicPath ?? selectedMedia.path ?? 'No path'}</span></div>
+                        <div>Category: <span className="text-white">{selectedMedia.category ?? 'Uncategorized'}</span></div>
+                        <div>Used in: <span className="text-white">{selectedMedia.usedIn?.join(', ') || 'Not mapped yet'}</span></div>
+                        <div>Status: <span className="text-white">{selectedMedia.protected ? 'Protected source' : 'Editable upload'}</span></div>
+                      </div>
 
-                                <div className="flex flex-wrap gap-2 pt-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => openEditor('media_assets', row)}
-                                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:bg-white/10"
-                                  >
-                                    <Pencil size={13} />
-                                    Edit
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => void deleteRow('media_assets', row)}
-                                    className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-red-200 transition-colors hover:bg-red-500/20"
-                                  >
-                                    <Trash2 size={13} />
-                                    Delete
-                                  </button>
-                                </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setReplaceTarget(selectedMedia)}
+                          className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white"
+                        >
+                          <Pencil size={14} />
+                          Replace
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void copyPath(selectedMedia.publicPath ?? selectedMedia.path ?? '')}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/76 hover:bg-white/10"
+                        >
+                          <Copy size={14} />
+                          Copy path
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-4 rounded-[1.35rem] border border-dashed border-white/10 bg-black/20 p-6 text-sm text-white/52">
+                      No media selected.
+                    </div>
+                  )}
+                </section>
+
+                <section className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-5">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">File roots</div>
+                  <div className="mt-4 grid gap-2">
+                    {fileRoots.map((root) => (
+                      <div key={root} className="rounded-[1.1rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70">
+                        {root}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38">Activity log</div>
+                      <h3 className="mt-2 text-xl font-semibold text-white">Recent local changes</h3>
+                    </div>
+                    <AdminBadge tone="muted">{activity.length} entries</AdminBadge>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {activity.length > 0 ? (
+                      activity.map((entry) => (
+                        <div key={entry.id} className="rounded-[1.2rem] border border-white/10 bg-black/20 p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <div className="text-sm font-semibold text-white">{entry.summary}</div>
+                              <div className="mt-1 text-[10px] uppercase tracking-[0.24em] text-white/38">
+                                {entry.action}
                               </div>
                             </div>
-                          );
-                        })
-                      ) : (
-                        <div className="rounded-[1.45rem] border border-dashed border-white/10 bg-black/10 p-6 text-sm text-white/50">
-                          No media assets uploaded yet.
-                        </div>
-                      )}
-                    </div>
-                  </section>
-                </motion.div>
-              ) : null}
-
-              {activeTab === 'activity' ? (
-                <motion.div
-                  key="activity"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid gap-5 xl:grid-cols-[1fr_0.72fr]"
-                >
-                  <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Activity logs</div>
-                    <div className="mt-4 space-y-3">
-                      {activityRows.length > 0 ? (
-                        activityRows.map((row) => (
-                          <div key={row.id ?? `${row.action}-${row.created_at}`} className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <div className="text-sm font-semibold text-white">{row.summary ?? 'Activity'}</div>
-                                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-white/42">
-                                  {row.action ?? 'action'} · {row.entity_type ?? 'entity'}
-                                </div>
-                              </div>
-                              <div className="text-xs text-white/42">{formatDate(row.created_at)}</div>
-                            </div>
-                            {row.metadata ? (
-                              <pre className="mt-3 overflow-auto rounded-2xl border border-white/10 bg-black/30 p-3 font-mono text-[12px] leading-5 text-white/70">
-                                {safeStringify(row.metadata)}
-                              </pre>
-                            ) : null}
+                            <div className="text-xs text-white/38">{formatDate(entry.createdAt)}</div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="rounded-[1.35rem] border border-dashed border-white/10 bg-black/10 p-6 text-sm text-white/50">
-                          No activity recorded yet.
+                          {entry.metadata ? (
+                            <pre className="mt-3 max-h-44 overflow-auto rounded-[1rem] border border-white/10 bg-black/30 p-3 font-mono text-[11px] leading-5 text-white/62">
+                              {JSON.stringify(entry.metadata, null, 2)}
+                            </pre>
+                          ) : null}
                         </div>
-                      )}
-                    </div>
-                  </section>
-
-                  <section className="space-y-5">
-                    <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                        Published snapshot
-                      </div>
-                      <pre className="mt-4 max-h-[24rem] overflow-auto rounded-[1.35rem] border border-white/10 bg-black/25 p-4 font-mono text-[12px] leading-6 text-white/70">
-                        {safeStringify(publishedSnapshot)}
-                      </pre>
-                    </div>
-
-                    <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                        Draft snapshot
-                      </div>
-                      <pre className="mt-4 max-h-[24rem] overflow-auto rounded-[1.35rem] border border-white/10 bg-black/25 p-4 font-mono text-[12px] leading-6 text-white/70">
-                        {safeStringify(draftSnapshot)}
-                      </pre>
-                    </div>
-                  </section>
-                </motion.div>
-              ) : null}
-
-              {activeTab === 'settings' ? (
-                <motion.div
-                  key="settings"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]"
-                >
-                  <section className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Account</div>
-                    <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-                      <div className="text-lg font-semibold text-white">{session?.user.displayName}</div>
-                      <div className="mt-1 text-sm text-white/60">{session?.user.email}</div>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/54">
-                          {session?.user.role.name}
-                        </span>
-                        <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/54">
-                          {session?.user.status}
-                        </span>
-                      </div>
-                    </div>
-
-                    {canManageAccount ? (
-                      <form
-                        className="mt-5 space-y-4"
-                        onSubmit={async (event) => {
-                          event.preventDefault();
-                          if (!csrfToken) return;
-
-                          const form = new FormData(event.currentTarget);
-                          const currentPassword = String(form.get('currentPassword') ?? '');
-                          const newPassword = String(form.get('newPassword') ?? '');
-                          const confirmPassword = String(form.get('confirmPassword') ?? '');
-
-                          if (newPassword !== confirmPassword) {
-                            setError('New password and confirmation do not match.');
-                            return;
-                          }
-
-                          await requestJson('/api/admin/auth/password', {
-                            method: 'POST',
-                            headers: {
-                              'x-csrf-token': csrfToken
-                            },
-                            body: JSON.stringify({ currentPassword, newPassword })
-                          });
-                        }}
-                      >
-                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                          Change password
-                        </div>
-                        <input
-                          name="currentPassword"
-                          type="password"
-                          placeholder="Current password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                          required
-                        />
-                        <input
-                          name="newPassword"
-                          type="password"
-                          placeholder="New password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                          required
-                        />
-                        <input
-                          name="confirmPassword"
-                          type="password"
-                          placeholder="Confirm new password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                          required
-                        />
-                        <button
-                          type="submit"
-                          className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-transform hover:translate-y-[-1px]"
-                        >
-                          <Save size={14} />
-                          Update password
-                        </button>
-                      </form>
+                      ))
                     ) : (
-                      <p className="mt-5 text-sm leading-6 text-white/58">
-                        This account does not currently have account-management permissions.
-                      </p>
+                      <div className="rounded-[1.2rem] border border-dashed border-white/10 bg-black/20 p-5 text-sm text-white/52">
+                        No activity logged yet.
+                      </div>
                     )}
-                  </section>
-
-                  <section className="space-y-5">
-                    <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                        Session controls
-                      </div>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                        <button
-                          type="button"
-                          onClick={openPreview}
-                          className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4 text-left transition-colors hover:border-white/15 hover:bg-white/6"
-                        >
-                          <div className="text-sm font-semibold text-white">Preview mode</div>
-                          <div className="mt-1 text-sm text-white/60">Open the public site with draft content enabled.</div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void logout()}
-                          className="rounded-[1.35rem] border border-red-500/20 bg-red-500/10 p-4 text-left transition-colors hover:bg-red-500/20"
-                        >
-                          <div className="text-sm font-semibold text-red-200">Log out</div>
-                          <div className="mt-1 text-sm text-red-100/70">Clear the admin session cookies.</div>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">
-                        Admin notes
-                      </div>
-                      <ul className="mt-4 space-y-3 text-sm leading-7 text-white/62">
-                        <li>Direct access uses the hidden URL and the access code, then loads the dashboard immediately.</li>
-                        <li>Writes and uploads are still protected by the server-side access gate and role checks.</li>
-                        <li>Each save triggers a content refresh broadcast so the public site can update without redeploying.</li>
-                      </ul>
-                    </div>
-                  </section>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
-        </main>
+                  </div>
+                </section>
+              </div>
+            </section>
+          </>
+        ) : null}
       </div>
 
       <AnimatePresence>
-        {editor ? (
-          <EditorModal
-            editor={editor}
-            saving={savingEditor}
-            onClose={closeEditor}
-            onChange={setEditor}
-            onSave={() => void saveEditor()}
+        {replaceTarget ? (
+          <ReplaceModal
+            media={replaceTarget}
+            onClose={() => setReplaceTarget(null)}
+            onSubmit={handleReplace}
+            progress={replaceProgress}
+            busy={uploading}
           />
         ) : null}
       </AnimatePresence>

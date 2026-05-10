@@ -1,0 +1,885 @@
+{
+  "content": {
+    "brand": {
+      "name": "GRAPHINEX",
+      "tagline": "Design. Create. Grow.",
+      "logo": "/Graphinex%20logo/logo.png",
+      "location": "Lucknow, India",
+      "reach": "Serving across India and UAE"
+    },
+    "navigation": [
+      {
+        "name": "Services",
+        "href": "/#services"
+      },
+      {
+        "name": "Portfolio",
+        "href": "/portfolio"
+      },
+      {
+        "name": "About",
+        "href": "/#about"
+      },
+      {
+        "name": "Contact",
+        "href": "/#contact"
+      }
+    ],
+    "hero": {
+      "heading": "BUILT FOR GROWTH",
+      "headingHighlights": [
+        "GROWTH"
+      ],
+      "subheading": "Premium branding, content, and motion systems built to attract attention and convert it into revenue.",
+      "video": "/Hero background video/Video.mp4",
+      "placeholder": "/hero.jpeg"
+    },
+    "showreel": {
+      "title": "Our Showreel",
+      "youtubeId": "41bEV6Coy3U",
+      "caption": "Watch how Graphinex turns raw content into premium visual systems."
+    },
+    "trustCertificates": [
+      {
+        "title": "GST Certificate",
+        "status": "GST Registered",
+        "description": "Verified business document",
+        "pdfUrl": "/assets/certificates/gst-certificate.pdf"
+      },
+      {
+        "title": "MSME Certificate",
+        "status": "MSME Registered",
+        "description": "Verified business document",
+        "pdfUrl": "/assets/certificates/msme-certificate.pdf"
+      }
+    ],
+    "serviceOverviews": [
+      {
+        "id": "videoEditing",
+        "title": "Video Editing",
+        "icon": "VE",
+        "description": "High-impact storytelling through cinematic video and professional post-production.",
+        "previewImage": "/assets/services-hover/video-editing.png",
+        "portfolioCategory": "video-editing"
+      },
+      {
+        "id": "graphicDesign",
+        "title": "Graphic Design",
+        "icon": "GD",
+        "description": "Crafting iconic visual identities that resonate with your audience and define your market presence.",
+        "previewImage": "/assets/services-hover/graphic-design.png",
+        "portfolioCategory": "graphic-design"
+      },
+      {
+        "id": "branding",
+        "title": "Branding",
+        "icon": "BR",
+        "description": "Bespoke digital content strategies built with engagement and aesthetics in mind.",
+        "previewImage": "/assets/services-hover/branding.png",
+        "portfolioCategory": "branding"
+      }
+    ],
+    "results": [
+      {
+        "label": "Views Generated",
+        "value": "50M+",
+        "suffix": ""
+      },
+      {
+        "label": "Engagement Growth",
+        "value": "3X",
+        "suffix": ""
+      },
+      {
+        "label": "Projects Delivered",
+        "value": "999+",
+        "suffix": ""
+      },
+      {
+        "label": "Active Clients",
+        "value": "450+",
+        "suffix": ""
+      }
+    ],
+    "contact": {
+      "phone": "+91 77050 90700",
+      "email": "graphinex@gmail.com",
+      "whatsapp": "https://wa.me/917705090700?text=Hi%20Graphinex,%20I%20came%20across%20your%20work%20and%20I%27m%20interested%20in%20your%20services.%20I%27d%20like%20to%20discuss%20a%20project.%20Please%20share%20your%20pricing%20and%20best%20work."
+    },
+    "socials": [
+      {
+        "name": "Instagram",
+        "href": "https://www.instagram.com/graphinex.in?igsh=Z3cxYjZ0MDd3NmFq"
+      },
+      {
+        "name": "YouTube",
+        "href": "https://www.youtube.com/@graphinexagency"
+      },
+      {
+        "name": "LinkedIn",
+        "href": "https://www.linkedin.com/in/graphinex-undefined-45a269407?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+      },
+      {
+        "name": "Twitter / X",
+        "href": "https://x.com/Graphinex_in"
+      }
+    ],
+    "homeFeaturedWorks": [
+      {
+        "id": "featured-work-short-hook-01-assets-videos-work-1-mp4-0",
+        "type": "video",
+        "title": "Short Hook 01",
+        "category": "Featured Work",
+        "src": "/assets/videos/work-1.mp4",
+        "poster": "/assets/videos/work-1.png",
+        "link": "#"
+      },
+      {
+        "id": "featured-work-short-hook-02-assets-videos-work-2-mp4-1",
+        "type": "video",
+        "title": "Short Hook 02",
+        "category": "Featured Work",
+        "src": "/assets/videos/work-2.mp4",
+        "poster": "/assets/videos/work-2.png",
+        "link": "#"
+      },
+      {
+        "id": "featured-work-short-hook-03-assets-videos-work-3-mp4-2",
+        "type": "video",
+        "title": "Short Hook 03",
+        "category": "Featured Work",
+        "src": "/assets/videos/work-3.mp4",
+        "poster": "/assets/videos/work-3.png",
+        "link": "#"
+      },
+      {
+        "id": "featured-work-short-hook-04-assets-videos-work-4-mp4-3",
+        "type": "video",
+        "title": "Short Hook 04",
+        "category": "Featured Work",
+        "src": "/assets/videos/work-4.mp4",
+        "poster": "/assets/videos/work-4.png",
+        "link": "#"
+      }
+    ],
+    "homePortfolioCollections": {
+      "video-editing": [
+        {
+          "id": "portfolio-video-editing-edit-reel-01-assets-video-editing-v1-mp4-0",
+          "type": "video",
+          "title": "Edit Reel 01",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v1.mp4",
+          "poster": "/assets/video-editing/v1.png",
+          "link": "#"
+        },
+        {
+          "id": "portfolio-video-editing-edit-reel-02-assets-video-editing-v2-mp4-1",
+          "type": "video",
+          "title": "Edit Reel 02",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v2.mp4",
+          "poster": "/assets/video-editing/v2.png",
+          "link": "#"
+        },
+        {
+          "id": "portfolio-video-editing-edit-reel-03-assets-video-editing-v3-mp4-2",
+          "type": "video",
+          "title": "Edit Reel 03",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v3.mp4",
+          "poster": "/assets/video-editing/v3.png",
+          "link": "#"
+        },
+        {
+          "id": "portfolio-video-editing-edit-reel-04-assets-video-editing-v4-mp4-3",
+          "type": "video",
+          "title": "Edit Reel 04",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v4.mp4",
+          "poster": "/assets/video-editing/v4.png",
+          "link": "#"
+        }
+      ],
+      "graphic-design": [
+        {
+          "id": "portfolio-graphic-design-graphic-design-01-assets-graphic-design-g1-jpeg-0",
+          "type": "image",
+          "title": "Graphic Design 01",
+          "category": "Visual Design",
+          "src": "/assets/graphic-design/g1.jpeg"
+        },
+        {
+          "id": "portfolio-graphic-design-graphic-design-02-assets-graphic-design-g2-jpeg-1",
+          "type": "image",
+          "title": "Graphic Design 02",
+          "category": "Visual Design",
+          "src": "/assets/graphic-design/g2.jpeg"
+        },
+        {
+          "id": "portfolio-graphic-design-graphic-design-03-assets-graphic-design-g3-jpeg-2",
+          "type": "image",
+          "title": "Graphic Design 03",
+          "category": "Visual Design",
+          "src": "/assets/graphic-design/g3.jpeg"
+        },
+        {
+          "id": "portfolio-graphic-design-graphic-design-04-assets-graphic-design-g4-jpeg-3",
+          "type": "image",
+          "title": "Graphic Design 04",
+          "category": "Visual Design",
+          "src": "/assets/graphic-design/g4.jpeg"
+        }
+      ],
+      "branding": [
+        {
+          "id": "portfolio-branding-brand-film-01-assets-branding-b1-jpeg-0",
+          "type": "image",
+          "title": "Brand Film 01",
+          "category": "Branding",
+          "src": "/assets/branding/b1.jpeg"
+        },
+        {
+          "id": "portfolio-branding-brand-film-02-assets-branding-b2-jpeg-1",
+          "type": "image",
+          "title": "Brand Film 02",
+          "category": "Branding",
+          "src": "/assets/branding/b2.jpeg"
+        },
+        {
+          "id": "portfolio-branding-brand-film-03-assets-branding-b3-jpeg-2",
+          "type": "image",
+          "title": "Brand Film 03",
+          "category": "Branding",
+          "src": "/assets/branding/b3.jpeg"
+        },
+        {
+          "id": "portfolio-branding-brand-film-04-assets-branding-b4-jpeg-3",
+          "type": "image",
+          "title": "Brand Film 04",
+          "category": "Branding",
+          "src": "/assets/branding/b4.jpeg"
+        }
+      ]
+    },
+    "portfolioCollections": {
+      "video-editing": [
+        {
+          "id": "portfolio-video-editing-edit-reel-01-assets-video-editing-v1-mp4-0",
+          "type": "video",
+          "title": "Edit Reel 01",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v1.mp4",
+          "poster": "/assets/video-editing/v1.png",
+          "link": "#"
+        },
+        {
+          "id": "portfolio-video-editing-edit-reel-02-assets-video-editing-v2-mp4-1",
+          "type": "video",
+          "title": "Edit Reel 02",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v2.mp4",
+          "poster": "/assets/video-editing/v2.png",
+          "link": "#"
+        },
+        {
+          "id": "portfolio-video-editing-edit-reel-03-assets-video-editing-v3-mp4-2",
+          "type": "video",
+          "title": "Edit Reel 03",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v3.mp4",
+          "poster": "/assets/video-editing/v3.png",
+          "link": "#"
+        },
+        {
+          "id": "portfolio-video-editing-edit-reel-04-assets-video-editing-v4-mp4-3",
+          "type": "video",
+          "title": "Edit Reel 04",
+          "category": "Reel Edit",
+          "src": "/assets/video-editing/v4.mp4",
+          "poster": "/assets/video-editing/v4.png",
+          "link": "#"
+        }
+      ],
+      "graphic-design": [
+        {
+          "id": "portfolio-graphic-design-graphic-design-01-assets-graphic-design-g1-jpeg-0",
+          "type": "image",
+          "title": "Graphic Design 01",
+          "src": "/assets/graphic-design/g1.jpeg"
+        },
+        {
+          "id": "portfolio-graphic-design-graphic-design-02-assets-graphic-design-g2-jpeg-1",
+          "type": "image",
+          "title": "Graphic Design 02",
+          "src": "/assets/graphic-design/g2.jpeg"
+        },
+        {
+          "id": "portfolio-graphic-design-graphic-design-03-assets-graphic-design-g3-jpeg-2",
+          "type": "image",
+          "title": "Graphic Design 03",
+          "src": "/assets/graphic-design/g3.jpeg"
+        },
+        {
+          "id": "portfolio-graphic-design-graphic-design-04-assets-graphic-design-g4-jpeg-3",
+          "type": "image",
+          "title": "Graphic Design 04",
+          "src": "/assets/graphic-design/g4.jpeg"
+        }
+      ],
+      "branding": [
+        {
+          "id": "portfolio-branding-branding-01-assets-branding-b1-jpeg-0",
+          "type": "image",
+          "title": "Branding 01",
+          "src": "/assets/branding/b1.jpeg"
+        },
+        {
+          "id": "portfolio-branding-branding-02-assets-branding-b2-jpeg-1",
+          "type": "image",
+          "title": "Branding 02",
+          "src": "/assets/branding/b2.jpeg"
+        },
+        {
+          "id": "portfolio-branding-branding-03-assets-branding-b3-jpeg-2",
+          "type": "image",
+          "title": "Branding 03",
+          "src": "/assets/branding/b3.jpeg"
+        },
+        {
+          "id": "portfolio-branding-branding-04-assets-branding-b4-jpeg-3",
+          "type": "image",
+          "title": "Branding 04",
+          "src": "/assets/branding/b4.jpeg"
+        }
+      ]
+    },
+    "portfolioPage": {
+      "hero": {
+        "title": "Our Work Speaks",
+        "subtitle": "Real results, sharper visuals, and proof-led creative execution across every category."
+      }
+    },
+    "logos": [
+      {
+        "id": "logo-client-logo-1-assets-logos-logo-1-jpeg-0",
+        "type": "image",
+        "title": "Client Logo 1",
+        "category": "Logos",
+        "src": "/assets/logos/logo-1.jpeg",
+        "link": "#"
+      },
+      {
+        "id": "logo-client-logo-2-assets-logos-logo-2-jpeg-1",
+        "type": "image",
+        "title": "Client Logo 2",
+        "category": "Logos",
+        "src": "/assets/logos/logo-2.jpeg",
+        "link": "#"
+      },
+      {
+        "id": "logo-client-logo-3-assets-logos-logo-3-jpeg-2",
+        "type": "image",
+        "title": "Client Logo 3",
+        "category": "Logos",
+        "src": "/assets/logos/logo-3.jpeg",
+        "link": "#"
+      },
+      {
+        "id": "logo-client-logo-4-assets-logos-logo-4-jpeg-3",
+        "type": "image",
+        "title": "Client Logo 4",
+        "category": "Logos",
+        "src": "/assets/logos/logo-4.jpeg",
+        "link": "#"
+      }
+    ],
+    "happyClients": [
+      {
+        "id": "happy-client-elvish-yadav-assets-clients-elvish-png-0",
+        "name": "Elvish Yadav",
+        "role": "Creator",
+        "quote": "Graphinex is innovative, reliable, and always exceeds expectations! A fantastic team to work with!",
+        "image": "/assets/clients/elvish.png",
+        "instagram": "https://www.instagram.com/elvish_yadav/",
+        "youtube": "https://www.youtube.com/@TheSocialFactory"
+      },
+      {
+        "id": "happy-client-amir-trt-assets-clients-amir-png-1",
+        "name": "Amir Trt",
+        "role": "Creator",
+        "quote": "Graphinex excels in video production and design, creating content that truly connects.",
+        "image": "/assets/clients/amir.png",
+        "instagram": "https://www.instagram.com/aamir.trt?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+      },
+      {
+        "id": "happy-client-dharmendra-bilotia-assets-clients-dharmendra-png-2",
+        "name": "Dharmendra Bilotia",
+        "role": "Creator",
+        "quote": "Graphinex is creative, professional, and delivers amazing results! Highly recommended!",
+        "image": "/assets/clients/dharmendra.png",
+        "instagram": "https://www.instagram.com/dharmendra_bilotia_/"
+      },
+      {
+        "id": "happy-client-alisha-rajput-assets-clients-alisha-png-3",
+        "name": "Alisha Rajput",
+        "role": "Creator",
+        "quote": "Top quality, smooth execution, and impressive results!",
+        "image": "/assets/clients/alisha.png",
+        "instagram": "https://www.instagram.com/alisharajput_22/"
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "testimonial-kabir-ahuja-0",
+        "name": "Kabir Ahuja",
+        "role": "Founder • Elevan Media",
+        "rating": 5,
+        "review": "Graphinex honestly understood the exact vibe I wanted without me over-explaining everything. The edits felt premium from the very first draft 🔥"
+      },
+      {
+        "id": "testimonial-luca-moretti-1",
+        "name": "Luca Moretti",
+        "role": "Creative Strategist • Milan",
+        "rating": 5,
+        "review": "The motion quality and visual pacing were seriously impressive. Everything felt clean, modern, and highly intentional."
+      },
+      {
+        "id": "testimonial-zavian-reed-2",
+        "name": "Zavian Reed",
+        "role": "Personal Brand Creator",
+        "rating": 5,
+        "review": "I’ve worked with multiple editing teams before, but Graphinex delivered the smoothest workflow till now. Fast replies, great quality, no confusion."
+      },
+      {
+        "id": "testimonial-harshil-vora-3",
+        "name": "Harshil Vora",
+        "role": "E-commerce Brand Owner",
+        "rating": 5,
+        "review": "Graphinex ne meri ads creatives ka overall feel hi upgrade kar diya. Videos ab zyada premium aur engaging lagti hain."
+      },
+      {
+        "id": "testimonial-am-lie-laurent-4",
+        "name": "Amélie Laurent",
+        "role": "Fashion Content Consultant",
+        "rating": 5,
+        "review": "The visuals felt elegant and cinematic at the same time. You can clearly tell Graphinex focuses heavily on presentation quality."
+      },
+      {
+        "id": "testimonial-abeer-malhotra-5",
+        "name": "Abeer Malhotra",
+        "role": "Fitness Creator",
+        "rating": 5,
+        "review": "Maine mainly reels editing ke liye contact kiya tha but overall branding output bhi kaafi strong nikla 💯"
+      },
+      {
+        "id": "testimonial-nathan-elric-6",
+        "name": "Nathan Elric",
+        "role": "Startup Operator",
+        "rating": 5,
+        "review": "The attention to detail was the biggest difference for me. Nothing felt rushed and the final result looked very polished."
+      },
+      {
+        "id": "testimonial-reyansh-kohli-7",
+        "name": "Reyansh Kohli",
+        "role": "Music Artist",
+        "rating": 5,
+        "review": "Graphinex ka editing style modern hai but overdone nahi lagta. Smooth transitions and proper pacing 👌"
+      },
+      {
+        "id": "testimonial-elena-voss-8",
+        "name": "Elena Voss",
+        "role": "Social Campaign Manager",
+        "rating": 5,
+        "review": "The website visuals and animations felt surprisingly premium on mobile too. Everything stayed smooth and responsive."
+      },
+      {
+        "id": "testimonial-yuvraj-sethi-9",
+        "name": "Yuvraj Sethi",
+        "role": "Luxury Brand Consultant",
+        "rating": 5,
+        "review": "Honestly expected good edits, but the overall creative direction from Graphinex was even better than expected."
+      },
+      {
+        "id": "testimonial-carter-vale-10",
+        "name": "Carter Vale",
+        "role": "Digital Creator",
+        "rating": 5,
+        "review": "Graphinex made the entire content look more high-end without making it feel too flashy. That balance is hard to find."
+      },
+      {
+        "id": "testimonial-vihaan-arora-11",
+        "name": "Vihaan Arora",
+        "role": "Agency Partner",
+        "rating": 5,
+        "review": "Communication clear thi, delivery smooth thi, aur revisions bhi properly handled hue. Overall experience kaafi professional tha."
+      },
+      {
+        "id": "testimonial-sienna-blake-12",
+        "name": "Sienna Blake",
+        "role": "Lifestyle Brand Manager",
+        "rating": 5,
+        "review": "The visuals immediately felt premium and audience-ready. Really loved the clean cinematic approach."
+      },
+      {
+        "id": "testimonial-aryaveer-khanna-13",
+        "name": "Aryaveer Khanna",
+        "role": "Real Estate Creator",
+        "rating": 5,
+        "review": "Graphinex ne jo reels pacing aur hooks use kiye usse videos ka retention kaafi better hua."
+      },
+      {
+        "id": "testimonial-kai-emerson-14",
+        "name": "Kai Emerson",
+        "role": "Creative Director",
+        "rating": 5,
+        "review": "Everything from the transitions to the motion flow felt intentional. The final presentation looked extremely refined."
+      }
+    ],
+    "process": [
+      {
+        "id": "process-inquiry-0",
+        "step": "01",
+        "name": "Inquiry",
+        "description": "We align on goals, audience, and the exact outcome the project needs to create.",
+        "previewImage": "/assets/videos/work-3.png"
+      },
+      {
+        "id": "process-concept-1",
+        "step": "02",
+        "name": "Concept",
+        "description": "We shape the direction, narrative, and visual system before any execution begins.",
+        "previewImage": "/assets/videos/work-4.png"
+      },
+      {
+        "id": "process-creation-2",
+        "step": "03",
+        "name": "Creation",
+        "description": "We build, refine, and polish the work into a premium final asset with control.",
+        "previewImage": "/assets/graphic-design/g3.jpeg"
+      },
+      {
+        "id": "process-launch-3",
+        "step": "04",
+        "name": "Launch",
+        "description": "We deliver the final output ready to ship, perform, and convert in market.",
+        "previewImage": "/assets/branding/b2.jpeg"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "review-aman-verma-0",
+        "name": "Aman Verma",
+        "type": "YouTuber",
+        "text": "Engagement literally 3x ho gaya.",
+        "time": "2 min ago"
+      },
+      {
+        "id": "review-ravi-singh-1",
+        "name": "Ravi Singh",
+        "type": "Real Estate",
+        "text": "Leads double ho gaye within 10 days.",
+        "time": "5 min ago"
+      },
+      {
+        "id": "review-muskan-b-2",
+        "name": "Muskan B.",
+        "type": "Brand Owner",
+        "text": "Design quality next level hai.",
+        "time": "8 min ago"
+      },
+      {
+        "id": "review-imran-k-3",
+        "name": "Imran K.",
+        "type": "Coach",
+        "text": "Reels viral hone lage consistently.",
+        "time": "10 min ago"
+      },
+      {
+        "id": "review-sahil-arora-4",
+        "name": "Sahil Arora",
+        "type": "Fitness Creator",
+        "text": "Content finally looks premium.",
+        "time": "12 min ago"
+      },
+      {
+        "id": "review-neha-jain-5",
+        "name": "Neha Jain",
+        "type": "Influencer",
+        "text": "My reach improved instantly.",
+        "time": "15 min ago"
+      },
+      {
+        "id": "review-vikas-sharma-6",
+        "name": "Vikas Sharma",
+        "type": "Startup Founder",
+        "text": "Branding ne pura game change kar diya.",
+        "time": "18 min ago"
+      },
+      {
+        "id": "review-faizan-ali-7",
+        "name": "Faizan Ali",
+        "type": "Agency Owner",
+        "text": "Clients impressed with quality.",
+        "time": "22 min ago"
+      },
+      {
+        "id": "review-karan-mehta-8",
+        "name": "Karan Mehta",
+        "type": "YouTuber",
+        "text": "CTR boost hua thumbnails se.",
+        "time": "25 min ago"
+      },
+      {
+        "id": "review-palak-v-9",
+        "name": "Palak V.",
+        "type": "Skincare Brand",
+        "text": "Visual storytelling at its best.",
+        "time": "30 min ago"
+      },
+      {
+        "id": "review-arjun-s-10",
+        "name": "Arjun S.",
+        "type": "Fitness Coach",
+        "text": "High retention edits actually work.",
+        "time": "35 min ago"
+      },
+      {
+        "id": "review-divya-m-11",
+        "name": "Divya M.",
+        "type": "E-comm Owner",
+        "text": "Ad creatives are converting like crazy.",
+        "time": "40 min ago"
+      },
+      {
+        "id": "review-rahul-g-12",
+        "name": "Rahul G.",
+        "type": "Tech Reviewer",
+        "text": "Minimalistic yet impactful designs.",
+        "time": "45 min ago"
+      },
+      {
+        "id": "review-sanya-p-13",
+        "name": "Sanya P.",
+        "type": "Lifestyle Blogger",
+        "text": "Consistency manage karna easy ho gaya.",
+        "time": "50 min ago"
+      },
+      {
+        "id": "review-kabir-d-14",
+        "name": "Kabir D.",
+        "type": "FinTech Startup",
+        "text": "Professionalism reflects in every frame.",
+        "time": "1 hour ago"
+      },
+      {
+        "id": "review-anish-t-15",
+        "name": "Anish T.",
+        "type": "Gamer",
+        "text": "Montages are insane, editing is top-notch.",
+        "time": "1 hour ago"
+      },
+      {
+        "id": "review-isha-w-16",
+        "name": "Isha W.",
+        "type": "Fashion Designer",
+        "text": "Aesthetics exactly match my brand vibe.",
+        "time": "2 hours ago"
+      },
+      {
+        "id": "review-mayank-l-17",
+        "name": "Mayank L.",
+        "type": "Crypto Analyst",
+        "text": "Detailed motion graphics explain complex stuff.",
+        "time": "2 hours ago"
+      },
+      {
+        "id": "review-tanmay-b-18",
+        "name": "Tanmay B.",
+        "type": "Motivational Speaker",
+        "text": "Short-form content is gold now.",
+        "time": "3 hours ago"
+      },
+      {
+        "id": "review-priya-r-19",
+        "name": "Priya R.",
+        "type": "Yoga Instructor",
+        "text": "Calm and peaceful visual style achieved.",
+        "time": "3 hours ago"
+      },
+      {
+        "id": "review-zaid-h-20",
+        "name": "Zaid H.",
+        "type": "Chef",
+        "text": "Food videos look delicious, high engagement.",
+        "time": "4 hours ago"
+      },
+      {
+        "id": "review-megha-s-21",
+        "name": "Megha S.",
+        "type": "Beauty Expert",
+        "text": "Product showcase reels are stunning.",
+        "time": "4 hours ago"
+      },
+      {
+        "id": "review-rishabh-k-22",
+        "name": "Rishabh K.",
+        "type": "Stock Trader",
+        "text": "Clean UI for my financial courses.",
+        "time": "5 hours ago"
+      },
+      {
+        "id": "review-aditi-b-23",
+        "name": "Aditi B.",
+        "type": "Travel Vlogger",
+        "text": "Cinematic transitions are breathtaking.",
+        "time": "5 hours ago"
+      },
+      {
+        "id": "review-siddharth-v-24",
+        "name": "Siddharth V.",
+        "type": "Educationist",
+        "text": "Visual teaching aids simplified learning.",
+        "time": "6 hours ago"
+      },
+      {
+        "id": "review-nisha-d-25",
+        "name": "Nisha D.",
+        "type": "Interior Designer",
+        "text": "Portfolio presentation is much better now.",
+        "time": "7 hours ago"
+      },
+      {
+        "id": "review-varun-p-26",
+        "name": "Varun P.",
+        "type": "D2C Brand",
+        "text": "Scaling became easier with right creative partner.",
+        "time": "8 hours ago"
+      },
+      {
+        "id": "review-kritika-s-27",
+        "name": "Kritika S.",
+        "type": "Artist",
+        "text": "My work looks professional in these edits.",
+        "time": "9 hours ago"
+      },
+      {
+        "id": "review-aryan-t-28",
+        "name": "Aryan T.",
+        "type": "App Developer",
+        "text": "App demo video increased signups.",
+        "time": "10 hours ago"
+      },
+      {
+        "id": "review-deepak-r-29",
+        "name": "Deepak R.",
+        "type": "Car Enthusiast",
+        "text": "Automotive cinematography is elite.",
+        "time": "11 hours ago"
+      },
+      {
+        "id": "review-sonal-m-30",
+        "name": "Sonal M.",
+        "type": "Wedding Planner",
+        "text": "Emotional storytelling at its peak.",
+        "time": "12 hours ago"
+      },
+      {
+        "id": "review-harshil-b-31",
+        "name": "Harshil B.",
+        "type": "Real Estate Agent",
+        "text": "Property tours are getting more inquiries.",
+        "time": "13 hours ago"
+      },
+      {
+        "id": "review-simran-g-32",
+        "name": "Simran G.",
+        "type": "Makeup Artist",
+        "text": "Tutorials are crisp and clear.",
+        "time": "14 hours ago"
+      },
+      {
+        "id": "review-manish-j-33",
+        "name": "Manish J.",
+        "type": "E-learning Platform",
+        "text": "Course production quality upgraded.",
+        "time": "15 hours ago"
+      },
+      {
+        "id": "review-ashish-p-34",
+        "name": "Ashish P.",
+        "type": "Journalist",
+        "text": "News snippets are very professional.",
+        "time": "16 hours ago"
+      },
+      {
+        "id": "review-swati-l-35",
+        "name": "Swati L.",
+        "type": "Home Decor",
+        "text": "Product reels are visually appealing.",
+        "time": "17 hours ago"
+      },
+      {
+        "id": "review-prateek-s-36",
+        "name": "Prateek S.",
+        "type": "Music Producer",
+        "text": "Music video edits are vibe.",
+        "time": "18 hours ago"
+      },
+      {
+        "id": "review-kiara-n-37",
+        "name": "Kiara N.",
+        "type": "Dancer",
+        "text": "Movement tracking is perfect on beats.",
+        "time": "19 hours ago"
+      },
+      {
+        "id": "review-rohit-a-38",
+        "name": "Rohit A.",
+        "type": "Productivity Guru",
+        "text": "Fast-paced editing keeps viewer hooked.",
+        "time": "20 hours ago"
+      },
+      {
+        "id": "review-tushar-d-39",
+        "name": "Tushar D.",
+        "type": "Software Engineer",
+        "text": "Clean animations for my tech demos.",
+        "time": "21 hours ago"
+      }
+    ],
+    "activity": [
+      "Ravi (Mumbai) just started a project",
+      "Client from Dubai booked branding package",
+      "YouTuber gained 2.1x reach with our edits",
+      "New reel project started for Real Estate brand"
+    ],
+    "footer": {
+      "brandMessage": "Transforming your content into a client-acquisition machine with sharper branding, cleaner edits, and premium visual systems built to convert.",
+      "privacyLabel": "Privacy Policy",
+      "termsLabel": "Terms",
+      "registeredBusinessName": "Graphinex Enterprises",
+      "gstLabel": "GSTIN: 09FOXPA7667R1ZI",
+      "udyamLabel": "Udyam: UDYAM-UP-04-0049600"
+    },
+    "seo": {
+      "home": {
+        "title": "Graphinex Creative | Video Editing, Graphic Design & Branding Agency",
+        "description": "Graphinex Creative is a results-driven creative agency specializing in video editing, graphic design, and branding. We turn your content into clients.",
+        "canonical": "https://graphinex.in/",
+        "ogImage": "https://graphinex.in/Graphinex%20logo/logo.png",
+        "robots": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      },
+      "portfolio": {
+        "title": "Graphinex Portfolio | Premium Creative Work",
+        "description": "Explore selected video editing, graphic design, and branding work created by Graphinex.",
+        "canonical": "https://graphinex.in/portfolio",
+        "ogImage": "https://graphinex.in/Graphinex%20logo/logo.png",
+        "robots": "index, follow"
+      }
+    },
+    "teamMembers": []
+  },
+  "updatedAt": "2026-05-10T14:54:46.143Z",
+  "version": "54ef2293d5f9604236e1b98c6b1cae8214c21d0d8bdbddbbce3f7097227a36c1"
+}
