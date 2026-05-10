@@ -68,36 +68,7 @@ async function createDirectAccessSession(request: Request): Promise<VerifiedSess
     return null;
   }
 
-  const database = getDatabase();
-  let sessionUser: SessionUser | null = null;
-
-  if (database) {
-    const rows = await database`
-      select
-        u.id,
-        u.email,
-        u.display_name,
-        u.avatar_url,
-        u.status,
-        r.slug as role_slug,
-        r.name as role_name
-      from admin_users u
-      inner join roles r on r.id = u.role_id
-      where u.status = 'active'
-      order by case when r.slug = 'superadmin' then 0 else 1 end, u.created_at asc
-      limit 1
-    `;
-
-    const user = (rows as any[])[0];
-
-    if (user) {
-      sessionUser = buildAccessSessionUser(user);
-    }
-  }
-
-  if (!sessionUser) {
-    sessionUser = buildAccessSessionUser();
-  }
+  const sessionUser = buildAccessSessionUser();
 
   const accessCode = getAdminAccessCode();
   const sessionHash = sha256(accessCode);

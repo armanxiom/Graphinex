@@ -88,42 +88,43 @@ export async function composeSiteSnapshotFromTables(): Promise<SiteContent> {
     return cloneSiteContent(defaultSiteContent);
   }
 
-  const [
-    homepageRows,
-    heroRows,
-    serviceRows,
-    projectRows,
-    testimonialRows,
-    teamRows,
-    mediaRows,
-    contactRows,
-    footerRows,
-    seoRows
-  ] = await Promise.all([
-    database`select * from homepage_content where resource_key = ${HOME_KEY} order by updated_at desc limit 1`,
-    database`select * from hero_sections where resource_key = ${HERO_KEY} order by updated_at desc limit 1`,
-    database`select * from services where status = 'published' order by sort_order asc, created_at asc`,
-    database`select * from portfolio_projects where status = 'published' order by sort_order asc, created_at asc`,
-    database`select * from testimonials where status = 'published' order by sort_order asc, created_at asc`,
-    database`select * from team_members where status in ('published', 'draft') order by sort_order asc, created_at asc`,
-    database`select * from media_assets where status = 'active' order by created_at desc`,
-    database`select * from contact_details where resource_key = ${CONTACT_KEY} order by updated_at desc limit 1`,
-    database`select * from footer_content where resource_key = ${FOOTER_KEY} order by updated_at desc limit 1`,
-    database`select * from seo_settings where resource_key in ('home', 'portfolio') order by updated_at desc`
-  ]);
+  try {
+    const [
+      homepageRows,
+      heroRows,
+      serviceRows,
+      projectRows,
+      testimonialRows,
+      teamRows,
+      mediaRows,
+      contactRows,
+      footerRows,
+      seoRows
+    ] = await Promise.all([
+      database`select * from homepage_content where resource_key = ${HOME_KEY} order by updated_at desc limit 1`,
+      database`select * from hero_sections where resource_key = ${HERO_KEY} order by updated_at desc limit 1`,
+      database`select * from services where status = 'published' order by sort_order asc, created_at asc`,
+      database`select * from portfolio_projects where status = 'published' order by sort_order asc, created_at asc`,
+      database`select * from testimonials where status = 'published' order by sort_order asc, created_at asc`,
+      database`select * from team_members where status in ('published', 'draft') order by sort_order asc, created_at asc`,
+      database`select * from media_assets where status = 'active' order by created_at desc`,
+      database`select * from contact_details where resource_key = ${CONTACT_KEY} order by updated_at desc limit 1`,
+      database`select * from footer_content where resource_key = ${FOOTER_KEY} order by updated_at desc limit 1`,
+      database`select * from seo_settings where resource_key in ('home', 'portfolio') order by updated_at desc`
+    ]);
 
-  const content = cloneSiteContent(defaultSiteContent);
-  const homepagePayload = asRecord((homepageRows as any[])[0]?.payload);
-  const heroPayload = asRecord((heroRows as any[])[0]?.payload);
-  const contactPayload = asRecord((contactRows as any[])[0]?.payload);
-  const footerPayload = asRecord((footerRows as any[])[0]?.payload);
+    const content = cloneSiteContent(defaultSiteContent);
+    const homepagePayload = asRecord((homepageRows as any[])[0]?.payload);
+    const heroPayload = asRecord((heroRows as any[])[0]?.payload);
+    const contactPayload = asRecord((contactRows as any[])[0]?.payload);
+    const footerPayload = asRecord((footerRows as any[])[0]?.payload);
 
-  if (homepagePayload.brand) {
-    content.brand = {
-      ...content.brand,
-      ...(asRecord(homepagePayload.brand) as SiteContent['brand'])
-    };
-  }
+    if (homepagePayload.brand) {
+      content.brand = {
+        ...content.brand,
+        ...(asRecord(homepagePayload.brand) as SiteContent['brand'])
+      };
+    }
 
   if (Array.isArray(homepagePayload.navigation)) {
     content.navigation = homepagePayload.navigation as SiteContent['navigation'];
@@ -247,7 +248,10 @@ export async function composeSiteSnapshotFromTables(): Promise<SiteContent> {
     };
   }
 
-  return content;
+    return content;
+  } catch {
+    return cloneSiteContent(defaultSiteContent);
+  }
 }
 
 export async function readSnapshot(resourceKey: string, variant: 'draft' | 'published') {
@@ -257,18 +261,22 @@ export async function readSnapshot(resourceKey: string, variant: 'draft' | 'publ
     return null;
   }
 
-  const rows =
-    variant === 'draft'
-      ? ((await database`select * from drafts where resource_key = ${resourceKey} order by updated_at desc limit 1`) as any[])
-      : ((await database`select * from published_content where resource_key = ${resourceKey} order by updated_at desc limit 1`) as any[]);
+  try {
+    const rows =
+      variant === 'draft'
+        ? ((await database`select * from drafts where resource_key = ${resourceKey} order by updated_at desc limit 1`) as any[])
+        : ((await database`select * from published_content where resource_key = ${resourceKey} order by updated_at desc limit 1`) as any[]);
 
-  const payload = rows[0]?.payload;
+    const payload = rows[0]?.payload;
 
-  if (!payload || typeof payload !== 'object') {
+    if (!payload || typeof payload !== 'object') {
+      return null;
+    }
+
+    return payload as SiteContent;
+  } catch {
     return null;
   }
-
-  return payload as SiteContent;
 }
 
 export async function upsertSnapshot(

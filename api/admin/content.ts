@@ -3,6 +3,26 @@ import { getDatabase } from '../_lib/database';
 import { jsonResponse, unauthorized } from '../_lib/http';
 import { getCsrfTokenFromRequest, requireAdminSession } from '../_lib/session';
 
+function createEmptyResources() {
+  return {
+    homepage_content: [],
+    hero_sections: [],
+    services: [],
+    portfolio_projects: [],
+    testimonials: [],
+    team_members: [],
+    media_assets: [],
+    seo_settings: [],
+    contact_details: [],
+    footer_content: [],
+    activity_logs: [],
+    drafts: [],
+    published_content: [],
+    roles: [],
+    admin_users: []
+  };
+}
+
 async function fetchTable(name: string) {
   const database = getDatabase();
 
@@ -58,54 +78,68 @@ export async function GET(request: Request) {
     return unauthorized();
   }
 
-  const [published, draft, workingCopy, tables] = await Promise.all([
-    readPublishedSnapshot(),
-    readDraftSnapshot(),
-    composeSiteSnapshotFromTables(),
-    Promise.all([
-      fetchTable('homepage_content'),
-      fetchTable('hero_sections'),
-      fetchTable('services'),
-      fetchTable('portfolio_projects'),
-      fetchTable('testimonials'),
-      fetchTable('team_members'),
-      fetchTable('media_assets'),
-      fetchTable('seo_settings'),
-      fetchTable('contact_details'),
-      fetchTable('footer_content'),
-      fetchTable('activity_logs'),
-      fetchTable('drafts'),
-      fetchTable('published_content'),
-      fetchTable('roles'),
-      fetchTable('admin_users')
-    ])
-  ]);
+  try {
+    const [published, draft, workingCopy, tables] = await Promise.all([
+      readPublishedSnapshot(),
+      readDraftSnapshot(),
+      composeSiteSnapshotFromTables(),
+      Promise.all([
+        fetchTable('homepage_content'),
+        fetchTable('hero_sections'),
+        fetchTable('services'),
+        fetchTable('portfolio_projects'),
+        fetchTable('testimonials'),
+        fetchTable('team_members'),
+        fetchTable('media_assets'),
+        fetchTable('seo_settings'),
+        fetchTable('contact_details'),
+        fetchTable('footer_content'),
+        fetchTable('activity_logs'),
+        fetchTable('drafts'),
+        fetchTable('published_content'),
+        fetchTable('roles'),
+        fetchTable('admin_users')
+      ])
+    ]);
 
-  return jsonResponse({
-    published,
-    draft,
-    workingCopy,
-    resources: {
-      homepage_content: tables[0],
-      hero_sections: tables[1],
-      services: tables[2],
-      portfolio_projects: tables[3],
-      testimonials: tables[4],
-      team_members: tables[5],
-      media_assets: tables[6],
-      seo_settings: tables[7],
-      contact_details: tables[8],
-      footer_content: tables[9],
-      activity_logs: tables[10],
-      drafts: tables[11],
-      published_content: tables[12],
-      roles: tables[13],
-      admin_users: tables[14]
-    },
-    session: {
-      user: session.user,
-      expiresAt: session.expiresAt,
-      csrfToken: getCsrfTokenFromRequest(request)
-    }
-  });
+    return jsonResponse({
+      published,
+      draft,
+      workingCopy,
+      resources: {
+        homepage_content: tables[0],
+        hero_sections: tables[1],
+        services: tables[2],
+        portfolio_projects: tables[3],
+        testimonials: tables[4],
+        team_members: tables[5],
+        media_assets: tables[6],
+        seo_settings: tables[7],
+        contact_details: tables[8],
+        footer_content: tables[9],
+        activity_logs: tables[10],
+        drafts: tables[11],
+        published_content: tables[12],
+        roles: tables[13],
+        admin_users: tables[14]
+      },
+      session: {
+        user: session.user,
+        expiresAt: session.expiresAt,
+        csrfToken: session.directAccess ? session.csrfToken : getCsrfTokenFromRequest(request)
+      }
+    });
+  } catch {
+    return jsonResponse({
+      published: await readPublishedSnapshot(),
+      draft: await readDraftSnapshot(),
+      workingCopy: await composeSiteSnapshotFromTables(),
+      resources: createEmptyResources(),
+      session: {
+        user: session.user,
+        expiresAt: session.expiresAt,
+        csrfToken: session.directAccess ? session.csrfToken : getCsrfTokenFromRequest(request)
+      }
+    });
+  }
 }
