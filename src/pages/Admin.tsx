@@ -205,10 +205,24 @@ function requestJson<T>(url: string, init: RequestInit = {}) {
     }
   }).then(async (response) => {
     const text = await response.text();
-    const payload = text ? JSON.parse(text) : null;
+    let payload: any = null;
+
+    if (text) {
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        payload = text;
+      }
+    }
 
     if (!response.ok) {
-      const message = payload?.error || `Request failed (${response.status})`;
+      const errorValue = payload && typeof payload === 'object' ? payload.error ?? payload.details ?? payload.message : payload;
+      const message =
+        typeof errorValue === 'string'
+          ? errorValue
+          : errorValue && typeof errorValue === 'object'
+            ? JSON.stringify(errorValue)
+            : `Request failed (${response.status})`;
       throw new Error(message);
     }
 
