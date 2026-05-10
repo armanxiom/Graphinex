@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
+      strictPort: true,
       hmr: process.env.DISABLE_HMR !== 'true',
       proxy: {
         '/api': 'http://127.0.0.1:3001'
