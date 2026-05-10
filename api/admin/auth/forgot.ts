@@ -1,5 +1,6 @@
 import { randomToken, sha256 } from '../../_lib/crypto';
 import { getDatabase } from '../../_lib/database';
+import { getAdminAccessCode } from '../../_lib/access';
 import { badRequest, jsonResponse, readJson } from '../../_lib/http';
 import { hasSmtpConfig, sendPasswordResetEmail } from '../../_lib/mail';
 import { resetRequestSchema } from '../../_lib/schemas';
@@ -33,12 +34,9 @@ export async function POST(request: Request) {
   const tokenHash = sha256(token);
   const expiresAt = new Date(Date.now() + RESET_WINDOW_MS);
   const baseUrl = process.env.APP_URL || `https://${process.env.VERCEL_URL || 'localhost:3000'}`;
-  const accessCode = process.env.GRAPHINEX_ADMIN_ACCESS_CODE;
   const resetUrl = new URL('/armanxion-core/reset', baseUrl);
 
-  if (accessCode) {
-    resetUrl.searchParams.set('access', accessCode);
-  }
+  resetUrl.searchParams.set('access', getAdminAccessCode());
 
   resetUrl.searchParams.set('token', token);
 

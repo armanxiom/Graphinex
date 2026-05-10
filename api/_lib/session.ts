@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { getDatabase } from './database';
 import { randomToken, sha256, safeCompare } from './crypto';
+import { getAdminAccessCode, hasValidAdminAccess } from './access';
 
 const SESSION_COOKIE = 'graphinex_admin_session';
 const CSRF_COOKIE = 'graphinex_admin_csrf';
@@ -26,6 +27,7 @@ export interface VerifiedSession {
   sessionId: string;
   csrfToken: string;
   expiresAt: string;
+  directAccess?: boolean;
 }
 
 function getSessionSecret() {
@@ -36,6 +38,79 @@ function getSessionSecret() {
   }
 
   return secret;
+}
+
+function buildAccessSessionUser(row?: {
+  id?: string;
+  email?: string;
+  display_name?: string;
+  avatar_url?: string | null;
+  status?: string;
+  role_slug?: string;
+  role_name?: string;
+}) {
+  return {
+    id: String(row?.id ?? 'direct-access'),
+    email: String(row?.email ?? 'admin@graphinex.in'),
+    displayName: String(row?.display_name ?? 'Graphinex Admin'),
+    avatarUrl: row?.avatar_url ?? null,
+    status: String(row?.status ?? 'active'),
+    role: {
+      slug: String(row?.role_slug ?? 'superadmin'),
+      name: String(row?.role_name ?? 'Super Admin'),
+      permissions: { all: true }
+    }
+  } satisfies SessionUser;
+}
+
+async function createDirectAccessSession(request: Request): Promise<VerifiedSession | null> {
+  if (!hasValidAdminAccess(request)) {
+    return null;
+  }
+
+  const database = getDatabase();
+  let sessionUser: SessionUser | null = null;
+
+  if (database) {
+    const rows = await database`
+      select
+        u.id,
+        u.email,
+        u.display_name,
+        u.avatar_url,
+        u.status,
+        r.slug as role_slug,
+        r.name as role_name
+      from admin_users u
+      inner join roles r on r.id = u.role_id
+      where u.status = 'active'
+      order by case when r.slug = 'superadmin' then 0 else 1 end, u.created_at asc
+      limit 1
+    `;
+
+    const user = (rows as any[])[0];
+
+    if (user) {
+      sessionUser = buildAccessSessionUser(user);
+    }
+  }
+
+  if (!sessionUser) {
+    sessionUser = buildAccessSessionUser();
+  }
+
+  const accessCode = getAdminAccessCode();
+  const sessionHash = sha256(accessCode);
+  const csrfToken = sha256(`${accessCode}:direct-access`);
+  const expiresAt = new Date(Date.now() + SESSION_DURATION_MS).toISOString();
+
+  return {
+    user: sessionUser,
+    sessionId: `access-${sessionHash.slice(0, 16)}`,
+    csrfToken,
+    expiresAt,
+    directAccess: true
+  };
 }
 
 function parseCookies(header: string | null) {
@@ -170,103 +245,93 @@ export async function revokeSession(token: string) {
 export async function verifyAdminSession(request: Request): Promise<VerifiedSession | null> {
   const database = getDatabase();
 
-  if (!database) {
-    return null;
-  }
-
   const cookies = parseCookies(request.headers.get('cookie'));
   const token = cookies.get(SESSION_COOKIE);
 
-  if (!token) {
-    return null;
-  }
+  if (database && token) {
+    let payload: { sid?: string; uid?: string; role?: string } | null = null;
 
-  let payload: { sid?: string; uid?: string; role?: string } | null = null;
-
-  try {
-    const secret = getSessionSecret();
-    const verified = await jwtVerify(token, new TextEncoder().encode(secret));
-    payload = verified.payload as typeof payload;
-  } catch {
-    return null;
-  }
-
-  if (!payload?.sid || !payload.uid) {
-    return null;
-  }
-
-  const sessionHash = sha256(token);
-
-  const rows = (await database`
-    select
-      s.id as session_id,
-      s.csrf_token_hash,
-      s.expires_at,
-      s.revoked_at,
-      u.id as admin_user_id,
-      u.email,
-      u.display_name,
-      u.avatar_url,
-      u.status,
-      r.slug as role_slug,
-      r.name as role_name,
-      r.permissions
-    from admin_sessions s
-    inner join admin_users u on u.id = s.admin_user_id
-    inner join roles r on r.id = u.role_id
-    where s.session_hash = ${sessionHash}
-      and s.revoked_at is null
-      and s.expires_at > now()
-      and u.status = 'active'
-    limit 1
-  `) as Array<{
-    session_id: string;
-    csrf_token_hash: string;
-    expires_at: string;
-    revoked_at: string | null;
-    admin_user_id: string;
-    email: string;
-    display_name: string;
-    avatar_url: string | null;
-    status: string;
-    role_slug: string;
-    role_name: string;
-    permissions: Record<string, boolean>;
-  }>;
-
-  const session = rows[0];
-
-  if (!session) {
-    return null;
-  }
-
-  if (!safeCompare(sessionHash, sha256(token))) {
-    return null;
-  }
-
-  await database`
-    update admin_sessions
-    set last_seen_at = now(), updated_at = now()
-    where id = ${session.session_id}
-  `;
-
-  return {
-    sessionId: session.session_id,
-    csrfToken: session.csrf_token_hash,
-    expiresAt: session.expires_at,
-    user: {
-      id: session.admin_user_id,
-      email: session.email,
-      displayName: session.display_name,
-      avatarUrl: session.avatar_url,
-      status: session.status,
-      role: {
-        slug: session.role_slug,
-        name: session.role_name,
-        permissions: session.permissions ?? {}
-      }
+    try {
+      const secret = getSessionSecret();
+      const verified = await jwtVerify(token, new TextEncoder().encode(secret));
+      payload = verified.payload as typeof payload;
+    } catch {
+      payload = null;
     }
-  };
+
+    if (payload?.sid && payload.uid) {
+      const sessionHash = sha256(token);
+
+      const rows = (await database`
+        select
+          s.id as session_id,
+          s.csrf_token_hash,
+          s.expires_at,
+          s.revoked_at,
+          u.id as admin_user_id,
+          u.email,
+          u.display_name,
+          u.avatar_url,
+          u.status,
+          r.slug as role_slug,
+          r.name as role_name,
+          r.permissions
+        from admin_sessions s
+        inner join admin_users u on u.id = s.admin_user_id
+        inner join roles r on r.id = u.role_id
+        where s.session_hash = ${sessionHash}
+          and s.revoked_at is null
+          and s.expires_at > now()
+          and u.status = 'active'
+        limit 1
+      `) as Array<{
+        session_id: string;
+        csrf_token_hash: string;
+        expires_at: string;
+        revoked_at: string | null;
+        admin_user_id: string;
+        email: string;
+        display_name: string;
+        avatar_url: string | null;
+        status: string;
+        role_slug: string;
+        role_name: string;
+        permissions: Record<string, boolean>;
+      }>;
+
+      const session = rows[0];
+
+      if (session && safeCompare(sessionHash, sha256(token))) {
+        await database`
+          update admin_sessions
+          set last_seen_at = now(), updated_at = now()
+          where id = ${session.session_id}
+        `;
+
+        return {
+          sessionId: session.session_id,
+          csrfToken: session.csrf_token_hash,
+          expiresAt: session.expires_at,
+          user: {
+            id: session.admin_user_id,
+            email: session.email,
+            displayName: session.display_name,
+            avatarUrl: session.avatar_url,
+            status: session.status,
+            role: {
+              slug: session.role_slug,
+              name: session.role_name,
+              permissions: session.permissions ?? {}
+            }
+          }
+        };
+      }
+
+      return createDirectAccessSession(request);
+    }
+  }
+
+  return createDirectAccessSession(request);
 }
 
 export async function requireAdminSession(request: Request) {
@@ -285,6 +350,10 @@ export function getCsrfTokenFromRequest(request: Request) {
 }
 
 export function validateCsrf(request: Request, session: VerifiedSession) {
+  if (session.directAccess) {
+    return true;
+  }
+
   const headerToken = request.headers.get('x-csrf-token');
   const cookieToken = getCsrfTokenFromRequest(request);
 

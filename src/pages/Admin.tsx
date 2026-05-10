@@ -185,7 +185,17 @@ const RESOURCE_DESCRIPTIONS: Record<string, string> = {
 };
 
 function requestJson<T>(url: string, init: RequestInit = {}) {
-  return fetch(url, {
+  const requestUrl = new URL(url, window.location.origin);
+
+  if (requestUrl.pathname.startsWith('/api/admin/')) {
+    const accessCode = new URLSearchParams(window.location.search).get('access');
+
+    if (accessCode && !requestUrl.searchParams.has('access')) {
+      requestUrl.searchParams.set('access', accessCode);
+    }
+  }
+
+  return fetch(requestUrl.toString(), {
     ...init,
     credentials: 'include',
     headers: {

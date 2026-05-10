@@ -1,7 +1,6 @@
 import { next } from '@vercel/functions';
 import { jwtVerify } from 'jose';
-
-const ADMIN_ROUTE = '/armanxion-core';
+import { ADMIN_ROUTE, getAdminAccessCode, hasValidAdminAccess } from './api/_lib/access';
 const ADMIN_COOKIE = 'graphinex_admin_session';
 const ACCESS_QUERY_KEY = 'access';
 
@@ -67,7 +66,7 @@ export default async function middleware(request: Request) {
   const pathname = url.pathname;
 
   if (pathname.startsWith('/api/admin')) {
-    if (await hasValidSession(request)) {
+    if (await hasValidSession(request) || hasValidAdminAccess(request)) {
       return next();
     }
 
@@ -87,7 +86,7 @@ export default async function middleware(request: Request) {
   }
 
   const accessCode = url.searchParams.get(ACCESS_QUERY_KEY);
-  const expectedAccessCode = process.env.GRAPHINEX_ADMIN_ACCESS_CODE;
+  const expectedAccessCode = getAdminAccessCode();
 
   if (!accessCode) {
     return Response.redirect(new URL('/', url), 302);
@@ -95,10 +94,6 @@ export default async function middleware(request: Request) {
 
   if (!expectedAccessCode || accessCode !== expectedAccessCode) {
     return notFoundResponse();
-  }
-
-  if (await hasValidSession(request)) {
-    return next();
   }
 
   return next();
