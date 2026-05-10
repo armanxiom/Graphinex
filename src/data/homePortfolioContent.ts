@@ -40,32 +40,32 @@ export const homeFeaturedWorks = [
     type: 'video',
     title: 'Short Hook 01',
     category: 'Featured Work',
-    src: '/Short videos/short 1.mp4',
-    poster: '/Short videos/cover 1.png',
+    src: '/assets/videos/work-1.mp4',
+    poster: '/assets/videos/work-1.png',
     link: '#'
   },
   {
     type: 'video',
     title: 'Short Hook 02',
     category: 'Featured Work',
-    src: '/Short videos/short 2.mp4',
-    poster: '/Short videos/cover 2.png',
+    src: '/assets/videos/work-2.mp4',
+    poster: '/assets/videos/work-2.png',
     link: '#'
   },
   {
     type: 'video',
     title: 'Short Hook 03',
     category: 'Featured Work',
-    src: '/Short videos/short 3.mp4',
-    poster: '/Short videos/cover 3.png',
+    src: '/assets/videos/work-3.mp4',
+    poster: '/assets/videos/work-3.png',
     link: '#'
   },
   {
     type: 'video',
     title: 'Short Hook 04',
     category: 'Featured Work',
-    src: '/Short videos/short 4.mp4',
-    poster: '/Short videos/cover 4.png',
+    src: '/assets/videos/work-4.mp4',
+    poster: '/assets/videos/work-4.png',
     link: '#'
   }
 ] as const;

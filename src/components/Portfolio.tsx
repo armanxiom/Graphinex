@@ -79,79 +79,71 @@ export const Portfolio = () => {
 
       <div className="container-boxed">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-5">
-          {featuredWorks.map((item, index) => (
-              <motion.div
-              key={index}
-              initial={
-                !performance.shouldUsePremiumMotion
-                  ? { opacity: 0 }
-                  : isMobileViewport
-                    ? { opacity: 0, scale: 0.995 }
-                    : { opacity: 0, y: 18, scale: 0.99 }
-              }
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={
-                isMobileViewport
-                  ? { duration: 0.38, delay: index * 0.03, ease: [0.22, 1, 0.36, 1] }
-                  : { duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }
-              }
-              viewport={{ once: true }}
-              onClick={() => setSelectedIndex(index)}
-              className={`premium-card group relative cursor-pointer overflow-hidden transition-all duration-300 ${
-                item.type === 'video'
-                  ? item.ratio === 'landscape'
-                    ? 'aspect-[16/9]'
-                    : item.ratio === 'square'
-                      ? 'aspect-square'
-                      : 'aspect-[9/16]'
-                  : 'aspect-square'
-              }`}
-            >
-              {/* Media */}
-                {item.type === "video" ? (
-                  index === 0 ? (
-                    <video 
-                      src={item.src} 
-                      poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
-                      autoPlay={mediaReady && performance.shouldAutoplayMedia} 
-                      muted 
-                      loop={mediaReady && performance.shouldAutoplayMedia}
-                      playsInline
-                      preload={mediaReady && performance.shouldAutoplayMedia ? 'metadata' : 'none'}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                ) : (
-                    <img
-                      src={item.poster ? getOptimizedImageSource(item.poster, 'webp') : item.src}
-                      alt={item.title}
-                      loading={index < imagePriorityCount ? 'eager' : 'lazy'}
-                      fetchPriority={index < imagePriorityCount ? 'high' : 'low'}
-                      decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                )
-              ) : (
-                <OptimizedImage
-                  src={item.src}
-                  alt={item.title}
-                  pictureClassName="absolute inset-0"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  priority={index < imagePriorityCount}
-                />
-              )}
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          {featuredWorks.map((item, index) => {
+            const shouldAutoplay = index === 0 && mediaReady && performance.shouldAutoplayMedia;
 
-              {item.type === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-md">
-                    <Play size={16} className="fill-current" />
+            return (
+              <motion.button
+                key={`${item.src}-${index}`}
+                type="button"
+                initial={
+                  !performance.shouldUsePremiumMotion
+                    ? { opacity: 0 }
+                    : isMobileViewport
+                      ? { opacity: 0, scale: 0.995 }
+                      : { opacity: 0, y: 18, scale: 0.99 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={
+                  isMobileViewport
+                    ? { duration: 0.38, delay: index * 0.03, ease: [0.22, 1, 0.36, 1] }
+                    : { duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }
+                }
+                viewport={{ once: true }}
+                onClick={() => setSelectedIndex(index)}
+                className={`premium-card group relative cursor-pointer overflow-hidden transition-all duration-300 ${
+                  item.type === 'video'
+                    ? item.ratio === 'landscape'
+                      ? 'aspect-[16/9]'
+                      : item.ratio === 'square'
+                        ? 'aspect-square'
+                        : 'aspect-[9/16]'
+                    : 'aspect-square'
+                }`}
+              >
+                {item.type === 'video' ? (
+                  <video
+                    src={item.src}
+                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                    autoPlay={shouldAutoplay}
+                    muted
+                    loop={shouldAutoplay}
+                    playsInline
+                    preload={shouldAutoplay ? 'metadata' : 'none'}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <OptimizedImage
+                    src={item.src}
+                    alt={item.title}
+                    pictureClassName="absolute inset-0"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority={index < imagePriorityCount}
+                  />
+                )}
+
+                <div className="absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                {item.type === 'video' && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-md">
+                      <Play size={16} className="fill-current" />
+                    </div>
                   </div>
-                </div>
-              )}
-            </motion.div>
-          ))}
+                )}
+              </motion.button>
+            );
+          })}
         </div>
       </div>
 

@@ -87,7 +87,6 @@ function HeroStatValue({
 }
 
 export const Hero = () => {
-  const heroRef = useRef<HTMLElement | null>(null);
   const statsRef = useRef<HTMLDivElement | null>(null);
   const performance = useDevicePerformance();
   const prefersReducedMotion = Boolean(useReducedMotion());
@@ -127,7 +126,6 @@ export const Hero = () => {
 
   return (
     <section
-      ref={heroRef}
       className="relative flex min-h-screen items-center overflow-visible pt-[8.25rem] pb-16 sm:pt-[9.5rem] md:pt-[13rem] md:pb-20"
       id="hero"
     >
@@ -247,7 +245,6 @@ export const Hero = () => {
             imageSrc={heroCardImage}
             imageSrcAvif={heroCardImageAvif}
             alt="Graphinex Studio workspace"
-            triggerRef={heroRef}
           />
         </div>
       </div>
