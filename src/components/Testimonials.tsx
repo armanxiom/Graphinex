@@ -5,7 +5,7 @@ import { useDevicePerformance } from '../lib/performance';
 
 type Testimonial = (typeof testimonialData)[number];
 
-const AUTO_ROTATE_MS = 6200;
+const AUTO_ROTATE_MS = 2500;
 const SWIPE_THRESHOLD = 48;
 const MOTION_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -54,14 +54,14 @@ function TestimonialCard({
 }) {
   const slideDistance = touchDevice ? 32 : 64;
   const bodyTransition = premiumMotion
-    ? { duration: 0.72, ease: MOTION_EASE }
-    : { duration: 0.42, ease: MOTION_EASE };
+    ? { duration: 0.38, ease: MOTION_EASE }
+    : { duration: 0.3, ease: MOTION_EASE };
   const shellTransition = premiumMotion
-    ? { duration: 4.2, repeat: Infinity, ease: 'easeInOut' as const }
-    : { duration: 5.2, repeat: Infinity, ease: 'easeInOut' as const };
+    ? { duration: 3.2, repeat: Infinity, ease: 'easeInOut' as const }
+    : { duration: 4, repeat: Infinity, ease: 'easeInOut' as const };
   const glowTransition = premiumMotion
-    ? { duration: 8.5, repeat: Infinity, ease: 'easeInOut' as const, repeatDelay: 1.4 }
-    : { duration: 10.5, repeat: Infinity, ease: 'easeInOut' as const, repeatDelay: 1.8 };
+    ? { duration: 5.5, repeat: Infinity, ease: 'easeInOut' as const, repeatDelay: 0.8 }
+    : { duration: 6.5, repeat: Infinity, ease: 'easeInOut' as const, repeatDelay: 1 };
 
   return (
     <motion.article
@@ -135,16 +135,16 @@ function TestimonialCard({
 
       <div className="relative flex h-full items-center justify-center px-1 sm:px-2">
         <div className="mx-auto flex w-full max-w-[48rem] flex-col items-center text-center">
-          <motion.div
-            initial={reducedMotion ? false : premiumMotion ? { opacity: 0, y: 12, filter: 'blur(8px)' } : { opacity: 0, y: 8 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: premiumMotion ? 0.5 : 0.36, delay: 0.16, ease: MOTION_EASE }}
-            className="flex flex-col items-center"
-          >
+            <motion.div
+              initial={reducedMotion ? false : premiumMotion ? { opacity: 0, y: 8, filter: 'blur(8px)' } : { opacity: 0, y: 6 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: premiumMotion ? 0.34 : 0.26, delay: 0.1, ease: MOTION_EASE }}
+              className="flex flex-col items-center"
+            >
             <motion.h3
               initial={reducedMotion ? false : premiumMotion ? { opacity: 0, y: 8 } : { opacity: 0, y: 6 }}
               animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: premiumMotion ? 0.42 : 0.3, delay: 0.08, ease: MOTION_EASE }}
+              transition={{ duration: premiumMotion ? 0.28 : 0.22, delay: 0.04, ease: MOTION_EASE }}
               className="text-[clamp(1.35rem,2.85vw,2.45rem)] font-semibold tracking-[-0.05em] text-white sm:text-[clamp(1.45rem,2.85vw,2.45rem)]"
               style={{
                 fontFamily:
@@ -157,7 +157,7 @@ function TestimonialCard({
             <motion.p
               initial={reducedMotion ? false : premiumMotion ? { opacity: 0, y: 8 } : { opacity: 0, y: 6 }}
               animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: premiumMotion ? 0.42 : 0.3, delay: 0.18, ease: MOTION_EASE }}
+              transition={{ duration: premiumMotion ? 0.28 : 0.22, delay: 0.08, ease: MOTION_EASE }}
               className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/56 sm:text-[0.74rem]"
             >
               {testimonial.role}
@@ -167,14 +167,14 @@ function TestimonialCard({
           <motion.div
             initial={reducedMotion ? false : { opacity: 0, scaleX: 0.35 }}
             animate={reducedMotion ? undefined : { opacity: 1, scaleX: 1 }}
-            transition={{ duration: premiumMotion ? 0.44 : 0.32, delay: 0.2, ease: MOTION_EASE }}
+            transition={{ duration: premiumMotion ? 0.28 : 0.22, delay: 0.1, ease: MOTION_EASE }}
             className="mt-6 h-px w-20 origin-center bg-gradient-to-r from-transparent via-brand-orange/55 to-transparent sm:w-24"
           />
 
           <motion.p
             initial={reducedMotion ? false : premiumMotion ? { opacity: 0, y: 14 } : { opacity: 0, y: 10 }}
             animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: premiumMotion ? 0.48 : 0.32, delay: 0.34, ease: MOTION_EASE }}
+            transition={{ duration: premiumMotion ? 0.34 : 0.24, delay: 0.16, ease: MOTION_EASE }}
             className="mx-auto mt-6 max-w-[44rem] text-[clamp(0.98rem,4vw,1.08rem)] leading-[1.72] tracking-[-0.02em] text-white/86 sm:text-[clamp(1rem,1.9vw,1.22rem)] sm:leading-[1.85]"
             style={{
               fontFamily:
@@ -194,7 +194,7 @@ function TestimonialCard({
         aria-hidden="true"
         initial={reducedMotion ? false : { opacity: 0.24, scale: 1 }}
         animate={reducedMotion ? undefined : { opacity: [0.18, 0.32, 0.18], scale: [1, 1.01, 1] }}
-        transition={reducedMotion ? undefined : { duration: premiumMotion ? 4.2 : 5.2, repeat: Infinity, ease: 'easeInOut' }}
+        transition={reducedMotion ? undefined : { duration: premiumMotion ? 3.2 : 4, repeat: Infinity, ease: 'easeInOut' }}
         className="pointer-events-none absolute inset-0 rounded-[1.6rem] ring-1 ring-brand-orange/10 sm:rounded-[2rem]"
       />
     </motion.article>
