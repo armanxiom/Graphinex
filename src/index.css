@@ -1455,6 +1455,11 @@ html[data-theme='light'] {
     padding-bottom: 64px !important;
   }
 
+  .testimonials-section {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+
   main h1,
   main h2 {
     font-size: clamp(2rem, 9vw, 3.35rem) !important;
