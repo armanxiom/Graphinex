@@ -22,7 +22,7 @@ import {
   Video,
   X
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { upload } from '@vercel/blob/client';
 import { announceContentRefresh, enablePreviewMode } from '../state/site-content';
 import { type SiteContent } from '../lib/siteContent';
@@ -96,29 +96,6 @@ type UploadState = {
   altText: string;
   collectionKey: string;
   progress: number;
-  busy: boolean;
-  error: string | null;
-  notice: string | null;
-};
-
-type AuthState = {
-  email: string;
-  password: string;
-  busy: boolean;
-  error: string | null;
-};
-
-type ForgotState = {
-  email: string;
-  busy: boolean;
-  error: string | null;
-  notice: string | null;
-};
-
-type ResetState = {
-  token: string;
-  password: string;
-  confirmPassword: string;
   busy: boolean;
   error: string | null;
   notice: string | null;
@@ -616,10 +593,6 @@ function EditorModal({
 }
 
 export default function AdminPage() {
-  const location = useLocation();
-  const isResetRoute = location.pathname.endsWith('/reset');
-  const resetTokenFromUrl = useMemo(() => new URLSearchParams(location.search).get('token') ?? '', [location.search]);
-
   const [bootstrap, setBootstrap] = useState<AdminBootstrap | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -628,26 +601,6 @@ export default function AdminPage() {
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [savingEditor, setSavingEditor] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [auth, setAuth] = useState<AuthState>({
-    email: '',
-    password: '',
-    busy: false,
-    error: null
-  });
-  const [forgot, setForgot] = useState<ForgotState>({
-    email: '',
-    busy: false,
-    error: null,
-    notice: null
-  });
-  const [reset, setReset] = useState<ResetState>({
-    token: resetTokenFromUrl,
-    password: '',
-    confirmPassword: '',
-    busy: false,
-    error: null,
-    notice: null
-  });
   const [uploadState, setUploadState] = useState<UploadState>({
     file: null,
     kind: 'image',
@@ -730,104 +683,6 @@ export default function AdminPage() {
       }
     }
   }, [bootstrap, selectedResource]);
-
-  useEffect(() => {
-    if (isResetRoute) {
-      setActiveTab('settings');
-    }
-  }, [isResetRoute]);
-
-  useEffect(() => {
-    setReset((current) => ({
-      ...current,
-      token: resetTokenFromUrl || current.token
-    }));
-  }, [resetTokenFromUrl]);
-
-  const login = async (event: FormEvent) => {
-    event.preventDefault();
-    setAuth((current) => ({ ...current, busy: true, error: null }));
-
-    try {
-      await requestJson('/api/admin/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({
-          email: auth.email,
-          password: auth.password
-        })
-      });
-      await loadBootstrap();
-      setAuth((current) => ({ ...current, password: '', busy: false }));
-    } catch (loginError) {
-      setAuth((current) => ({
-        ...current,
-        busy: false,
-        error: loginError instanceof Error ? loginError.message : 'Login failed'
-      }));
-    }
-  };
-
-  const requestReset = async (event: FormEvent) => {
-    event.preventDefault();
-    setForgot((current) => ({ ...current, busy: true, error: null, notice: null }));
-
-    try {
-      const response = await requestJson<{ ok: boolean; resetUrl?: string }>('/api/admin/auth/forgot', {
-        method: 'POST',
-        body: JSON.stringify({ email: forgot.email })
-      });
-
-      setForgot((current) => ({
-        ...current,
-        busy: false,
-        notice: response.resetUrl ? `Reset URL (dev only): ${response.resetUrl}` : 'Reset email queued if the account exists.'
-      }));
-    } catch (resetError) {
-      setForgot((current) => ({
-        ...current,
-        busy: false,
-        error: resetError instanceof Error ? resetError.message : 'Unable to request reset'
-      }));
-    }
-  };
-
-  const confirmReset = async (event: FormEvent) => {
-    event.preventDefault();
-
-    if (reset.password !== reset.confirmPassword) {
-      setReset((current) => ({
-        ...current,
-        error: 'Passwords do not match.'
-      }));
-      return;
-    }
-
-    setReset((current) => ({ ...current, busy: true, error: null, notice: null }));
-
-    try {
-      await requestJson('/api/admin/auth/reset', {
-        method: 'POST',
-        body: JSON.stringify({
-          token: reset.token,
-          newPassword: reset.password
-        })
-      });
-
-      setReset((current) => ({
-        ...current,
-        busy: false,
-        password: '',
-        confirmPassword: '',
-        notice: 'Password updated. You can sign in again.'
-      }));
-    } catch (resetError) {
-      setReset((current) => ({
-        ...current,
-        busy: false,
-        error: resetError instanceof Error ? resetError.message : 'Unable to reset password'
-      }));
-    }
-  };
 
   const logout = async () => {
     if (!csrfToken) {
@@ -1046,7 +901,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!bootstrap || isResetRoute || !session) {
+  if (!bootstrap) {
     return (
       <div className="min-h-screen bg-[#05070b] text-white">
         <div className="absolute inset-0 overflow-hidden">
@@ -1075,135 +930,18 @@ export default function AdminPage() {
               </h1>
 
               <p className="mt-5 max-w-xl text-sm leading-7 text-white/66">
-                Private admin access for content editing, media uploads, publishing, and account management.
+                Open the hidden URL with the access code and the dashboard will load directly. No login screen is used.
               </p>
 
-              {!isResetRoute ? (
-                <form className="mt-8 space-y-4" onSubmit={login}>
-                  <label className="block">
-                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                      Email
-                    </span>
-                    <input
-                      type="email"
-                      value={auth.email}
-                      onChange={(event) => setAuth((current) => ({ ...current, email: event.target.value }))}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                      placeholder="admin@graphinex.in"
-                      required
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                      Password
-                    </span>
-                    <input
-                      type="password"
-                      value={auth.password}
-                      onChange={(event) => setAuth((current) => ({ ...current, password: event.target.value }))}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                      placeholder="••••••••••"
-                      required
-                    />
-                  </label>
-
-                  {auth.error ? (
-                    <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                      {auth.error}
-                    </div>
-                  ) : null}
-
-                  <button
-                    type="submit"
-                    disabled={auth.busy}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white transition-transform hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {auth.busy ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                    Sign in
-                  </button>
-                </form>
-              ) : null}
-
-              {!isResetRoute ? (
-                <form className="mt-6 space-y-4 rounded-[1.5rem] border border-white/10 bg-black/20 p-5" onSubmit={requestReset}>
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                    Forgot password
-                  </div>
-                  <input
-                    type="email"
-                    value={forgot.email}
-                    onChange={(event) => setForgot((current) => ({ ...current, email: event.target.value }))}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                    placeholder="admin@graphinex.in"
-                    required
-                  />
-                  {forgot.error ? <div className="text-sm text-red-200">{forgot.error}</div> : null}
-                  {forgot.notice ? <div className="text-sm text-emerald-200">{forgot.notice}</div> : null}
-                  <button
-                    type="submit"
-                    disabled={forgot.busy}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white transition-colors hover:bg-white/10 disabled:opacity-60"
-                  >
-                    {forgot.busy ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                    Send reset link
-                  </button>
-                </form>
-              ) : null}
-
-              {isResetRoute ? (
-                <form className="mt-8 space-y-4" onSubmit={confirmReset}>
-                  <label className="block">
-                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                      Reset token
-                    </span>
-                    <input
-                      value={reset.token}
-                      onChange={(event) => setReset((current) => ({ ...current, token: event.target.value }))}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                      required
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                      New password
-                    </span>
-                    <input
-                      type="password"
-                      value={reset.password}
-                      onChange={(event) => setReset((current) => ({ ...current, password: event.target.value }))}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                      required
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.24em] text-white/46">
-                      Confirm password
-                    </span>
-                    <input
-                      type="password"
-                      value={reset.confirmPassword}
-                      onChange={(event) => setReset((current) => ({ ...current, confirmPassword: event.target.value }))}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-brand-orange/40"
-                      required
-                    />
-                  </label>
-
-                  {reset.error ? <div className="text-sm text-red-200">{reset.error}</div> : null}
-                  {reset.notice ? <div className="text-sm text-emerald-200">{reset.notice}</div> : null}
-
-                  <button
-                    type="submit"
-                    disabled={reset.busy}
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white transition-transform hover:translate-y-[-1px] disabled:opacity-60"
-                  >
-                    {reset.busy ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                    Reset password
-                  </button>
-                </form>
-              ) : null}
+              {error ? (
+                <div className="mt-8 rounded-[1.5rem] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                  {error}
+                </div>
+              ) : (
+                <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/62">
+                  The hidden URL is valid. If the dashboard does not appear, refresh once or check the deployment logs.
+                </div>
+              )}
             </div>
 
             <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.06] via-white/[0.04] to-brand-orange/10 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-8">
@@ -1213,8 +951,8 @@ export default function AdminPage() {
                   <div className="mt-2 text-lg font-semibold text-white">/armanxion-core</div>
                 </div>
                 <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Security</div>
-                  <div className="mt-2 text-lg font-semibold text-white">Session + CSRF + role checks</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Access</div>
+                  <div className="mt-2 text-lg font-semibold text-white">Direct URL only</div>
                 </div>
                 <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
                   <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/42">Data</div>
@@ -1234,7 +972,7 @@ export default function AdminPage() {
                   <li>Edits homepage, hero, services, portfolio, testimonials, SEO, contact, and footer content.</li>
                   <li>Uploads and manages media assets with real Blob storage metadata.</li>
                   <li>Publishes draft snapshots and broadcasts live refreshes to the public site.</li>
-                  <li>Supports password recovery, password changes, and role-based access control.</li>
+                  <li>Opens directly from the hidden URL without a login form.</li>
                 </ul>
               </div>
             </div>
@@ -1972,8 +1710,8 @@ export default function AdminPage() {
                         Admin notes
                       </div>
                       <ul className="mt-4 space-y-3 text-sm leading-7 text-white/62">
-                        <li>Login, reset, and password changes all use server-side validation.</li>
-                        <li>CSRF-protected writes require the session token returned by the bootstrap endpoint.</li>
+                        <li>Direct access uses the hidden URL and the access code, then loads the dashboard immediately.</li>
+                        <li>Writes and uploads are still protected by the server-side access gate and role checks.</li>
                         <li>Each save triggers a content refresh broadcast so the public site can update without redeploying.</li>
                       </ul>
                     </div>
