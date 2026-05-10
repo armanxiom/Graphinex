@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { reviews } from '../data/siteConfig';
 
 type Review = (typeof reviews)[number];
@@ -7,7 +7,6 @@ const reviewList = reviews as ReadonlyArray<Review>;
 
 export const SocialProof = () => {
   const [currentReview, setCurrentReview] = useState<(Review & { id: number }) | null>(null);
-  const reduceMotion = Boolean(useReducedMotion());
 
   useEffect(() => {
     if (reviewList.length < 1) return;
@@ -17,31 +16,23 @@ export const SocialProof = () => {
       setCurrentReview({ ...reviewList[randomIndex], id: Date.now() });
     };
 
-    const interval = window.setInterval(cycleReview, 3200);
+    const interval = window.setInterval(cycleReview, 5000);
     cycleReview();
 
     return () => window.clearInterval(interval);
   }, []);
 
   return (
-    <div className="pointer-events-none fixed bottom-24 left-4 z-40 hidden md:block">
-      <AnimatePresence mode="sync">
+    <div className="pointer-events-none fixed bottom-4 left-4 z-40 w-[min(250px,calc(100vw-2rem))] sm:bottom-24 sm:w-[250px]">
+      <AnimatePresence mode="wait">
         {currentReview ? (
           <motion.div
             key={currentReview.id}
             initial={{ x: -28, opacity: 0, scale: 0.98, filter: 'blur(8px)' }}
-            animate={
-              reduceMotion
-                ? { x: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }
-                : { x: 0, opacity: 1, scale: [1, 1.01, 1], y: [0, -2, 0], filter: 'blur(0px)' }
-            }
+            animate={{ x: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ x: -28, opacity: 0, scale: 0.98, filter: 'blur(8px)' }}
-            transition={
-              reduceMotion
-                ? { duration: 0.36, ease: [0.22, 1, 0.36, 1] }
-                : { duration: 4.8, repeat: Infinity, ease: 'easeInOut' }
-            }
-            className="pointer-events-auto w-[250px] rounded-[1rem] border border-[color:var(--panel-card-border)] bg-[color:var(--panel-bg)] px-3 py-3 text-[color:var(--panel-text)] shadow-[0_16px_38px_rgba(15,15,15,0.12)] backdrop-blur-md"
+            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-auto w-full rounded-[1rem] border border-[color:var(--panel-card-border)] bg-[color:var(--panel-bg)] px-3 py-3 text-[color:var(--panel-text)] shadow-[0_16px_38px_rgba(15,15,15,0.12)] backdrop-blur-md"
           >
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange/12 text-xs font-semibold text-brand-orange">

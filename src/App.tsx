@@ -6,6 +6,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PageTransition } from './components/PageTransition';
 import { WhatsAppCTA } from './components/WhatsAppCTA';
+import { SeoManager } from './components/SeoManager';
 import { DeferredSection } from './components/DeferredSection';
 import {
   BehindTheSceneSkeleton,
@@ -36,9 +37,11 @@ const loadBehindTheScene = () =>
   import('./components/BehindTheScene').then((mod) => ({ default: mod.BehindTheScene }));
 const loadFooter = () => import('./components/Footer').then((mod) => ({ default: mod.Footer }));
 const loadPortfolioPage = () => import('./pages/Portfolio');
+const loadAdminPage = () => import('./pages/Admin');
 
 const LazySocialProof = lazy(loadSocialProof);
 const LazyPortfolioPage = lazy(loadPortfolioPage);
+const LazyAdminPage = lazy(loadAdminPage);
 
 function ScrollToHash() {
   const { pathname, hash } = useLocation();
@@ -62,6 +65,17 @@ function ScrollToHash() {
   }, [hash, pathname, profile.isLowEnd]);
 
   return null;
+}
+
+function AppChrome() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/armanxion-core');
+
+  if (isAdminRoute) {
+    return null;
+  }
+
+  return <WhatsAppCTA />;
 }
 
 function HomePage({ performance }: { performance: DevicePerformanceProfile }) {
@@ -124,6 +138,7 @@ export default function App() {
 
   return (
     <Router>
+      <SeoManager />
       <ScrollToHash />
       <main
         id="main-content"
@@ -156,10 +171,26 @@ export default function App() {
                   </Suspense>
                 }
               />
+              <Route
+                path="/armanxion-core/*"
+                element={
+                  <Suspense
+                    fallback={
+                      <div className="min-h-screen bg-[#05070b]">
+                        <div className="grid min-h-screen place-items-center text-sm uppercase tracking-[0.24em] text-white/50">
+                          Loading admin console
+                        </div>
+                      </div>
+                    }
+                  >
+                    <LazyAdminPage />
+                  </Suspense>
+                }
+              />
             </Routes>
           </PageTransition>
 
-          <WhatsAppCTA />
+          <AppChrome />
         </div>
       </main>
     </Router>
