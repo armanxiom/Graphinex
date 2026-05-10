@@ -11,7 +11,6 @@ import { MediaLightbox } from './MediaLightbox';
 import { useRevealOnView } from '../hooks/useRevealOnView';
 import { useIsMobileViewport } from '../hooks/useMediaQuery';
 import { useDevicePerformance } from '../lib/performance';
-import { getOptimizedImageSource } from '../lib/image';
 import { OptimizedImage } from './OptimizedImage';
 
 type FeaturedWorkItem = {
@@ -114,7 +113,7 @@ export const Portfolio = () => {
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                    poster={item.poster}
                     autoPlay={shouldAutoplay}
                     muted
                     loop={shouldAutoplay}

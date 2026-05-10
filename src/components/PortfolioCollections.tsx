@@ -11,7 +11,6 @@ import { useRevealOnView } from '../hooks/useRevealOnView';
 import { useIsMobileViewport } from '../hooks/useMediaQuery';
 import { homePortfolioCollections } from '../data/siteConfig';
 import { useDevicePerformance } from '../lib/performance';
-import { getOptimizedImageSource } from '../lib/image';
 import { OptimizedImage } from './OptimizedImage';
 
 type MediaItem = {
@@ -132,7 +131,7 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                    poster={item.poster}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay={mediaReady && performance.shouldAutoplayMedia}
                     muted
@@ -189,7 +188,7 @@ export function MediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                    poster={item.poster}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay={idx === 0 && mediaReady && performance.shouldAutoplayMedia}
                     muted

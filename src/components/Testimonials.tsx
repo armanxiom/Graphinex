@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type Key } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { testimonials as testimonialData } from '../data/siteConfig';
-import { useDevicePerformance } from '../lib/performance';
 
 type Testimonial = (typeof testimonialData)[number];
 
@@ -151,8 +150,7 @@ export const Testimonials = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isCycling, setIsCycling] = useState(false);
-  const performance = useDevicePerformance();
-  const reduceMotion = Boolean(useReducedMotion()) || !performance.shouldUsePremiumMotion;
+  const reduceMotion = Boolean(useReducedMotion());
 
   const testimonials = testimonialData || [];
 

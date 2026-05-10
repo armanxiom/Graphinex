@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Expand, Minimize2, X } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
-import { getOptimizedImageSource } from '../lib/image';
 
 type MediaItem = {
   type: string;
@@ -186,7 +185,7 @@ export function MediaLightbox({
               {media.type === 'video' ? (
                 <video
                   src={media.src}
-                  poster={media.poster ? getOptimizedImageSource(media.poster, 'webp') : undefined}
+                  poster={media.poster}
                   controls
                   autoPlay
                   playsInline

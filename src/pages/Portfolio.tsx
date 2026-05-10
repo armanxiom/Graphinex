@@ -9,7 +9,6 @@ import { Portfolio as FeaturedWorksSection } from '../components/Portfolio';
 import { MediaSection as SharedMediaSection } from '../components/PortfolioCollections';
 import { YouTubeEmbed } from '../components/YouTubeEmbed';
 import { brand, logos, portfolioCollections, portfolioPage, showreel } from '../data/siteConfig';
-import { getOptimizedImageSource } from '../lib/image';
 import { useDevicePerformance } from '../lib/performance';
 import { OptimizedImage } from '../components/OptimizedImage';
 
@@ -98,7 +97,7 @@ function PortfolioMediaSection({
               >
                 <video
                   src={item.src}
-                  poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                  poster={item.poster}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   autoPlay={performance.shouldAutoplayMedia}
                   muted
@@ -135,7 +134,7 @@ function PortfolioMediaSection({
                 {item.type === 'video' ? (
                   <video
                     src={item.src}
-                    poster={item.poster ? getOptimizedImageSource(item.poster, 'webp') : undefined}
+                    poster={item.poster}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     autoPlay={idx === 0 && performance.shouldAutoplayMedia}
                     muted
