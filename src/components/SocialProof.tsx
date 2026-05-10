@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { reviews } from '../data/siteConfig';
 
 type Review = (typeof reviews)[number];
@@ -7,6 +7,7 @@ const reviewList = reviews as ReadonlyArray<Review>;
 
 export const SocialProof = () => {
   const [currentReview, setCurrentReview] = useState<(Review & { id: number }) | null>(null);
+  const reduceMotion = Boolean(useReducedMotion());
 
   useEffect(() => {
     if (reviewList.length < 1) return;
@@ -16,7 +17,7 @@ export const SocialProof = () => {
       setCurrentReview({ ...reviewList[randomIndex], id: Date.now() });
     };
 
-    const interval = window.setInterval(cycleReview, 5000);
+    const interval = window.setInterval(cycleReview, 3200);
     cycleReview();
 
     return () => window.clearInterval(interval);
@@ -24,14 +25,22 @@ export const SocialProof = () => {
 
   return (
     <div className="pointer-events-none fixed bottom-24 left-4 z-40 hidden md:block">
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="sync">
         {currentReview ? (
           <motion.div
             key={currentReview.id}
             initial={{ x: -28, opacity: 0, scale: 0.98, filter: 'blur(8px)' }}
-            animate={{ x: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            animate={
+              reduceMotion
+                ? { x: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }
+                : { x: 0, opacity: 1, scale: [1, 1.01, 1], y: [0, -2, 0], filter: 'blur(0px)' }
+            }
             exit={{ x: -28, opacity: 0, scale: 0.98, filter: 'blur(8px)' }}
-            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+            transition={
+              reduceMotion
+                ? { duration: 0.36, ease: [0.22, 1, 0.36, 1] }
+                : { duration: 4.8, repeat: Infinity, ease: 'easeInOut' }
+            }
             className="pointer-events-auto w-[250px] rounded-[1rem] border border-[color:var(--panel-card-border)] bg-[color:var(--panel-bg)] px-3 py-3 text-[color:var(--panel-text)] shadow-[0_16px_38px_rgba(15,15,15,0.12)] backdrop-blur-md"
           >
             <div className="flex items-center gap-2">

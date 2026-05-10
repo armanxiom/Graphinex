@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useRevealOnView } from '../hooks/useRevealOnView';
 import { useIsMobileViewport } from '../hooks/useMediaQuery';
-import { useDevicePerformance } from '../lib/performance';
 
 type BTSItem = {
   id: string;
@@ -54,7 +53,6 @@ function handleVideoReady(video: HTMLVideoElement) {
     video.volume = 0;
     video.playsInline = true;
     video.loop = true;
-    video.preload = 'auto';
     video.controls = false;
   } catch {
     // Some browsers lock down media flags until user interaction.
@@ -89,7 +87,6 @@ function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
 export function BehindTheScene() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const isMobileViewport = useIsMobileViewport();
-  const performance = useDevicePerformance();
   const { ref: sectionRevealRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
     rootMargin: isMobileViewport ? '1000px 0px' : '700px 0px',
     threshold: 0.05
@@ -212,20 +209,14 @@ export function BehindTheScene() {
                   <video
                     src={mediaReady ? buildVideoSrc(item.fileName) : undefined}
                     muted
-                    autoPlay={mediaReady && performance.shouldAutoplayMedia}
-                    loop={mediaReady && performance.shouldAutoplayMedia}
+                    autoPlay={mediaReady}
+                    loop={mediaReady}
                     playsInline
-                    preload={
-                      mediaReady && performance.shouldAutoplayMedia
-                        ? isMobileViewport
-                          ? 'metadata'
-                          : 'auto'
-                        : 'none'
-                    }
+                    preload={isMobileViewport ? 'metadata' : 'auto'}
                     aria-label={`Graphinex behind the scene clip ${index + 1}`}
                     className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                     style={{ objectPosition: item.objectPosition }}
-                    onLoadedData={(event) => {
+                    onCanPlay={(event) => {
                       handleVideoReady(event.currentTarget);
                     }}
                   />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type Key } from 'react';
+import { useEffect, useRef, useState, type Key } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { testimonials as testimonialData } from '../data/siteConfig';
 
@@ -6,44 +6,26 @@ type Testimonial = (typeof testimonialData)[number];
 
 const AUTO_ROTATE_MS = 6200;
 
-function splitWords(text: string) {
-  return text.trim().split(/\s+/).filter(Boolean);
-}
-
 function AnimatedReview({
   text,
-  delay = 0.32,
   reducedMotion
 }: {
   text: string;
-  delay?: number;
   reducedMotion: boolean;
 }) {
-  const words = useMemo(() => splitWords(text), [text]);
-
   if (reducedMotion) {
     return <span>{text}</span>;
   }
 
   return (
-    <span aria-label={text}>
-      {words.map((word, index) => (
-        <motion.span
-          key={`${word}-${index}`}
-          initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{
-            duration: 0.45,
-            delay: delay + index * 0.035,
-            ease: [0.22, 1, 0.36, 1]
-          }}
-          className="inline-block will-change-transform"
-        >
-          {word}
-          {index < words.length - 1 ? '\u00A0' : ''}
-        </motion.span>
-      ))}
-    </span>
+    <motion.span
+      initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      className="inline-block"
+    >
+      {text}
+    </motion.span>
   );
 }
 
@@ -65,14 +47,18 @@ function TestimonialCard({
       animate={
         reducedMotion
           ? { opacity: 1, y: 0, scale: 1 }
-          : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }
+          : { opacity: 1, y: [0, -2, 0], scale: [1, 1.004, 1], filter: 'blur(0px)' }
       }
       exit={
         reducedMotion
           ? { opacity: 0 }
           : { opacity: 0, y: -18, scale: 0.985, filter: 'blur(12px)' }
       }
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={
+        reducedMotion
+          ? { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+          : { duration: 6.2, repeat: Infinity, ease: 'easeInOut' }
+      }
       className="relative w-full min-h-[22rem] overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.36)] backdrop-blur-2xl sm:min-h-[23rem] sm:p-6 md:min-h-[24rem] md:p-7 lg:min-h-[25rem] lg:p-8"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.18),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(255,145,48,0.12),transparent_28%)]" />
@@ -130,7 +116,7 @@ function TestimonialCard({
                 '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif'
             }}
           >
-            <AnimatedReview text={testimonial.review} delay={0.44} reducedMotion={reducedMotion} />
+            <AnimatedReview text={testimonial.review} reducedMotion={reducedMotion} />
           </motion.p>
         </div>
       </div>
@@ -268,7 +254,7 @@ export const Testimonials = () => {
             viewport={{ once: true, amount: 0.36 }}
             className="motion-optimised"
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="sync">
               <TestimonialCard
                 key={`${activeIndex}-${currentTestimonial.review.slice(0, 20)}`}
                 testimonial={currentTestimonial}
