@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -22,6 +22,34 @@ import {
   TestimonialsSkeleton
 } from './components/SectionSkeletons';
 import { useDevicePerformance, type DevicePerformanceProfile } from './lib/performance';
+
+type VisualSkin = 'sr' | 'legacy';
+const VISUAL_SKIN_STORAGE_KEY = 'graphinex-visual-skin';
+
+function resolveVisualSkin(search: string): VisualSkin {
+  if (typeof window === 'undefined') {
+    return 'sr';
+  }
+
+  const params = new URLSearchParams(search);
+  const requestedSkin = (params.get('skin') ?? params.get('visual') ?? '').toLowerCase();
+
+  if (requestedSkin === 'legacy' || requestedSkin === 'original' || requestedSkin === 'classic') {
+    return 'legacy';
+  }
+
+  if (requestedSkin === 'sr' || requestedSkin === 'slider' || requestedSkin === 'revolution') {
+    return 'sr';
+  }
+
+  const storedSkin = window.localStorage.getItem(VISUAL_SKIN_STORAGE_KEY);
+
+  if (storedSkin === 'sr' || storedSkin === 'legacy') {
+    return storedSkin;
+  }
+
+  return 'sr';
+}
 
 const loadShowreel = () => import('./components/Showreel').then((mod) => ({ default: mod.Showreel }));
 const loadServices = () => import('./components/Services').then((mod) => ({ default: mod.Services }));
@@ -76,6 +104,29 @@ function ScrollToHash() {
 
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [hash, pathname, profile.isLowEnd]);
+
+  return null;
+}
+
+function VisualSkinSync() {
+  const location = useLocation();
+  const [visualSkin, setVisualSkin] = useState<VisualSkin>(() => {
+    if (typeof window === 'undefined') {
+      return 'sr';
+    }
+
+    return resolveVisualSkin(window.location.search);
+  });
+
+  useEffect(() => {
+    setVisualSkin(resolveVisualSkin(location.search));
+  }, [location.search]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.visualSkin = visualSkin;
+    window.localStorage.setItem(VISUAL_SKIN_STORAGE_KEY, visualSkin);
+  }, [visualSkin]);
 
   return null;
 }
@@ -151,6 +202,7 @@ export default function App() {
 
   return (
     <Router>
+      <VisualSkinSync />
       <SeoManager />
       <ScrollToHash />
       <main

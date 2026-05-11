@@ -214,7 +214,7 @@ export const Navbar = () => {
   return (
     <header className="fixed inset-x-0 top-0 z-[150] isolate backdrop-blur-2xl">
       {/* 2. TOP ACTIVITY BAR (SCROLLING) */}
-      <div className="hidden h-8 w-full items-center overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] text-[10px] uppercase tracking-widest text-[color:var(--page-text)] md:flex">
+      <div className="top-activity-bar hidden h-8 w-full items-center overflow-hidden border-b border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] text-[10px] uppercase tracking-widest text-[color:var(--page-text)] md:flex">
         <div className="whitespace-nowrap flex animate-scroll gap-10">
           {[...activityItems, ...activityItems].map((item, i) => (
             <span key={i} className="flex items-center gap-3 opacity-70">
@@ -266,7 +266,7 @@ export const Navbar = () => {
 
       {/* 3. NAVBAR BELOW TOP BAR */}
       <nav className="flex items-center justify-center py-3 md:py-4" id="navbar">
-        <div className="hidden md:flex w-[min(94vw,1120px)] items-center justify-between gap-4 rounded-full border border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] px-4 py-3 shadow-[0_22px_64px_rgba(15,15,15,0.12)] backdrop-blur-2xl">
+        <div className="desktop-nav-shell hidden md:flex w-[min(94vw,1120px)] items-center justify-between gap-4 rounded-full border border-[color:var(--nav-border)] bg-[color:var(--nav-surface)] px-4 py-3 shadow-[0_22px_64px_rgba(15,15,15,0.12)] backdrop-blur-2xl">
           <Link to="/" className="flex items-center gap-2 group z-[60] shrink-0" id="nav-logo">
             <OptimizedImage
               src={brand.logo}

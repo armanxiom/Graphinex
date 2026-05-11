@@ -34,6 +34,7 @@ export function SeoManager() {
     const isPortfolio = location.pathname.startsWith('/portfolio');
     const isAdmin = location.pathname.startsWith('/armanxion-core');
     const seo = isPortfolio ? content.seo.portfolio : content.seo.home;
+    const visualSkin = document.documentElement.dataset.visualSkin;
 
     document.title = isAdmin
       ? 'Graphinex Admin'
@@ -41,7 +42,7 @@ export function SeoManager() {
 
     ensureMeta('description', isAdmin ? 'Private Graphinex admin console.' : seo.description);
     ensureMeta('robots', isAdmin ? 'noindex, nofollow' : seo.robots);
-    ensureMeta('theme-color', '#0f0f0f');
+    ensureMeta('theme-color', visualSkin === 'sr' ? '#050505' : '#0f0f0f');
     ensureMeta('og:title', seo.title);
     ensureMeta('og:description', seo.description);
     ensureMeta('og:image', seo.ogImage);

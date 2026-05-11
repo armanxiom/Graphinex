@@ -39,6 +39,16 @@ export function HeroFlipCard({ imageSrc, imageSrcAvif, alt }: HeroFlipCardProps)
       </picture>
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent_24%,rgba(0,0,0,0.18))]" />
+      <div className="pointer-events-none hero-card-shell__editorial absolute inset-0" aria-hidden="true">
+        <div className="hero-card-shell__editorial-chip">see what&apos;s possible</div>
+        <div className="hero-card-shell__editorial-copy">
+          <div className="hero-card-shell__editorial-kicker">explore our work</div>
+          <div className="hero-card-shell__editorial-title">Unique visuals. Endless possibilities.</div>
+          <p className="hero-card-shell__editorial-description">
+            Premium motion, branding, and video systems for modern campaigns and product stories.
+          </p>
+        </div>
+      </div>
       <div className="pointer-events-none absolute inset-0 rounded-[24px] border border-white/10" />
     </motion.figure>
   );
