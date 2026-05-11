@@ -98,7 +98,11 @@ export const Navbar = () => {
   const location = useLocation();
   const [theme, setTheme] = useState<ThemeMode>(() => {
     if (typeof window === 'undefined') {
-      return 'light';
+      return 'dark';
+    }
+
+    if (document.documentElement.dataset.visualSkin === 'sr') {
+      return 'dark';
     }
 
     const storedTheme = window.localStorage.getItem('graphinex-theme');

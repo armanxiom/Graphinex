@@ -5,12 +5,13 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight, PlayCircle } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { contact, hero, results } from '../data/siteConfig';
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { contact, hero, logos, results } from '../data/siteConfig';
 import { useCountUp } from '../hooks/useCountUp';
 import { useDevicePerformance } from '../lib/performance';
 import { HeroFlipCard } from './HeroFlipCard';
+import { OptimizedImage } from './OptimizedImage';
 
 const heroBackgroundImage = '/assets/hero/hero-background.webp';
 const heroBackgroundImageAvif = '/assets/hero/hero-background.avif';
@@ -87,11 +88,24 @@ function HeroStatValue({
 }
 
 export const Hero = () => {
+  const heroStageRef = useRef<HTMLElement | null>(null);
   const statsRef = useRef<HTMLDivElement | null>(null);
+  const location = useLocation();
   const performance = useDevicePerformance();
   const prefersReducedMotion = Boolean(useReducedMotion());
   const simplifyMotion = prefersReducedMotion || !performance.shouldUsePremiumMotion;
   const [statsActive, setStatsActive] = useState(false);
+  const featuredLogos = logos.slice(0, 4);
+  const marqueeItems = [
+    'Video Editing',
+    'Graphic Design',
+    'Branding',
+    'Showreel',
+    'Portfolio',
+    'Motion Systems'
+  ];
+  const requestedSkin = (new URLSearchParams(location.search).get('skin') ?? new URLSearchParams(location.search).get('visual') ?? '').toLowerCase();
+  const isSliderSkin = requestedSkin !== 'legacy' && requestedSkin !== 'original' && requestedSkin !== 'classic';
 
   const headingWords = useMemo(() => hero.heading.split(/\s+/), []);
   const highlightWords = useMemo(
@@ -124,32 +138,118 @@ export const Hero = () => {
     return () => observer.disconnect();
   }, [statsActive]);
 
+  const updateGlow = (event: ReactPointerEvent<HTMLElement>) => {
+    if (simplifyMotion || performance.isTouchDevice) {
+      return;
+    }
+
+    const node = heroStageRef.current;
+
+    if (!node) {
+      return;
+    }
+
+    const rect = node.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    node.style.setProperty('--hero-glow-x', `${Math.min(100, Math.max(0, x))}%`);
+    node.style.setProperty('--hero-glow-y', `${Math.min(100, Math.max(0, y))}%`);
+    node.style.setProperty('--hero-glow-opacity', '1');
+  };
+
+  const resetGlow = () => {
+    const node = heroStageRef.current;
+
+    if (!node) {
+      return;
+    }
+
+    node.style.setProperty('--hero-glow-opacity', simplifyMotion ? '0.5' : '0.82');
+  };
+
   return (
     <section
-      className="relative flex min-h-screen items-center overflow-visible pt-[8.25rem] pb-16 sm:pt-[9.5rem] md:pt-[13rem] md:pb-20"
+      ref={heroStageRef}
+      className="hero-stage relative flex min-h-screen items-center overflow-visible pt-[8.25rem] pb-16 sm:pt-[9.5rem] md:pt-[13rem] md:pb-20"
       id="hero"
+      onPointerMove={updateGlow}
+      onPointerEnter={updateGlow}
+      onPointerLeave={resetGlow}
     >
-      <div className="absolute inset-0 -z-30 overflow-hidden">
-        <picture>
-          <source srcSet={heroBackgroundImageAvif} type="image/avif" />
-          <source srcSet={heroBackgroundImage} type="image/webp" />
-          <img
-            src={heroBackgroundImage}
-            alt=""
-            aria-hidden="true"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="h-full w-full object-cover object-center"
-          />
-        </picture>
-      </div>
+      {isSliderSkin ? (
+        <>
+          <div className="hero-stage__bg absolute inset-0 -z-30 overflow-hidden">
+            <picture>
+              <source srcSet={heroBackgroundImageAvif} type="image/avif" />
+              <source srcSet={heroBackgroundImage} type="image/webp" />
+              <img
+                src={heroBackgroundImage}
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-cover object-center"
+              />
+            </picture>
+          </div>
 
-      <div className="absolute inset-0 -z-20 bg-[linear-gradient(120deg,rgba(8,8,8,0.88),rgba(8,8,8,0.64)_42%,rgba(8,8,8,0.58)_64%,rgba(8,8,8,0.82))]" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(255,200,160,0.12),transparent_22%)]" />
+          <div className="hero-stage__grid" aria-hidden="true" />
+          <div className="hero-stage__cursor-glow" aria-hidden="true" />
+          <div className="hero-stage__orb hero-stage__orb--1" aria-hidden="true" />
+          <div className="hero-stage__orb hero-stage__orb--2" aria-hidden="true" />
+          <div className="hero-stage__ghost hero-stage__ghost--one" aria-hidden="true">
+            GRAPHINEX
+          </div>
+          <div className="hero-stage__ghost hero-stage__ghost--two" aria-hidden="true">
+            STUDIO
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-0 -z-30 overflow-hidden">
+            <picture>
+              <source srcSet={heroBackgroundImageAvif} type="image/avif" />
+              <source srcSet={heroBackgroundImage} type="image/webp" />
+              <img
+                src={heroBackgroundImage}
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-cover object-center"
+              />
+            </picture>
+          </div>
+
+          <div className="absolute inset-0 -z-20 bg-[linear-gradient(120deg,rgba(8,8,8,0.88),rgba(8,8,8,0.64)_42%,rgba(8,8,8,0.58)_64%,rgba(8,8,8,0.82))]" />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,106,0,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(255,200,160,0.12),transparent_22%)]" />
+        </>
+      )}
 
       <div className="container-boxed relative z-10 grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-        <div className="z-10" id="hero-text">
+        <div className="hero-stage__content z-10" id="hero-text">
+          {isSliderSkin ? (
+            <div className="hero-marquee mb-6 hidden md:block" aria-hidden="true">
+              <div className="hero-marquee__track animate-scroll">
+                {[...Array(2)].map((_, trackIndex) => (
+                  <div key={trackIndex} className="hero-marquee__copy">
+                    {marqueeItems.map((item, itemIndex) => (
+                      <span
+                        key={`${trackIndex}-${item}`}
+                        className={`hero-marquee__word ${itemIndex === 1 ? 'hero-marquee__word--accent' : ''}`}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <motion.span
             initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: 'blur(10px)' }}
             animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -187,7 +287,7 @@ export const Hero = () => {
             initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
             animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.62, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-8 max-w-xl text-base leading-8 text-white/80 md:text-lg"
+            className="hero-stage__lede mb-8 max-w-xl text-base leading-8 text-white/80 md:text-lg"
           >
             {hero.subheading}
           </motion.p>
@@ -196,7 +296,7 @@ export const Hero = () => {
             initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
             animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: 0.56, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-10 flex flex-wrap gap-3"
+            className="hero-stage__actions mb-10 flex flex-wrap gap-3"
           >
             <a
               href={contact.whatsapp}
@@ -215,6 +315,42 @@ export const Hero = () => {
               <PlayCircle size={14} />
             </Link>
           </motion.div>
+
+          {isSliderSkin ? (
+            <motion.div
+              initial={simplifyMotion ? { opacity: 0 } : { opacity: 0, y: 16, filter: 'blur(10px)' }}
+              animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.58, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
+              className="hero-stage__featured mb-10 rounded-[1.4rem] border border-white/10 bg-white/[0.035] px-4 py-4 backdrop-blur-md"
+            >
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/52">
+                  Featured In
+                </div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/36">
+                  Real local assets
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {featuredLogos.map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex h-16 items-center justify-center rounded-[1rem] border border-white/10 bg-black/35 px-4"
+                  >
+                    <OptimizedImage
+                      src={item.src}
+                      alt={item.title}
+                      className="max-h-8 w-auto object-contain opacity-90 grayscale"
+                      pictureClassName="flex items-center justify-center"
+                      loading="eager"
+                      fetchPriority="high"
+                    />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          ) : null}
 
           <motion.div
             ref={statsRef}

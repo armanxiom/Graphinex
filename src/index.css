@@ -314,10 +314,7 @@ html[data-visual-skin='sr'] {
     --hero-glow-x: 18%;
     --hero-glow-y: 24%;
     --hero-glow-opacity: 0.82;
-    background:
-      radial-gradient(circle at left center, rgba(255, 106, 0, 0.16), transparent 24%),
-      radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.06), transparent 16%),
-      linear-gradient(180deg, #080808 0%, #0a0a0a 46%, #080808 100%);
+    background: transparent;
     color: #ffffff;
     isolation: isolate;
   }
@@ -327,6 +324,16 @@ html[data-visual-skin='sr'] {
       radial-gradient(circle at 16% 18%, rgba(255, 106, 0, 0.16), transparent 26%),
       radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.05), transparent 18%),
       linear-gradient(180deg, #070707 0%, #090909 42%, #050505 100%);
+  }
+
+  html[data-visual-skin='legacy'] .hero-stage__bg,
+  html[data-visual-skin='legacy'] .hero-stage__grid,
+  html[data-visual-skin='legacy'] .hero-stage__cursor-glow,
+  html[data-visual-skin='legacy'] .hero-stage__orb,
+  html[data-visual-skin='legacy'] .hero-stage__ghost,
+  html[data-visual-skin='legacy'] .hero-marquee,
+  html[data-visual-skin='legacy'] .hero-stage__featured {
+    display: none !important;
   }
 
   .hero-stage__bg {

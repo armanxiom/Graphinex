@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -24,7 +24,6 @@ import {
 import { useDevicePerformance, type DevicePerformanceProfile } from './lib/performance';
 
 type VisualSkin = 'sr' | 'legacy';
-const VISUAL_SKIN_STORAGE_KEY = 'graphinex-visual-skin';
 
 function resolveVisualSkin(search: string): VisualSkin {
   if (typeof window === 'undefined') {
@@ -40,12 +39,6 @@ function resolveVisualSkin(search: string): VisualSkin {
 
   if (requestedSkin === 'sr' || requestedSkin === 'slider' || requestedSkin === 'revolution') {
     return 'sr';
-  }
-
-  const storedSkin = window.localStorage.getItem(VISUAL_SKIN_STORAGE_KEY);
-
-  if (storedSkin === 'sr' || storedSkin === 'legacy') {
-    return storedSkin;
   }
 
   return 'sr';
@@ -110,22 +103,11 @@ function ScrollToHash() {
 
 function VisualSkinSync() {
   const location = useLocation();
-  const [visualSkin, setVisualSkin] = useState<VisualSkin>(() => {
-    if (typeof window === 'undefined') {
-      return 'sr';
-    }
-
-    return resolveVisualSkin(window.location.search);
-  });
-
-  useEffect(() => {
-    setVisualSkin(resolveVisualSkin(location.search));
-  }, [location.search]);
+  const visualSkin = resolveVisualSkin(location.search);
 
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.visualSkin = visualSkin;
-    window.localStorage.setItem(VISUAL_SKIN_STORAGE_KEY, visualSkin);
   }, [visualSkin]);
 
   return null;

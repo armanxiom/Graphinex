@@ -39,13 +39,22 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap"
     />
-    <script>
+      <script>
       (function () {
         try {
           var root = document.documentElement;
+          var params = new URLSearchParams(window.location.search);
+          var requestedSkin = ((params.get('skin') || params.get('visual') || '') + '').toLowerCase();
+          var visualSkin = requestedSkin === 'legacy' || requestedSkin === 'original' || requestedSkin === 'classic'
+            ? 'legacy'
+            : 'sr';
           var storedTheme = localStorage.getItem('graphinex-theme');
           var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var theme = storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : (prefersDark ? 'dark' : 'light');
+          var theme = visualSkin === 'sr'
+            ? 'dark'
+            : storedTheme === 'light' || storedTheme === 'dark'
+              ? storedTheme
+              : (prefersDark ? 'dark' : 'light');
           var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
           var saveData = Boolean(connection && connection.saveData);
           var effectiveType = (connection && connection.effectiveType) || '';
@@ -57,6 +66,7 @@
           var lowEnd = reducedMotion || saveData || lowNetwork || cores <= 4 || memory <= 4 || minViewport <= 440;
           var performance = lowEnd ? 'low' : (cores <= 6 || memory <= 6) ? 'balanced' : 'high';
 
+          root.dataset.visualSkin = visualSkin;
           root.dataset.theme = theme;
           root.style.colorScheme = theme;
           root.dataset.performance = performance;
