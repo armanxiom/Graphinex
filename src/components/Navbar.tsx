@@ -6,8 +6,8 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { brand, contact, navigation } from '../data/siteConfig';
-import { useState, useEffect, type CSSProperties, type Key, type PointerEvent as ReactPointerEvent } from 'react';
-import { ChevronRight, Menu, X } from 'lucide-react';
+import { useState, useEffect, type Key, type PointerEvent as ReactPointerEvent } from 'react';
+import { ChevronRight, Menu, Moon, SunMedium, X } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
 
 const activityItems = [
@@ -63,40 +63,33 @@ function ThemeToggle({
   compact?: boolean;
 }) {
   const darkMode = theme === 'dark';
-  const switchStyle = {
-    '--toggle-size': compact ? '12px' : '14px'
-  } as CSSProperties;
+  const indicatorTone = darkMode ? 'text-white/35' : 'text-black/35';
 
   return (
-    <label className="theme-switch shrink-0" style={switchStyle}>
-      <input
-        type="checkbox"
-        className="theme-switch__checkbox"
-        checked={darkMode}
-        onChange={onToggle}
-        aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-      />
-
-      <span className="theme-switch__container">
-        <span className="theme-switch__stars-container" aria-hidden="true">
-          <span className="theme-switch__star theme-switch__star--one">*</span>
-          <span className="theme-switch__star theme-switch__star--two">*</span>
-          <span className="theme-switch__star theme-switch__star--three">*</span>
-        </span>
-
-        <span className="theme-switch__circle-container" aria-hidden="true">
-          <span className="theme-switch__sun-moon-container">
-            <span className="theme-switch__moon">
-              <span className="theme-switch__spot" />
-              <span className="theme-switch__spot" />
-              <span className="theme-switch__spot" />
-            </span>
-          </span>
-        </span>
-
-        <span className="theme-switch__clouds" aria-hidden="true" />
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-pressed={darkMode}
+      className={`relative inline-flex items-center overflow-hidden rounded-full border border-[color:var(--nav-border)] bg-[color:var(--toggle-track)] p-[3px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_12px_22px_rgba(17,17,17,0.08)] ${
+        compact ? 'h-9 w-[4.85rem]' : 'h-10 w-[5.15rem]'
+      }`}
+    >
+      <span className={`absolute left-2 z-[1] text-[10px] ${indicatorTone}`}>
+        <SunMedium size={compact ? 11 : 12} />
       </span>
-    </label>
+      <span className={`absolute right-2 z-[1] text-[10px] ${indicatorTone}`}>
+        <Moon size={compact ? 11 : 12} />
+      </span>
+
+      <span
+        className={`absolute left-[3px] top-[3px] bottom-[3px] z-[2] flex w-[calc(50%-3px)] items-center justify-center rounded-full bg-[linear-gradient(180deg,#ffffff_0%,#f4efe6_100%)] text-black shadow-[0_10px_24px_rgba(17,17,17,0.14),inset_0_1px_0_rgba(255,255,255,0.72)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          darkMode ? 'translate-x-full' : 'translate-x-0'
+        }`}
+      >
+        {darkMode ? <Moon size={compact ? 12 : 13} /> : <SunMedium size={compact ? 12 : 13} />}
+      </span>
+    </button>
   );
 }
 
