@@ -1,8 +1,9 @@
 import { next } from '@vercel/functions';
 import { jwtVerify } from 'jose';
-import { ADMIN_ROUTE, getAdminAccessCode, hasValidAdminAccess } from './server/functions/access.ts';
 const ADMIN_COOKIE = 'graphinex_admin_session';
+const ADMIN_ROUTE = '/armanxion-core';
 const ACCESS_QUERY_KEY = 'access';
+const DEFAULT_ADMIN_ACCESS_CODE = 'ARMANXION-GRX-9271';
 
 function parseCookies(header: string | null) {
   const cookies = new Map<string, string>();
@@ -24,6 +25,15 @@ function parseCookies(header: string | null) {
   });
 
   return cookies;
+}
+
+function getAdminAccessCode() {
+  return process.env.GRAPHINEX_ADMIN_ACCESS_CODE?.trim() || DEFAULT_ADMIN_ACCESS_CODE;
+}
+
+function hasValidAdminAccess(request: Request) {
+  const url = new URL(request.url);
+  return url.searchParams.get(ACCESS_QUERY_KEY) === getAdminAccessCode();
 }
 
 async function hasValidSession(request: Request) {
