@@ -45,9 +45,9 @@
           var root = document.documentElement;
           var params = new URLSearchParams(window.location.search);
           var requestedSkin = ((params.get('skin') || params.get('visual') || '') + '').toLowerCase();
-          var visualSkin = requestedSkin === 'legacy' || requestedSkin === 'original' || requestedSkin === 'classic'
-            ? 'legacy'
-            : 'sr';
+          var visualSkin = requestedSkin === 'sr' || requestedSkin === 'slider' || requestedSkin === 'revolution'
+            ? 'sr'
+            : 'legacy';
           var storedTheme = localStorage.getItem('graphinex-theme');
           var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
           var theme = visualSkin === 'sr'

@@ -105,7 +105,7 @@ export const Hero = () => {
     'Motion Systems'
   ];
   const requestedSkin = (new URLSearchParams(location.search).get('skin') ?? new URLSearchParams(location.search).get('visual') ?? '').toLowerCase();
-  const isSliderSkin = requestedSkin !== 'legacy' && requestedSkin !== 'original' && requestedSkin !== 'classic';
+  const isSliderSkin = requestedSkin === 'sr' || requestedSkin === 'slider' || requestedSkin === 'revolution';
 
   const headingWords = useMemo(() => hero.heading.split(/\s+/), []);
   const highlightWords = useMemo(

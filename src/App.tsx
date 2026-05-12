@@ -27,21 +27,17 @@ type VisualSkin = 'sr' | 'legacy';
 
 function resolveVisualSkin(search: string): VisualSkin {
   if (typeof window === 'undefined') {
-    return 'sr';
+    return 'legacy';
   }
 
   const params = new URLSearchParams(search);
   const requestedSkin = (params.get('skin') ?? params.get('visual') ?? '').toLowerCase();
 
-  if (requestedSkin === 'legacy' || requestedSkin === 'original' || requestedSkin === 'classic') {
-    return 'legacy';
-  }
-
   if (requestedSkin === 'sr' || requestedSkin === 'slider' || requestedSkin === 'revolution') {
     return 'sr';
   }
 
-  return 'sr';
+  return 'legacy';
 }
 
 const loadShowreel = () => import('./components/Showreel').then((mod) => ({ default: mod.Showreel }));
