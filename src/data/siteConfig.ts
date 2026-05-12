@@ -8,10 +8,10 @@ export {
   showreel,
   socials,
   trustCertificates
-} from './coreContent';
+} from './coreContent.ts';
 
-export { homeFeaturedWorks, homePortfolioCollections, videoEditingMedia } from './homePortfolioContent';
+export { homeFeaturedWorks, homePortfolioCollections, videoEditingMedia } from './homePortfolioContent.ts';
 
-export { logos, portfolioCollections, portfolioPage } from './portfolioContent';
+export { logos, portfolioCollections, portfolioPage } from './portfolioContent.ts';
 
-export { activity, happyClients, process, reviews, testimonials } from './engagementContent';
+export { activity, happyClients, process, reviews, testimonials } from './engagementContent.ts';

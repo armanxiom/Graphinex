@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
-import { hasValidAdminAccess } from '../server/functions/access';
-import { badRequest, jsonResponse, unauthorized } from '../server/functions/http';
-import { appendMediaActivity, getMediaBootstrap, storeUploadFile, upsertMediaRecord } from '../server/functions/media';
+import { hasValidAdminAccess } from '../server/functions/access.ts';
+import { badRequest, jsonResponse, unauthorized } from '../server/functions/http.ts';
+import { appendMediaActivity, getMediaBootstrap, storeUploadFile, upsertMediaRecord } from '../server/functions/media.ts';
 import { getUploadPublicUrl } from '../server/storage/content-store.js';
 
 function resolveMediaKind(value: unknown, mimeType: string) {

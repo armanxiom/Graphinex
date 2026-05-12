@@ -1,4 +1,4 @@
-import { videoEditingMedia } from './homePortfolioContent';
+import { videoEditingMedia } from './homePortfolioContent.ts';
 
 export const portfolioPage = {
   hero: {

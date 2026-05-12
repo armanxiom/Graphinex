@@ -1,5 +1,5 @@
-import { hasValidAdminAccess } from '../../server/functions/access';
-import { unauthorized, jsonResponse } from '../../server/functions/http';
+import { hasValidAdminAccess } from '../../server/functions/access.ts';
+import { unauthorized, jsonResponse } from '../../server/functions/http.ts';
 import { getAdminBootstrap } from '../../server/utils/content.js';
 
 export async function GET(request: Request) {

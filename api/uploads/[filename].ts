@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { UPLOAD_DIR } from '../../server/storage/content-store.js';
-import { notFound } from '../../server/functions/http';
+import { notFound } from '../../server/functions/http.ts';
 
 function contentTypeFor(filename: string) {
   const ext = path.extname(filename).toLowerCase();

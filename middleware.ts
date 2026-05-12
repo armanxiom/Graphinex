@@ -1,6 +1,6 @@
 import { next } from '@vercel/functions';
 import { jwtVerify } from 'jose';
-import { ADMIN_ROUTE, getAdminAccessCode, hasValidAdminAccess } from './server/functions/access';
+import { ADMIN_ROUTE, getAdminAccessCode, hasValidAdminAccess } from './server/functions/access.ts';
 const ADMIN_COOKIE = 'graphinex_admin_session';
 const ACCESS_QUERY_KEY = 'access';
 

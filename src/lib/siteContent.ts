@@ -18,7 +18,7 @@ import {
   socials,
   testimonials,
   trustCertificates
-} from '../data/siteConfig';
+} from '../data/siteConfig.ts';
 
 export type MediaKind = 'image' | 'video';
 
