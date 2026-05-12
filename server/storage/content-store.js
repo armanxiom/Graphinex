@@ -183,7 +183,7 @@ export async function appendActivity(entry) {
   try {
     await writeJson(ACTIVITY_FILE, next);
   } catch {
-    // In-memory activity history keeps the admin panel responsive on read-only runtimes.
+    // In-memory activity history keeps reads responsive on read-only runtimes.
   }
 
   return next;

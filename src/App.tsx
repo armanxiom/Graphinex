@@ -58,24 +58,9 @@ const loadBehindTheScene = () =>
   import('./components/BehindTheScene').then((mod) => ({ default: mod.BehindTheScene }));
 const loadFooter = () => import('./components/Footer').then((mod) => ({ default: mod.Footer }));
 const loadPortfolioPage = () => import('./pages/Portfolio');
-const loadAdminPage = () => import('./pages/Admin');
 
 const LazySocialProof = lazy(loadSocialProof);
 const LazyPortfolioPage = lazy(loadPortfolioPage);
-const LazyAdminPage = lazy(loadAdminPage);
-const adminRouteElement = (
-  <Suspense
-    fallback={
-      <div className="min-h-screen bg-[#05070b]">
-        <div className="grid min-h-screen place-items-center text-sm uppercase tracking-[0.24em] text-white/50">
-          Loading admin console
-        </div>
-      </div>
-    }
-  >
-    <LazyAdminPage />
-  </Suspense>
-);
 
 function ScrollToHash() {
   const { pathname, hash } = useLocation();
@@ -114,13 +99,6 @@ function VisualSkinSync() {
 }
 
 function AppChrome() {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/armanxion-core');
-
-  if (isAdminRoute) {
-    return null;
-  }
-
   return <WhatsAppCTA />;
 }
 
@@ -217,14 +195,6 @@ export default function App() {
                     <LazyPortfolioPage />
                   </Suspense>
                 }
-              />
-              <Route
-                path="/armanxion-core"
-                element={adminRouteElement}
-              />
-              <Route
-                path="/armanxion-core/*"
-                element={adminRouteElement}
               />
             </Routes>
           </PageTransition>

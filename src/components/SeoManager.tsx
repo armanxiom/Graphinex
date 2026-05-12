@@ -32,28 +32,20 @@ export function SeoManager() {
 
   useEffect(() => {
     const isPortfolio = location.pathname.startsWith('/portfolio');
-    const isAdmin = location.pathname.startsWith('/armanxion-core');
     const seo = isPortfolio ? content.seo.portfolio : content.seo.home;
     const visualSkin = document.documentElement.dataset.visualSkin;
 
-    document.title = isAdmin
-      ? 'Graphinex Admin'
-      : seo.title;
+    document.title = seo.title;
 
-    ensureMeta('description', isAdmin ? 'Private Graphinex admin console.' : seo.description);
-    ensureMeta('robots', isAdmin ? 'noindex, nofollow' : seo.robots);
+    ensureMeta('description', seo.description);
+    ensureMeta('robots', seo.robots);
     ensureMeta('theme-color', visualSkin === 'sr' ? '#050505' : '#0f0f0f');
     ensureMeta('og:title', seo.title);
     ensureMeta('og:description', seo.description);
     ensureMeta('og:image', seo.ogImage);
     ensureMeta('og:url', window.location.origin + location.pathname + location.search);
 
-    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (isAdmin) {
-      canonical?.remove();
-    } else {
-      ensureLink('canonical', seo.canonical);
-    }
+    ensureLink('canonical', seo.canonical);
   }, [content.seo.home, content.seo.portfolio, location.pathname, location.search]);
 
   return null;
