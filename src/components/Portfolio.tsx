@@ -4,24 +4,59 @@
  */
 
 import { motion } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
-import { useRef, useState } from 'react';
+import { homeFeaturedWorks } from '../data/siteConfig';
+import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { MediaLightbox } from './MediaLightbox';
+import { useRevealOnView } from '../hooks/useRevealOnView';
+import { useIsMobileViewport } from '../hooks/useMediaQuery';
+import { useDevicePerformance } from '../lib/performance';
+import { OptimizedImage } from './OptimizedImage';
+
+type FeaturedWorkItem = {
+  type: string;
+  title: string;
+  category: string;
+  src: string;
+  poster?: string;
+  link: string;
+  ratio?: 'landscape' | 'square';
+};
 
 export const Portfolio = () => {
-  const containerRef = useRef(null);
-  const [selectedMedia, setSelectedMedia] = useState<any>(null);
-  const featuredWorks = siteConfig.featuredWorks.slice(0, 4);
+  const isMobileViewport = useIsMobileViewport();
+  const performance = useDevicePerformance();
+  const { ref: sectionRef, isVisible: mediaReady } = useRevealOnView<HTMLElement>({
+    rootMargin: isMobileViewport ? '900px 0px' : '560px 0px',
+    threshold: 0.08
+  });
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const featuredWorks = homeFeaturedWorks as ReadonlyArray<FeaturedWorkItem>;
+  const selectedMedia = selectedIndex === null ? null : featuredWorks[selectedIndex];
+  const imagePriorityCount = isMobileViewport ? 2 : 1;
+
+  const goToPrevious = () => {
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current - 1 + featuredWorks.length) % featuredWorks.length;
+    });
+  };
+
+  const goToNext = () => {
+    setSelectedIndex((current) => {
+      if (current === null) return current;
+      return (current + 1) % featuredWorks.length;
+    });
+  };
 
   return (
-    <section className="theme-panel relative overflow-hidden py-20 md:py-28" id="work">
+    <section ref={sectionRef} className="theme-panel relative overflow-hidden py-20 md:py-28" id="work">
       <div className="container-boxed mb-12 md:mb-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="max-w-xl">
             <motion.span
-              initial={{ opacity: 0, y: 12, filter: 'blur(8px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 12, filter: 'blur(8px)' }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="text-brand-orange text-[10px] font-bold uppercase tracking-[0.24em] mb-6 block"
@@ -29,8 +64,8 @@ export const Portfolio = () => {
               Our Portfolio
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18, filter: 'blur(10px)' }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="text-3xl md:text-5xl font-bold uppercase tracking-tight leading-[1.05] mb-0 ios-bold"
@@ -42,65 +77,83 @@ export const Portfolio = () => {
       </div>
 
       <div className="container-boxed">
-        <div ref={containerRef} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-          {featuredWorks.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 18, scale: 0.99 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              viewport={{ once: true }}
-              onClick={() => setSelectedMedia(item)}
-              className="premium-card group relative aspect-[4/5] cursor-pointer overflow-hidden transition-all duration-300"
-            >
-              {/* Media */}
-              {item.type === "video" ? (
-                index === 0 ? (
-                  <video 
-                    src={item.src} 
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-5">
+          {featuredWorks.map((item, index) => {
+            const shouldAutoplay = index === 0 && mediaReady && performance.shouldAutoplayMedia;
+
+            return (
+              <motion.button
+                key={`${item.src}-${index}`}
+                type="button"
+                initial={
+                  !performance.shouldUsePremiumMotion
+                    ? { opacity: 0 }
+                    : isMobileViewport
+                      ? { opacity: 0, scale: 0.995 }
+                      : { opacity: 0, y: 18, scale: 0.99 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={
+                  isMobileViewport
+                    ? { duration: 0.38, delay: index * 0.03, ease: [0.22, 1, 0.36, 1] }
+                    : { duration: 0.65, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }
+                }
+                viewport={{ once: true }}
+                onClick={() => setSelectedIndex(index)}
+                className={`premium-card group relative cursor-pointer overflow-hidden transition-all duration-300 ${
+                  item.type === 'video'
+                    ? item.ratio === 'landscape'
+                      ? 'aspect-[16/9]'
+                      : item.ratio === 'square'
+                        ? 'aspect-square'
+                        : 'aspect-[9/16]'
+                    : 'aspect-square'
+                }`}
+              >
+                {item.type === 'video' ? (
+                  <video
+                    src={item.src}
                     poster={item.poster}
-                    autoPlay 
-                    muted 
-                    loop 
+                    autoPlay={shouldAutoplay}
+                    muted
+                    loop={shouldAutoplay}
                     playsInline
-                    preload="metadata"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    preload={shouldAutoplay ? 'metadata' : 'none'}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                      <img
-                        src={item.poster}
-                        alt={item.title}
-                        loading="eager"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                )
-              ) : (
-                <img 
-                  src={item.src} 
-                  alt={item.title}
-                  loading="eager"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              )}
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <OptimizedImage
+                    src={item.src}
+                    alt={item.title}
+                    pictureClassName="absolute inset-0"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority={index < imagePriorityCount}
+                  />
+                )}
 
-              {item.type === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-md">
-                    <Play size={16} className="fill-current" />
+                <div className="absolute inset-0 bg-brand-dark/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                {item.type === 'video' && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-md">
+                      <Play size={16} className="fill-current" />
+                    </div>
                   </div>
-                </div>
-              )}
-            </motion.div>
-          ))}
+                )}
+              </motion.button>
+            );
+          })}
         </div>
       </div>
 
-      <MediaLightbox media={selectedMedia} onClose={() => setSelectedMedia(null)} />
+      <MediaLightbox
+        media={selectedMedia}
+        onClose={() => setSelectedIndex(null)}
+        currentIndex={selectedIndex ?? undefined}
+        totalCount={featuredWorks.length}
+        onPrevious={featuredWorks.length > 1 ? goToPrevious : undefined}
+        onNext={featuredWorks.length > 1 ? goToNext : undefined}
+      />
     </section>
   );
 };

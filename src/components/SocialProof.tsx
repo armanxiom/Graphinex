@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { siteConfig } from '../data/siteConfig';
+import { reviews } from '../data/siteConfig';
+
+type Review = (typeof reviews)[number];
+const reviewList = reviews as ReadonlyArray<Review>;
 
 export const SocialProof = () => {
-  const [currentReview, setCurrentReview] = useState<any>(null);
+  const [currentReview, setCurrentReview] = useState<(Review & { id: number }) | null>(null);
 
   useEffect(() => {
-    const reviews = siteConfig.reviews;
-    if (!reviews || reviews.length === 0) return;
+    if (reviewList.length < 1) return;
 
     const cycleReview = () => {
-      const randomIndex = Math.floor(Math.random() * reviews.length);
-      setCurrentReview({ ...reviews[randomIndex], id: Date.now() });
+      const randomIndex = Math.floor(Math.random() * reviewList.length);
+      setCurrentReview({ ...reviewList[randomIndex], id: Date.now() });
     };
 
     const interval = window.setInterval(cycleReview, 5000);
@@ -21,7 +23,7 @@ export const SocialProof = () => {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed bottom-24 left-4 z-40">
+    <div className="pointer-events-none fixed bottom-4 left-4 z-40 w-[min(250px,calc(100vw-2rem))] sm:bottom-24 sm:w-[250px]">
       <AnimatePresence mode="wait">
         {currentReview ? (
           <motion.div
@@ -30,7 +32,7 @@ export const SocialProof = () => {
             animate={{ x: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ x: -28, opacity: 0, scale: 0.98, filter: 'blur(8px)' }}
             transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto w-[250px] rounded-[1rem] border border-[color:var(--panel-card-border)] bg-[color:var(--panel-bg)] px-3 py-3 text-[color:var(--panel-text)] shadow-[0_16px_38px_rgba(15,15,15,0.12)] backdrop-blur-md"
+            className="pointer-events-auto w-full rounded-[1rem] border border-[color:var(--panel-card-border)] bg-[color:var(--panel-bg)] px-3 py-3 text-[color:var(--panel-text)] shadow-[0_16px_38px_rgba(15,15,15,0.12)] backdrop-blur-md"
           >
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-orange/12 text-xs font-semibold text-brand-orange">

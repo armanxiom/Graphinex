@@ -3,20 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import gsap from 'gsap';
 import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type Key } from 'react';
 import { Link } from 'react-router-dom';
-import { siteConfig } from '../data/siteConfig';
+import { serviceOverviews } from '../data/siteConfig';
+import { useDevicePerformance } from '../lib/performance';
+import { OptimizedImage } from './OptimizedImage';
 
-type ServiceOverview = (typeof siteConfig.serviceOverviews)[number];
+type ServiceOverview = (typeof serviceOverviews)[number];
 const MotionLink = motion(Link);
 
 function ServiceRow({
   service,
   index
 }: {
+  key?: Key;
   service: ServiceOverview;
   index: number;
 }) {
@@ -25,10 +27,11 @@ function ServiceRow({
   const activeRef = useRef(false);
   const [active, setActive] = useState(false);
   const [supportsHover, setSupportsHover] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const performance = useDevicePerformance();
+  const reduceMotion = Boolean(useReducedMotion()) || !performance.shouldUsePremiumMotion;
   const portfolioHref = `/portfolio?category=${service.portfolioCategory}`;
 
-  const desktopInteractive = supportsHover && !reduceMotion;
+  const desktopInteractive = supportsHover && !reduceMotion && performance.shouldUseScrollFX;
 
   useEffect(() => {
     const query = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -66,14 +69,8 @@ function ServiceRow({
     }
 
     if (!desktopInteractive) {
-      gsap.set(preview, {
-        opacity: 0,
-        scale: 0.6,
-        x: 0,
-        y: 0,
-        rotation: 0,
-        yPercent: -50
-      });
+      preview.style.opacity = '0';
+      preview.style.transform = 'translate3d(0, -50%, 0) scale(0.6)';
 
       return;
     }
@@ -84,67 +81,85 @@ function ServiceRow({
       return;
     }
 
-    const xTo = gsap.quickTo(preview, 'x', { duration: 0.22, ease: 'power3.out' });
-    const yTo = gsap.quickTo(preview, 'y', { duration: 0.22, ease: 'power3.out' });
-    const rotationTo = gsap.quickTo(preview, 'rotation', { duration: 0.22, ease: 'power3.out' });
+    let disposed = false;
+    let cleanup = () => undefined;
 
-    gsap.set(preview, {
-      opacity: 0,
-      scale: 0.6,
-      x: 0,
-      y: 0,
-      rotation: 0,
-      yPercent: -50,
-      transformOrigin: 'center center'
-    });
+    const init = async () => {
+      const { default: gsap } = await import('gsap');
 
-    const showPreview = () => {
-      activeRef.current = true;
-      setActive(true);
-      gsap.to(preview, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.3,
-        ease: 'power3.out'
-      });
-    };
-
-    const hidePreview = () => {
-      activeRef.current = false;
-      setActive(false);
-      gsap.to(preview, {
-        opacity: 0,
-        scale: 0.6,
-        duration: 0.24,
-        ease: 'power3.out'
-      });
-    };
-
-    const movePreview = (event: PointerEvent) => {
-      if (!activeRef.current) {
+      if (disposed) {
         return;
       }
 
-      const rect = row.getBoundingClientRect();
-      const pointerX = event.clientX - rect.left;
-      const pointerY = event.clientY - rect.top;
+      const xTo = gsap.quickTo(preview, 'x', { duration: 0.22, ease: 'power3.out' });
+      const yTo = gsap.quickTo(preview, 'y', { duration: 0.22, ease: 'power3.out' });
+      const rotationTo = gsap.quickTo(preview, 'rotation', { duration: 0.22, ease: 'power3.out' });
 
-      const normalizedX = pointerX / rect.width - 0.5;
-      const normalizedY = pointerY / rect.height - 0.5;
+      gsap.set(preview, {
+        opacity: 0,
+        scale: 0.6,
+        x: 0,
+        y: 0,
+        rotation: 0,
+        yPercent: -50,
+        transformOrigin: 'center center'
+      });
 
-      xTo(normalizedX * 108);
-      yTo(normalizedY * 44);
-      rotationTo(normalizedX * 4.5);
+      const showPreview = () => {
+        activeRef.current = true;
+        setActive(true);
+        gsap.to(preview, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.3,
+          ease: 'power3.out'
+        });
+      };
+
+      const hidePreview = () => {
+        activeRef.current = false;
+        setActive(false);
+        gsap.to(preview, {
+          opacity: 0,
+          scale: 0.6,
+          duration: 0.24,
+          ease: 'power3.out'
+        });
+      };
+
+      const movePreview = (event: PointerEvent) => {
+        if (!activeRef.current) {
+          return;
+        }
+
+        const rect = row.getBoundingClientRect();
+        const pointerX = event.clientX - rect.left;
+        const pointerY = event.clientY - rect.top;
+
+        const normalizedX = pointerX / rect.width - 0.5;
+        const normalizedY = pointerY / rect.height - 0.5;
+
+        xTo(normalizedX * 108);
+        yTo(normalizedY * 44);
+        rotationTo(normalizedX * 4.5);
+      };
+
+      row.addEventListener('pointerenter', showPreview);
+      row.addEventListener('pointerleave', hidePreview);
+      row.addEventListener('pointermove', movePreview);
+
+      cleanup = () => {
+        row.removeEventListener('pointerenter', showPreview);
+        row.removeEventListener('pointerleave', hidePreview);
+        row.removeEventListener('pointermove', movePreview);
+      };
     };
 
-    row.addEventListener('pointerenter', showPreview);
-    row.addEventListener('pointerleave', hidePreview);
-    row.addEventListener('pointermove', movePreview);
+    void init();
 
     return () => {
-      row.removeEventListener('pointerenter', showPreview);
-      row.removeEventListener('pointerleave', hidePreview);
-      row.removeEventListener('pointermove', movePreview);
+      disposed = true;
+      cleanup();
     };
   }, [desktopInteractive]);
 
@@ -152,7 +167,7 @@ function ServiceRow({
     <Link to={portfolioHref} className="block text-inherit no-underline">
       <motion.article
         ref={rowRef}
-        initial={{ opacity: 0, y: 20 }}
+        initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         whileHover={desktopInteractive ? { y: -2 } : undefined}
         transition={{ duration: 0.52, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
@@ -167,7 +182,7 @@ function ServiceRow({
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,rgba(255,106,0,0.14),transparent_26%)]" />
         </div>
 
-        <div className="relative flex min-h-[122px] cursor-pointer flex-col gap-5 px-5 py-6 outline-none transition-all duration-500 sm:px-8 md:py-7 lg:min-h-[152px] lg:px-16 xl:px-20">
+        <div className="relative flex min-h-[108px] cursor-pointer flex-col gap-4 px-4 py-5 outline-none transition-all duration-500 sm:min-h-[122px] sm:px-8 sm:py-6 md:py-7 lg:min-h-[152px] lg:px-16 xl:px-20">
           <div className="flex min-w-0 flex-1 flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-6">
               <span className="mt-2 min-w-[2.85rem] text-[10px] font-semibold uppercase tracking-[0.32em] text-white/38 sm:min-w-[3.25rem]">
@@ -176,7 +191,7 @@ function ServiceRow({
 
               <div className="min-w-0 max-w-3xl">
                 <h3
-                  className={`text-[clamp(2.05rem,4.4vw,4.9rem)] font-semibold uppercase leading-[0.92] transition-colors duration-300 ${
+                  className={`text-[clamp(1.55rem,7.5vw,2.5rem)] font-semibold uppercase leading-[0.92] transition-colors duration-300 sm:text-[clamp(2.05rem,4.4vw,4.9rem)] ${
                     active ? 'text-brand-orange' : 'text-white'
                   }`}
                 >
@@ -206,12 +221,11 @@ function ServiceRow({
           <div className="absolute left-4 top-4 z-10 inline-flex h-8 items-center rounded-full border border-white/12 bg-black/35 px-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/88 backdrop-blur-md">
             {service.icon}
           </div>
-          <img
+          <OptimizedImage
             src={service.previewImage}
             alt={`${service.title} preview`}
             className="h-full w-full object-cover"
-            loading="eager"
-            decoding="async"
+            pictureClassName="absolute inset-0"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_45%,rgba(0,0,0,0.26))]" />
         </div>
@@ -221,7 +235,8 @@ function ServiceRow({
 }
 
 export const Services = () => {
-  const services = siteConfig.serviceOverviews;
+  const services = serviceOverviews;
+  const performance = useDevicePerformance();
 
   return (
     <section className="theme-panel relative overflow-hidden py-20 md:py-28" id="services">
@@ -231,8 +246,8 @@ export const Services = () => {
         <div className="mb-12 flex flex-col gap-8 md:mb-16 md:flex-row md:items-end md:justify-between">
           <div className="max-w-4xl">
             <motion.span
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="section-kicker text-white/55"
@@ -240,8 +255,8 @@ export const Services = () => {
               OUR SERVICES
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ delay: 0.08, duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="ios-bold text-[clamp(2.5rem,5vw,5.8rem)] uppercase leading-[0.94] text-white"
@@ -249,8 +264,8 @@ export const Services = () => {
               AGENCY SPECIALIZATIONS
             </motion.h2>
             <motion.p
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={!performance.shouldUsePremiumMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
+              whileInView={!performance.shouldUsePremiumMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               transition={{ delay: 0.14, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
               className="mt-5 max-w-2xl text-sm leading-7 text-white/64 md:text-base"

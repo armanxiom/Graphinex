@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import gsap from 'gsap';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
-import { siteConfig } from '../data/siteConfig';
+import { process as workflowSteps } from '../data/siteConfig';
+import { useDevicePerformance } from '../lib/performance';
+import { OptimizedImage } from './OptimizedImage';
 
-type WorkflowStep = (typeof siteConfig.process)[number];
+type WorkflowStep = (typeof workflowSteps)[number];
 
 const previewSize = {
   width: 312,
@@ -22,10 +23,11 @@ export const Process = () => {
   const activeIndexRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [hoverCapable, setHoverCapable] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const performance = useDevicePerformance();
+  const reduceMotion = Boolean(useReducedMotion()) || !performance.shouldUsePremiumMotion;
 
-  const interactive = hoverCapable && !reduceMotion;
-  const steps = siteConfig.process as WorkflowStep[];
+  const interactive = hoverCapable && !reduceMotion && performance.shouldUseScrollFX;
+  const steps = workflowSteps as ReadonlyArray<WorkflowStep>;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -57,10 +59,33 @@ export const Process = () => {
 
   useEffect(() => {
     if (!interactive) {
+      return;
+    }
+
+    const preview = previewRef.current;
+    const cursor = cursorRef.current;
+
+    if (!preview || !cursor) {
+      return;
+    }
+
+    const shouldShow = activeIndex !== null;
+
+    preview.style.opacity = shouldShow ? '1' : '0';
+    cursor.style.opacity = shouldShow ? '1' : '0';
+  }, [activeIndex, interactive]);
+
+  useEffect(() => {
+    if (!interactive) {
       const fallbackTargets = [cursorRef.current, previewRef.current].filter(Boolean);
 
       if (fallbackTargets.length > 0) {
-        gsap.set(fallbackTargets, { opacity: 0, scale: 0.92, x: 0, y: 0 });
+        fallbackTargets.forEach((target) => {
+          if (target instanceof HTMLElement) {
+            target.style.opacity = '0';
+            target.style.transform = 'scale(0.92) translate3d(0, 0, 0)';
+          }
+        });
       }
 
       return;
@@ -74,98 +99,87 @@ export const Process = () => {
       return;
     }
 
-    const setCursorX = gsap.quickTo(cursor, 'x', { duration: 0.18, ease: 'power3.out' });
-    const setCursorY = gsap.quickTo(cursor, 'y', { duration: 0.18, ease: 'power3.out' });
-    const setPreviewX = gsap.quickTo(preview, 'x', { duration: 0.24, ease: 'power3.out' });
-    const setPreviewY = gsap.quickTo(preview, 'y', { duration: 0.24, ease: 'power3.out' });
+    let disposed = false;
+    let cleanup = () => undefined;
 
-    const syncPreviewVisibility = () => {
-      const shouldShow = activeIndexRef.current !== null;
+    const init = async () => {
+      const { default: gsap } = await import('gsap');
 
-      gsap.to(preview, {
-        opacity: shouldShow ? 1 : 0,
-        scale: shouldShow ? 1 : 0.92,
-        duration: shouldShow ? 0.28 : 0.2,
-        ease: 'power3.out'
-      });
-
-      gsap.to(cursor, {
-        opacity: shouldShow ? 1 : 0,
-        scale: shouldShow ? 1 : 0.65,
-        duration: shouldShow ? 0.22 : 0.18,
-        ease: 'power3.out'
-      });
-    };
-
-    syncPreviewVisibility();
-
-    const handlePointerMove = (event: PointerEvent) => {
-      if (activeIndexRef.current === null) {
+      if (disposed) {
         return;
       }
 
-      const previewWidth = previewSize.width;
-      const previewHeight = previewSize.height;
+      const setCursorX = gsap.quickTo(cursor, 'x', { duration: 0.18, ease: 'power3.out' });
+      const setCursorY = gsap.quickTo(cursor, 'y', { duration: 0.18, ease: 'power3.out' });
+      const setPreviewX = gsap.quickTo(preview, 'x', { duration: 0.24, ease: 'power3.out' });
+      const setPreviewY = gsap.quickTo(preview, 'y', { duration: 0.24, ease: 'power3.out' });
 
-      let x = event.clientX + 28;
-      let y = event.clientY - previewHeight / 2;
+      const syncPreviewVisibility = () => {
+        const shouldShow = activeIndexRef.current !== null;
 
-      if (x + previewWidth > window.innerWidth - 20) {
-        x = event.clientX - previewWidth - 28;
-      }
+        gsap.to(preview, {
+          opacity: shouldShow ? 1 : 0,
+          scale: shouldShow ? 1 : 0.92,
+          duration: shouldShow ? 0.28 : 0.2,
+          ease: 'power3.out'
+        });
 
-      x = Math.max(20, Math.min(x, window.innerWidth - previewWidth - 20));
-      y = Math.max(20, Math.min(y, window.innerHeight - previewHeight - 20));
+        gsap.to(cursor, {
+          opacity: shouldShow ? 1 : 0,
+          scale: shouldShow ? 1 : 0.65,
+          duration: shouldShow ? 0.22 : 0.18,
+          ease: 'power3.out'
+        });
+      };
 
-      setCursorX(event.clientX);
-      setCursorY(event.clientY);
-      setPreviewX(x);
-      setPreviewY(y);
-    };
-
-    const handlePointerLeave = () => {
-      activeIndexRef.current = null;
-      setActiveIndex(null);
       syncPreviewVisibility();
+
+      const handlePointerMove = (event: PointerEvent) => {
+        if (activeIndexRef.current === null) {
+          return;
+        }
+
+        const previewWidth = previewSize.width;
+        const previewHeight = previewSize.height;
+
+        let x = event.clientX + 28;
+        let y = event.clientY - previewHeight / 2;
+
+        if (x + previewWidth > window.innerWidth - 20) {
+          x = event.clientX - previewWidth - 28;
+        }
+
+        x = Math.max(20, Math.min(x, window.innerWidth - previewWidth - 20));
+        y = Math.max(20, Math.min(y, window.innerHeight - previewHeight - 20));
+
+        setCursorX(event.clientX);
+        setCursorY(event.clientY);
+        setPreviewX(x);
+        setPreviewY(y);
+      };
+
+      const handlePointerLeave = () => {
+        activeIndexRef.current = null;
+        setActiveIndex(null);
+        syncPreviewVisibility();
+      };
+
+      section.addEventListener('pointermove', handlePointerMove);
+      section.addEventListener('pointerleave', handlePointerLeave);
+
+      cleanup = () => {
+        section.removeEventListener('pointermove', handlePointerMove);
+        section.removeEventListener('pointerleave', handlePointerLeave);
+      };
     };
 
-    section.addEventListener('pointermove', handlePointerMove);
-    section.addEventListener('pointerleave', handlePointerLeave);
+    void init();
 
     return () => {
-      section.removeEventListener('pointermove', handlePointerMove);
-      section.removeEventListener('pointerleave', handlePointerLeave);
+      disposed = true;
+      cleanup();
     };
   }, [interactive]);
-
-  useEffect(() => {
-    if (!interactive) {
-      return;
-    }
-
-    const preview = previewRef.current;
-    const cursor = cursorRef.current;
-
-    if (!preview || !cursor) {
-      return;
-    }
-
-    const shouldShow = activeIndex !== null;
-
-    gsap.to(preview, {
-      opacity: shouldShow ? 1 : 0,
-      scale: shouldShow ? 1 : 0.92,
-      duration: shouldShow ? 0.28 : 0.2,
-      ease: 'power3.out'
-    });
-
-    gsap.to(cursor, {
-      opacity: shouldShow ? 1 : 0,
-      scale: shouldShow ? 1 : 0.65,
-      duration: shouldShow ? 0.22 : 0.18,
-      ease: 'power3.out'
-    });
-  }, [activeIndex, interactive]);
 
   const activateStep = (index: number) => {
     activeIndexRef.current = index;
@@ -198,18 +212,22 @@ export const Process = () => {
           >
             <AnimatePresence mode="wait">
               {activeIndex !== null && (
-                <motion.img
+                <motion.div
                   key={steps[activeIndex].previewImage}
-                  src={steps[activeIndex].previewImage}
-                  alt={`${steps[activeIndex].name} preview`}
                   initial={{ opacity: 0, scale: 1.08 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-                  className="h-[180px] w-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
+                  className="h-[180px] w-full"
+                >
+                  <OptimizedImage
+                    src={steps[activeIndex].previewImage}
+                    alt={`${steps[activeIndex].name} preview`}
+                    className="h-[180px] w-full object-cover"
+                    pictureClassName="block h-[180px] w-full"
+                    priority
+                  />
+                </motion.div>
               )}
             </AnimatePresence>
 
@@ -225,8 +243,8 @@ export const Process = () => {
       <div className="container-boxed relative z-10">
         <div className="mb-12 max-w-4xl md:mb-16">
           <motion.span
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
+            whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
             className="section-kicker text-white/55"
@@ -234,8 +252,8 @@ export const Process = () => {
             OUR WORKFLOW
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
+            whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
             className="ios-bold text-[clamp(2.4rem,5vw,5.6rem)] uppercase leading-[0.95] text-white"
@@ -252,7 +270,7 @@ export const Process = () => {
               <motion.button
                 key={step.step}
                 type="button"
-                initial={{ opacity: 0, y: 20 }}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true, margin: '-80px' }}
@@ -319,12 +337,12 @@ export const Process = () => {
                     >
                       <div className="px-5 pb-5 sm:px-8">
                         <div className="overflow-hidden rounded-[1.15rem] border border-white/10 bg-white/[0.03]">
-                          <img
+                          <OptimizedImage
                             src={step.previewImage}
                             alt={`${step.name} preview`}
                             className="h-[180px] w-full object-cover"
-                            loading="eager"
-                            decoding="async"
+                            pictureClassName="block h-[180px] w-full"
+                            priority
                           />
                         </div>
                       </div>
